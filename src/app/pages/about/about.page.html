@@ -1,0 +1,16 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+    <ion-title>{{ dataService.getHeader('HEADER_ABOUT') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <h2>{{ 'LBL_HIPPOCAL_VERSION' | translate }} {{ version }}</h2>
+  <div [innerHtml]="dataService.RemoteText"></div>
+</ion-content>

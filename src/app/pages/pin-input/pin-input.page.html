@@ -1,0 +1,20 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-title>{{ dataProvider.getHeader('HEADER_PININPUT') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <div>{{ 'TEXT_PININPUT' | translate }}</div>
+  <ion-item class="centerInputFields" lines="none">
+  
+    <!-- <ion-input type="number" class="otp" [(ngModel)]="pin" pattern="[0-9]{1}" max="5"></ion-input> -->
+    <ion-item lines="none">
+      <ion-input #Field1 class="otp1" [(ngModel)]="pin1" pattern="[0-9]{1}" maxlength="1" [autofocus]="true" [clearOnEdit]="true" (keyup)="gotoNextField(Field1, Field2)"></ion-input>
+      <ion-input #Field2 class="otp1" [(ngModel)]="pin2" pattern="[0-9]{1}" maxlength="1" [clearOnEdit]="true" (keyup)="gotoNextField(Field2, Field3)"></ion-input>
+      <ion-input #Field3 class="otp1" [(ngModel)]="pin3" pattern="[0-9]{1}" maxlength="1" [clearOnEdit]="true" (keyup)="gotoNextField(Field3, Field4)"></ion-input>
+      <ion-input #Field4 class="otp1" [(ngModel)]="pin4" pattern="[0-9]{1}" maxlength="1" [clearOnEdit]="true" (keyup)="gotoNextField(Field4, Field5)"></ion-input>
+      <ion-input #Field5 class="otp1" [(ngModel)]="pin5" pattern="[0-9]{1}" maxlength="1" [clearOnEdit]="true" (keyup)="gotoNextField(Field5, Field1)"></ion-input>
+    </ion-item>
+  </ion-item>
+  <ion-button color="secondary" (click)="validatepin()" expand="block">{{ 'SIGNUP_BUTTON' | translate }}</ion-button>
+</ion-content>

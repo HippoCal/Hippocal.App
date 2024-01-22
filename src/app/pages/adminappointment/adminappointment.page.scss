@@ -1,0 +1,48 @@
+.range-md .range-tick {
+    top: 16px;
+    width: 2px;
+    height: 12px;
+  }
+
+  .range-md .range-bar {
+    top: 19px;
+    height: 7px;
+  }
+
+  .selector {
+    font-size: 18px;
+    line-height: 0.8;
+    letter-spacing: 0.1px;
+    color: #29235e;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center;
+    background-color: #ffffff;
+    text-align: left;
+  }
+
+  .option {
+    font-size: 8px;
+    line-height: 0.8;
+    letter-spacing: 0.1px;
+    color: #29235e;
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: center;
+    height: 10px;
+  }
+
+  ion-option .list {
+    font-size: 8px !important;
+    max-width: 100% !important;
+  }
+
+  .ion-option-items .item {
+    font-size: 8px !important;
+    max-width: 100% !important;
+  }
+
+  .select-popover {
+    font-size: 8px !important;
+    max-width: 100% !important;
+  }

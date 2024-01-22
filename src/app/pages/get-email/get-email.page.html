@@ -1,0 +1,19 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-title>{{ dataProvider.getHeader('HEADER_SETEMAIL') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <form [formGroup]="emailForm">
+    <ion-list padding>
+      <ion-item color="divider" lines="none" class="textField">
+        <ion-label>{{ 'TEXT_GETEMAIL' | translate }}</ion-label>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label position="floating">{{ 'EMAIL' | translate }}</ion-label>
+        <ion-input type="text" [(ngModel)]="email" formControlName="email" name="email" [class.invalid]="!emailForm.controls.email.valid && (emailForm.controls.email.dirty)"></ion-input>
+      </ion-item>
+      <ion-button color="primary" (click)="signup()" [disabled]="!emailForm.valid" expand="block">{{ 'BTN_SEND_MAIL' | translate }}</ion-button>
+    </ion-list>
+  </form>
+</ion-content>

@@ -1,0 +1,15 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-back-button icon="close-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ dataProvider.Profile.CurrentPlace.Name }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-list>
+    <app-place [place]="privatePlace" [color]="color" (click)="onPlaceDetails()"></app-place>
+    <ion-item-divider color="secondary">{{ 'BTN_NOWINPLACE' | translate }}</ion-item-divider>
+    <app-hour [halfHour]="halfHour" *ngFor="let halfHour of dataProvider.NowInPlaceData" (showAppointment)="onShowAppointment($event)"></app-hour>
+  </ion-list>
+</ion-content>

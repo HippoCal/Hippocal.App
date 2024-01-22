@@ -1,0 +1,36 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-buttons slot="start">
+        <ion-back-button icon="close-outline"></ion-back-button>
+      </ion-buttons>
+    </ion-buttons>
+    <ion-title>{{ getPlaceName() }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button icon-only (click)="onRefresh()">
+        <ion-icon name="refresh-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+
+  <ion-list (swipe)="swipe($event)">
+    <app-place [place]="privatePlace" [color]="color" (click)="onPlaceDetails()" *ngIf="hasPlace()"></app-place>
+    <ion-toolbar color="primary" align-title="middle">
+      <ion-buttons slot="start">
+        <ion-button icon-only (click)="previousWeek()">
+          <ion-icon name="arrow-back-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title class="textcenter">{{ dataProvider.WeekString }}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button icon-only (click)="nextWeek()">
+          <ion-icon name="arrow-forward-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+    <app-day *ngFor="let day of dataProvider.WeekData" [day]="day" (selectDay)="onSelectDay($event)" (showAppointment)="onShowAppointment($event)"></app-day>
+  </ion-list>
+  <ion-button color="primary" (click)="onnowinplace()" expand="block" *ngIf="hasPlace()">{{ 'BTN_NOWINPLACE' | translate }}</ion-button>
+</ion-content>

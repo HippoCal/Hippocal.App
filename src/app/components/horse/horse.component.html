@@ -1,0 +1,36 @@
+<ion-item color="divider" lines="none">
+  <ion-item-sliding (click)="onClick(horse)" lines="none">
+    <ion-item color="light">
+      <ion-avatar item-start>
+        <img class="smallImage" [src]="horse.LocalImage" />
+      </ion-avatar>
+      <h6>{{ horse.Name }}</h6>
+    </ion-item>
+    <ion-item-options lines="none">
+      <ion-item-option color="danger" [disabled]="!dataProvider.IsOnline || isLastHorse"
+        (click)="onDeleteHorse($event, horse)">
+        <ion-icon name="trash"></ion-icon>
+        {{ 'BTN_DELETE_NEWS' | translate }}
+      </ion-item-option>
+    </ion-item-options>
+  </ion-item-sliding>
+  <ion-item *ngIf="horse.HorseKey == horseKey" color="divider" class="ion-no-padding" lines="none">
+    <ion-list class="ion-no-padding">
+      <ion-list-header color="primary">
+        <ion-label>{{ 'HEADER_HORSEAPPOINTMENTS' | translate }}</ion-label>
+      </ion-list-header>
+      <ion-item color="secondary" lines="none" *ngFor="let typeappointment of horseAppointments.TypeAppointments" (click)="onTypeClick(typeappointment)" class="bottomPadding">
+        <div>
+          <div>{{getCaption(typeappointment.JobType, typeappointment.AppointmentType) }}</div>
+          <div *ngIf="typeappointment.Visible">
+            <ion-item color="divider" lines="none" *ngFor="let appointment of typeappointment.Appointments">
+              <div>{{formatDate(appointment)}} {{formatTime(appointment)}}</div>
+              <div>{{getAppointmentName(appointment)}}</div>
+            </ion-item>
+          </div>
+        </div>
+      </ion-item>
+      <ion-item color="secondary" lines="none"></ion-item>
+    </ion-list>
+  </ion-item>
+</ion-item>

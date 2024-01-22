@@ -1,0 +1,23 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+<ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    <ion-title>{{ dataProvider.getHeader('HEADER_IMAGEVIEW') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <swiper-container>
+      <swiper-slide>
+        <div class="swiper-zoom-container">
+          <img [src]="image">
+        </div>
+      </swiper-slide>
+    </swiper-container>
+  </ion-item>
+</ion-content>
+

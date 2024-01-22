@@ -1,0 +1,33 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+<ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    <ion-title>{{ dataProvider.getHeader(appointment.AppointmentName) }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-item class="imgcenter">
+    <ion-avatar>
+      <img [src]="userImage" class="center" (click)="zoom()"/>
+    </ion-avatar>
+  </ion-item>
+  <ion-row>
+    <ion-col size="4"><span>{{ 'LBL_DATE' | translate }}</span></ion-col>
+    <ion-col size="8"><h6>{{formatDate()}}</h6></ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="4"><span>{{ 'LBL_TIME' | translate }}</span></ion-col>
+    <ion-col size="8"><h6>{{formatTime()}}</h6></ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="4"><span>{{ 'LBL_PLACE' | translate }}</span></ion-col>
+    <ion-col size="8"><h6>{{dataProvider.Profile.CurrentPlace.Name}}</h6></ion-col>
+  </ion-row>
+  <ion-row *ngIf="appointment.Comment !== '' && appointment.Comment !== null && appointment.Comment !== undefined">
+    <ion-col size="4"><span>{{ 'LBL_EVENT_COMMENT' | translate }}</span></ion-col>
+    <ion-col size="8"><h6>{{appointment.Comment}}</h6></ion-col>
+  </ion-row>
+</ion-content>

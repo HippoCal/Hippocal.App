@@ -1,0 +1,30 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-button icon-only menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </ion-button>
+    <ion-title>{{ dataProvider.getHeader('HEADER_NEWSDETAILS') }}</ion-title>
+    <ion-buttons end>
+      <ion-button icon-only (click)="onRefresh()">
+        <ion-icon ios="ios-refresh-circle" md="md-refresh-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-list inset>
+    <ion-item color="light" text-wrap>
+      <h2>{{News.Headline}}</h2>
+    </ion-item>
+    <ion-item text-wrap>
+      <p>{{News.Text}}</p>
+    </ion-item>
+    <swiper-container>
+      <swiper-slide>
+        <div class="swiper-zoom-container">
+          <img [src]="image">
+        </div>
+      </swiper-slide>
+    </swiper-container>
+  </ion-list>
+</ion-content>

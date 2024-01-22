@@ -1,0 +1,16 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-back-button icon="close-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ dataProvider.getHeader(dayString) }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="daypage">
+  <ion-list>
+    <ion-item-divider color="secondary" *ngIf="!dataProvider.IsPrivate" >
+      <h6>{{ 'MSG_NEW_APPOINTMENT' | translate }}</h6>
+    </ion-item-divider>
+    <app-hour [halfHour]="halfHour" *ngFor="let halfHour of dataProvider.DayData" (selectHalfHour)="onSelectHalfHour($event)" (showAppointment)="onShowAppointment($event)"></app-hour>
+  </ion-list>
+</ion-content>

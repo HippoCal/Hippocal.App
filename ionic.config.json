@@ -1,0 +1,7 @@
+{
+  "name": "HippoCal",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

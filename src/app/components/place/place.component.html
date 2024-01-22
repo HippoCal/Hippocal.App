@@ -1,0 +1,13 @@
+  <ion-toolbar color="{{color}}" align-title="middle" (click)="onClick()" class="ion-no-padding">
+    <ion-buttons slot="start">
+      <ion-button icon-only>
+        <ion-avatar>
+          <img class="smallImage" [src]="place.LocalImage" />
+        </ion-avatar>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <h6>{{place.Name}}</h6>
+      <h6>{{place.OwnerName}}</h6>
+    </ion-title>
+  </ion-toolbar>

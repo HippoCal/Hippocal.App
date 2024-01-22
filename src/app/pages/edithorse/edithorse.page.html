@@ -1,0 +1,48 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-back-button icon="close-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ dataProvider.getHeader(isNew ? 'HEADER_ADDHORSE': 'HEADER_MODIFYHORSE') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-item class="imgcenter">
+    <ion-row>
+      <ion-col size="3">
+        <div class="imgcenter">
+        <ion-avatar>
+          <img [src]="horseImage" (click)="onGetImage()"/>
+        </ion-avatar>
+      </div>
+      </ion-col>
+      <ion-col size="9">
+        <ion-item lines="none" (click)="onGetImage()"><ion-icon item-start name="create"></ion-icon><span>{{ 'BTN_MODIFY_IMAGE' | translate }}</span></ion-item>
+        <ion-item lines="none"  (click)="onDeleteImage()" ><ion-icon item-start name="trash"></ion-icon><span>{{ 'BTN_DELETE_IMAGE' | translate }}</span></ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-item>
+  <form [formGroup]="horseForm">
+    <ion-list>
+      <ion-item>
+        <ion-label id="lblHorseName" position="floating">{{ 'HORSENAME' | translate }}</ion-label>
+        <ion-input aria-label="lblHorseName" type="text" [(ngModel)]="horse.Name" formControlName="horseName" name="horseName" [class.invalid]="!horseForm.controls['horseName'].valid && (horseForm.controls.horseName.dirty)"></ion-input>
+      </ion-item>
+      <div padding *ngIf="isNew">
+        <ion-button color="primary" (click)="onAddmodify()" [disabled]="!horseForm.valid || !dataProvider.IsOnline" expand="block">{{ 'BTN_ADDHORSE' | translate }}</ion-button>
+      </div>
+      <div padding *ngIf="!isNew">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button color="primary" (click)="onAddmodify()" [disabled]="!horseForm.valid || !dataProvider.IsOnline" expand="block">{{ 'BTN_MODIFYHORSE' | translate }}</ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button color="orange" [disabled]="!dataProvider.IsOnline || isLastHorse" expand="block" (click)="onDeleteHorse()">{{ 'BTN_DELETEHORSE' | translate }}</ion-button>
+            </ion-col>
+          </ion-row>
+          </ion-grid>
+      </div>
+    </ion-list>
+  </form>
+</ion-content>

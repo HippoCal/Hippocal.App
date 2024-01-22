@@ -1,0 +1,23 @@
+
+  ion-label {
+    margin: 4px 8px 4px 0px !important;
+  }
+  .errormsg {
+    color: #ff0000;
+  }
+  // Hide all elements
+  body.barcode-scanner-active {
+    visibility: hidden;
+    --background: transparent;
+    --ion-background-color: transparent;
+  }
+  // Show only the barcode scanner modal
+  .barcode-scanner-modal {
+    visibility: visible;
+  }
+  @media (prefers-color-scheme: dark) {
+    .barcode-scanner-modal {
+      --background: transparent;
+      --ion-background-color: transparent;
+    }
+  }

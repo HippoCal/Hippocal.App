@@ -1,0 +1,156 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-back-button icon="close-outline"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ dataProvider.getHeader('HEADER_PRIVATEAPPOINTMENT') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row *ngIf="isNew">
+      <ion-col size="3">
+        <h6>{{ 'LBL_DATE' | translate }}</h6>
+      </ion-col>
+      <ion-col size="9">
+        <h6>{{ appointmentService.getDateText() }}</h6>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="isNew">
+      <ion-col size="3">
+        <h6>{{ 'LBL_TIME' | translate }}</h6>
+      </ion-col>
+      <ion-col size="9">
+        <h6>{{ appointmentService.getDurationText() }}</h6>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!isNew">
+      <ion-toolbar align-title="middle" class="changer">
+        <ion-buttons slot="start">
+          <ion-button icon-only (click)="appointmentService.decDate()">
+            <ion-icon name="arrow-back-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title class="textcenter">{{ appointmentService.getDateText() }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button icon-only (click)="appointmentService.incDate()">
+            <ion-icon name="arrow-forward-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-row>
+    <ion-row *ngIf="!isNew">
+      <ion-toolbar align-title="middle" class="changer">
+        <ion-buttons slot="start">
+          <ion-button icon-only (click)="appointmentService.decTime()">
+            <ion-icon name="arrow-back-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title class="textcenter">{{appointmentService.getDurationText()}}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button icon-only (click)="appointmentService.incTime()">
+            <ion-icon name="arrow-forward-circle-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-row>
+    <ion-row>
+      <ion-col size="3">
+        <h6>{{ 'LBL_DURATION' | translate }}</h6>
+      </ion-col>
+      <ion-col size="9">
+        <h6>{{ appointmentService.getTimeText() }}</h6>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="3">
+        <h6>{{ 'LBL_HORSE' | translate }}</h6>
+      </ion-col>
+      <ion-col size="9">
+        <h6>{{ appointmentService.appointment.HorseName }}</h6>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="hasName">
+      <ion-col size="3">
+        <h6>{{ 'LBL_TEXT' | translate }}</h6>
+      </ion-col>
+      <ion-col size="9">
+        <h6>{{ appointmentService.appointment.AppointmentName }}</h6>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!isNew">
+      <ion-col size="6"><ion-button color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrModify()"
+          expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button></ion-col>
+      <ion-col size="6"><ion-button color="tertiary"
+          [disabled]="!dataProvider.IsOnline || !appointmentService.appointment.IsInTheFuture" (click)="onDelete()"
+          expand="block">{{ 'BTN_DELETEAPPOINTMENT' | translate }}</ion-button></ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-button *ngIf="isNew" color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrModify()"
+    expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button>
+  <ion-range min="30" max="360" step="30" [ticks]="true" [snaps]="true" color="primary" [(ngModel)]="duration" (ionChange)="change($event)">
+    <ion-label slot="start">30min</ion-label>
+    <ion-label slot="end">6h</ion-label>
+  </ion-range>
+  <div *ngIf="dataProvider.Profile.Horses.length > 1">
+    <ion-segment [(ngModel)]="area">
+      <ion-segment-button value="horses">{{ 'SEG_LBL_HORSES' | translate }}</ion-segment-button>
+      <ion-segment-button value="advanced">{{ 'SEG_LBL_EXTENDED' | translate }}</ion-segment-button>
+    </ion-segment>
+    <div [ngSwitch]="area">
+      <div *ngSwitchCase="'advanced'">
+        <ion-item>
+          <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTTYPE' | translate }}</ion-label>
+          <ion-select [(ngModel)]="appointmentService.appointment.AppointmentType" name="appointmentType" ngDefaultControl interface="popover" multiple="false"
+            (ionChange)="onChangeAppointmentType()">
+            <ion-select-option *ngFor="let appointmenttype of appointmentService.PrivateAppointmentTypes" [value]="appointmenttype.id">{{appointmenttype.text}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTNAME' | translate }}</ion-label>
+          <ion-input type="text" [(ngModel)]="appointmentService.appointment.AppointmentName"
+            name="jobname"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTCOMMENT' | translate }}</ion-label>
+          <ion-textarea name="comment" #comment id="comment" rows="6" maxLength="500" (keyup)="resize()"
+            [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
+        </ion-item>
+      </div>
+      <div *ngSwitchCase="'horses'">
+        <ion-row>
+          <ion-col size="12">
+            <ion-radio-group [(ngModel)]="appointmentService.appointment.HorseKey" (ionChange)="onChangeHorse()">
+              <ion-item *ngFor="let horse of dataProvider.Profile.Horses">
+                <ion-avatar item-start>
+                  <img class="smallImage" [src]="getHorseImage(horse.ImageUrl)" />
+                </ion-avatar>
+                <ion-label>{{ horse.Name }}</ion-label>
+                <ion-radio name="horseName" ngDefaultControl value="{{ horse.HorseKey }}"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </ion-col>
+        </ion-row>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="dataProvider.Profile.Horses.length === 1">
+    <ion-item>
+      <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTTYPE' | translate }}</ion-label>
+      <ion-select [(ngModel)]="appointmentService.appointment.AppointmentType" interface="popover" multiple="false"
+        (ionChange)="onChangeAppointmentType()">
+        <ion-select-option *ngFor="let appointmenttype of appointmentService.PrivateAppointmentTypes"
+          [value]="appointmenttype.id">{{appointmenttype.text}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTNAME' | translate }}</ion-label>
+      <ion-input type="text" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTCOMMENT' | translate }}</ion-label>
+      <ion-textarea #comment id="comment" rows="6" maxLength="500" (keyup)="resize()"
+        [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
+    </ion-item>
+  </div>
+</ion-content>

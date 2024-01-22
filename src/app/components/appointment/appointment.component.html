@@ -1,0 +1,15 @@
+<ion-col size="6" align-self-start>
+    <div *ngIf="appointment.AppointmentType === 0" class="hasData textcenter">
+      <h6>{{ formatTime(appointment) }}</h6>
+      <h6 class="threeDots" *ngIf="appointment.AppointmentName !== '' && appointment.AppointmentName !== undefined">{{appointment.AppointmentName}}</h6>
+      <h6 class="threeDots">{{appointment.HorseName}}</h6>
+    </div>
+    <div *ngIf="appointment.AppointmentType > 0 && appointment.AppointmentType < 5" class="hasEvent textcenter" [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
+      <h6>{{ formatTime(appointment) }}</h6>
+      <h6 class="threeDots">{{appointment.AppointmentName}}</h6>
+    </div>
+    <div *ngIf="appointment.AppointmentType > 4" class="hasEvent textcenter" [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
+      <h6>{{ formatTime(appointment) }}</h6>
+      <h6 class="threeDots">{{appointment.AppointmentName}}</h6>
+    </div>
+</ion-col>
