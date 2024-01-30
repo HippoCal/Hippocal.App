@@ -35,7 +35,7 @@ export class NewsdetailsPage {
   }
 
   async getImage() {
-    var image = await this.imageProvider.get(this.News.ImageUrl, this.News.NewsEntryKey, "news", false);
+    var image = await this.imageProvider.get(this.News.ImageUrl, this.News.NewsEntryKey, "news", false, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.image = image.data;

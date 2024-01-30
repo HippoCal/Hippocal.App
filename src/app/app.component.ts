@@ -180,7 +180,7 @@ export class AppComponent {
   }
 
   async getProfileImage() {
-    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true);
+    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.profileImage = image.data;

@@ -40,10 +40,15 @@ export class WeekPage implements OnInit {
   }
 
   async createPrivatePlace() {
-    this.privatePlace = new PlaceViewmodel(this.dataProvider.Profile.CurrentPlace.Name, '');
-    this.privatePlace.OwnerName = this.dataProvider.Profile.CurrentPlace.OwnerName;
-    this.privatePlace.LocalImage = await this.placeImage();
-    this.color = 'secondary-contrast';
+    if(this.dataProvider.Profile.CurrentPlace.IsPrivate) {
+      this.privatePlace = new PlaceViewmodel(this.dataProvider.Profile.CurrentPlace.Name, '');
+      this.privatePlace.OwnerName = this.dataProvider.Profile.CurrentPlace.OwnerName;
+      this.privatePlace.LocalImage = await this.placeImage();
+      this.color = 'secondary-contrast';
+    } else {
+      this.privatePlace = this.dataProvider.Profile.CurrentPlace;
+    }
+
   }
   
   public previousWeek(): void {
@@ -162,7 +167,7 @@ export class WeekPage implements OnInit {
   async placeImage(): Promise<string> {
     var entry = this.dataProvider.Profile.CurrentPlace;
     if (entry.LocalImage === undefined) {
-      var image = await this.imageService.get(entry.ImageUrl, entry.PlaceKey, "places", true);
+      var image = await this.imageService.get(entry.ImageUrl, entry.PlaceKey, "places", true, this.dataProvider.Profile.UserKey);
       if(image) {
         this.zone.run(() => {
           entry.LocalImage = image.data;

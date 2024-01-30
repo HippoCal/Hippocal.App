@@ -105,7 +105,7 @@ export class HorseComponent {
   }
 
   async gethorseImage() {
-    var image = await this.imageProvider.get(this.horse && this.horse.ImageUrl ? this.horse.ImageUrl : '', this.horse.HorseKey, "horse", true);
+    var image = await this.imageProvider.get(this.horse && this.horse.ImageUrl ? this.horse.ImageUrl : '', this.horse.HorseKey, "horse", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.horseImage = image.data;

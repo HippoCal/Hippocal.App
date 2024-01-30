@@ -32,7 +32,7 @@ export class PlacedetailsPage {
   }
 
   async getPlaceImage() {
-    var image = await this.imageProvider.get(this.dataProvider.Profile.CurrentPlace.ImageUrl, this.dataProvider.Profile.CurrentPlace.PlaceKey, "places", true);
+    var image = await this.imageProvider.get(this.dataProvider.Profile.CurrentPlace.ImageUrl, this.dataProvider.Profile.CurrentPlace.PlaceKey, "places", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.placeImage = image.data;

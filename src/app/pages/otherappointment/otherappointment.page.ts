@@ -52,7 +52,7 @@ export class OtherAppointmentPage {
   }
 
   async getUserImage() {
-    var image = await this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true);
+    var image = await this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.userImage = image.data;
@@ -61,7 +61,7 @@ export class OtherAppointmentPage {
   }
 
   async getHorseImage() {
-    var image = await this.imageProvider.get(this.appointment.HorseImageUrl, this.appointment.HorseKey, "horse", true);
+    var image = await this.imageProvider.get(this.appointment.HorseImageUrl, this.appointment.HorseKey, "horse", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.horseImage = image.data;

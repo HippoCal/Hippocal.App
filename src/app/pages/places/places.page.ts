@@ -30,8 +30,8 @@ export class PlacesPage {
 
   createPrivatePlace() {
     this.privatePlace = new PlaceViewmodel(this.translate.instant('BTN_NEW_PRIVATEAPPOINTMENT'), '');
-    this.privatePlace.LocalImage = this.dataProvider.getDefaultImage('appointment');
     this.privatePlace.OwnerName = this.translate.instant('BTN_NEW_PRIVATEAPPOINTMENT_DESCRIPTION');
+    this.privatePlace.IsPrivate = true;
     this.color = 'divider';
   }
 

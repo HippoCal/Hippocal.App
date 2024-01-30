@@ -684,7 +684,7 @@ export class DataService {
 
   subscribeBack() {
     if (this.IsOnline) {
-      return this.restProvider.subscribeBack()
+      return this.restProvider.subscribeBack(this.Profile.UserKey)
         .catch(reason => {
           this.showMessage('ERR_MSG_UNSUBSCRIBE', true);
         });
@@ -695,7 +695,7 @@ export class DataService {
 
   unsubscribe() {
     if (this.IsOnline) {
-      return this.restProvider.unsubscribe()
+      return this.restProvider.unsubscribe(this.Profile.UserKey)
         .catch(reason => {
           this.showMessage('ERR_MSG_UNSUBSCRIBE', true);
         });

@@ -13,6 +13,7 @@ export class PlaceViewmodel {
   public IsAdmin: boolean;
   public WeeksBookingInFuture: number;
   public BookableTo: string;
+  public IsPrivate: boolean;
 
   constructor(name: string, placekey: string, ownerName?: string, firstHour?: number, lastHour?: number, maxCapacity?: number, imageUrl?: string, localImage?: string, isAdmin?: boolean) {
     this.Name = name;
@@ -28,6 +29,7 @@ export class PlaceViewmodel {
     this.WeeksBookingInFuture = 0;
     this.BusinessHours = [];
     this.BookableTo = "";
+    this.IsPrivate = false;
   }
 
   public static Clone(data: PlaceViewmodel): PlaceViewmodel {
@@ -46,6 +48,7 @@ export class PlaceViewmodel {
       place.WeeksBookingInFuture = data.WeeksBookingInFuture;
       place.BusinessHours = data.BusinessHours;
       place.BookableTo = data.BookableTo;
+      place.IsPrivate = data.IsPrivate;
     return place;
   }
 

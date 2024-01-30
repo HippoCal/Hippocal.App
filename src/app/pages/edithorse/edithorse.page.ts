@@ -5,6 +5,7 @@ import { HorseViewmodel } from "src/app//viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from "src/app/services/services";
 import { UUID } from 'angular2-uuid';
 import { LocationStrategy } from '@angular/common';
+import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
 
 
 @Component({ 
@@ -18,7 +19,9 @@ export class EdithorsePage {
   public horse: HorseViewmodel = new HorseViewmodel('', '', '', '', this.dataProvider.Profile.UserKey);
   
   public horseImage: string;
+  public oldImageName: string;
   horseForm: FormGroup;
+  private file: ImageViewmodel;
 
   constructor(
     private router: Router,
@@ -34,8 +37,9 @@ export class EdithorsePage {
     this.horseForm = formBuilder.group({
       horseName: ['', Validators.compose([Validators.maxLength(30), Validators.required, Validators.minLength(2)])]
     });
-    this.gethorseImage();
+    
   }
+
 
   resolveParams() {
     this.route.queryParams.subscribe(params => {
@@ -47,6 +51,8 @@ export class EdithorsePage {
           this.horse.HorseKey = UUID.UUID();
         }
       }
+      this.oldImageName = this.horse.ImageUrl;
+      this.gethorseImage();
     });
   }
   
@@ -57,15 +63,17 @@ export class EdithorsePage {
   saveImage(fileName: string) {
     this.zone.run(() => {
       this.horse.ImageUrl = fileName;
+      if(this.horse.ImageUrl !== this.oldImageName && this.oldImageName !== '') {
+        this.imageProvider.deleteImage(this.oldImageName)
+      } 
       this.dataProvider.saveProfile(this.dataProvider.Profile);
+      this.gethorseImage();
     });
 
   }
 
-  uploadImage(fileName: string, url: string) {
-    this.imageProvider.upload(fileName, url, this.horse.HorseKey, this.dataProvider.Profile.UserKey, 'horse', (newFileName) => {
-        this.saveImage(newFileName);
-    });
+  async uploadImage() {
+    await this.imageProvider.upload(this.file, this.dataProvider.Profile.UserKey);
   }
 
   onDeleteImage() {
@@ -73,12 +81,16 @@ export class EdithorsePage {
   }
 
   onGetImage() {
-
-    this.imageProvider.getImage("horse", this.horse.HorseKey, (fileName, url) => {
-      this.saveImage(fileName);
-      this.uploadImage(fileName, url);
-      this.gethorseImage();
+    this.imageProvider.getImage('horse', this.horse.HorseKey, (file: ImageViewmodel) => {
+      this.file = file;
+      this.saveImage(file.fileName);
     });
+  }
+
+  refreshImage() {
+    if(this.oldImageName != this.horse.ImageUrl) {
+      this.uploadImage();
+    }
   }
 
   onDeleteHorse() {
@@ -110,6 +122,7 @@ export class EdithorsePage {
       if (this.isNew) {
         this.dataProvider.addHorse(this.horse).then(data => {
           if (data) {
+            this.refreshImage();
             this.dataProvider.loadProfile(() => {
               this.locationStrategy.back();
             });
@@ -119,6 +132,7 @@ export class EdithorsePage {
         this.horse.UserKey = this.dataProvider.Profile.UserKey;
         this.dataProvider.addHorse(this.horse).then(data => {
           if (data) {
+            this.refreshImage();
             this.dataProvider.loadProfile(() => {
               this.locationStrategy.back();
             });
@@ -134,7 +148,7 @@ export class EdithorsePage {
   }
 
   async gethorseImage() {
-    var image = await this.imageProvider.get(this.horse.ImageUrl, this.horse.HorseKey, "horse", true);
+    var image = await this.imageProvider.get(this.horse.ImageUrl, this.horse.HorseKey, "horse", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.horseImage = image.data;

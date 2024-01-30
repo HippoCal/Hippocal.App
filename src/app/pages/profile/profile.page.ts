@@ -2,7 +2,6 @@ import { Component, NgZone} from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { HorseViewmodel, PlaceViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from 'src/app/services/services';
-import { FileViewmodel } from 'src/app/viewmodels/fileviewmodel';
 
 @Component({
   selector: 'page-profile',
@@ -27,25 +26,22 @@ export class ProfilePage {
     if (!this.dataProvider.Profile.IsRegistered) {
       this.router.navigate(['/register'], {state: { animate: true, direction: 'forward' }});
     }
-
-    this.getUserImage();
     this.area = "basic";
     this.color = 'divider';
     this.lockedOut = (!this.dataProvider.Profile.IsActive && !this.dataProvider.IsPrivate) || (!this.dataProvider.Profile.EmailConfirmed && this.dataProvider.Profile.NumLogins > 5);
-
     this.lockOutReasonEMail = (!this.dataProvider.Profile.EmailConfirmed && this.dataProvider.Profile.NumLogins > 5);
     if (!this.dataProvider.Profile.IsActive) {
       this.lockOutReasonEMail = false;
     }
   }
 
-  ionViewWillEnter() {
-    this.getUserImage();
+  ngOnInit() {
+    this.getUserImage();;
   }
 
   async getUserImage() {
 
-    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true);
+    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.userImage = image.data;

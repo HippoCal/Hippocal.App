@@ -47,7 +47,7 @@ export class NowinplacePage {
   async placeImage(): Promise<string> {
     var entry = this.dataProvider.Profile.CurrentPlace;
     if (entry.LocalImage === undefined) {
-      var image = await this.imageProvider.get(entry.ImageUrl, entry.PlaceKey, "places", true);
+      var image = await this.imageProvider.get(entry.ImageUrl, entry.PlaceKey, "places", true, this.dataProvider.Profile.UserKey);
       if(image) {
         this.zone.run(() => {
           entry.LocalImage = image.data;

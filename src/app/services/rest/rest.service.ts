@@ -7,12 +7,15 @@ import { TokenService } from '../services';
 import { TranslateService } from '@ngx-translate/core';
 import { LoadingService } from '../services';
 import { ToastService } from '../services';
+import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
+import { finalize } from 'rxjs';
 
 @Injectable()
 export class RestService {
 
   private toastVisible: boolean;
   private toastText: string;
+  private uploadUrl: string = '';
 
   constructor(
     public http: HttpClient,
@@ -23,6 +26,7 @@ export class RestService {
     public translate: TranslateService,
     public tokenProvider: TokenService,
     public platform: Platform) {
+    this.uploadUrl = this.WebUrl + '/Upload/UploadHandler.ashx'; 
     this.toastVisible = false;
     this.tokenProvider.resetToken();
     Network.addListener('networkStatusChange', status => {
@@ -42,6 +46,7 @@ export class RestService {
   private webUrl = "http://localhost:31894";
   
   private apiUrl = this.baseUrl + '/api/mobileauth';
+  private mediaUrl = this.baseUrl + '/api/media';
   //private apiUrl = this.baseUrl + '/api';
 
   private isOnline: boolean = true;
@@ -108,14 +113,51 @@ export class RestService {
     return this.post(url, data, true, false, true);
   }
 
-  subscribeBack() {
+  subscribeBack(userKey: string) {
     var url = this.apiUrl + '/subscribe';
-    return this.get(url, true, true, true, { userKey: this.Token.UserKey });
+    return this.get(url, true, true, true, { userKey: userKey });
   }
 
-  unsubscribe() {
+  unsubscribe(userKey: string) {
     var url = this.apiUrl + '/unsubscribe';
-    return this.get(url, true, true, true, { userKey: this.Token.UserKey });
+    return this.get(url, true, true, true, { userKey: userKey });
+  }
+
+  loadImage(image: ImageViewmodel) {
+    var url = this.apiUrl + '/getImage';
+    return this.post(url, image, false, true, false);
+  }
+
+  async uploadImage(file: ImageViewmodel, userKey: string, showAnimation: boolean) {
+    if (showAnimation) {
+      this.showLoading("MSG_UPLOAD_IN_PROGRESS");
+    }
+    const response = await fetch(file.data);
+    const blob = await response.blob();
+    const formData = new FormData();
+    formData.append('bytes', blob, file.fileName)
+    let options = { 
+      headers: {}, 
+      params: {
+        uploadType: file.imageType,
+        key: file.key,
+        userkey: userKey,
+        fileName: file.fileName
+      } };
+    this.http.post(this.uploadUrl, formData, options)
+    .pipe(
+        finalize(() => {
+            this.hideLoading();
+        })
+    )
+    .subscribe(res => {
+        if (res['success']) {
+          this.toastSvc.showMessage("MSG_UPLOAD_SUCCESS", "", true, "", 2000);
+            
+        } else {
+          this.toastSvc.showMessage("MSG_UPLOAD_FAILURE", "", true, "", 2000);
+        }
+    });
   }
 
   setEmail(data: ProfileViewmodel) {
@@ -230,7 +272,7 @@ export class RestService {
     this.loadingSvc.hide();
   }
 
-  private getHeader(useToken: boolean, showAnimation: boolean, callback: any) {
+  private getHeader(useToken: boolean, showAnimation: boolean, callback: any, addFileHeader: boolean) {
     this.tokenProvider.loadToken().then( (token) => {
       if (useToken && this.tokenProvider.Expired && token.UserKey !== '' && token.EMail !== '') {
         var getToken = new TokenViewmodel(token.UserKey, token.UserPin, "", token.EMail, 0);
@@ -238,7 +280,7 @@ export class RestService {
           if (data !== undefined) {
             token = data as TokenViewmodel;
             this.saveToken(token);
-            var header = this.AddHeaders(token, useToken);
+            var header = this.AddHeaders(token, useToken, addFileHeader);
             callback(header);
           } else {
             callback(null);
@@ -247,13 +289,13 @@ export class RestService {
           callback(null);
         });
       } else {
-        var header = this.AddHeaders(token, useToken);
+        var header = this.AddHeaders(token, useToken, addFileHeader);
         callback(header);
       }
     });
   }
 
-  private AddHeaders(token: TokenViewmodel, useToken: boolean) {
+  private AddHeaders(token: TokenViewmodel, useToken: boolean, addFileHeader?: boolean) {
     var header = null;
     if (useToken && token.Token !== '' && token.Token !== undefined && token.Token !== null) {
       header = new HttpHeaders({
@@ -265,18 +307,24 @@ export class RestService {
         'Content-Type': 'application/json; charset=utf-8'
       });
     }
+    if(addFileHeader) {
+      header.add({'observe': 'response'});
+      header.add({'responseType': 'blob'});
+    }
     return header;
   }
 
-  private get<T>(url: string, showAnimation: boolean, useToken: boolean, showError: boolean, params?: any) {
+  
+  private get<T>(url: string, showAnimation: boolean, useToken: boolean, showError: boolean, params?: any, addFileHeader?: boolean) {
     if (showAnimation) {
       this.showLoading("MSG_LOADING");
     }
     return new Promise((resolve, reject) => {
-      console.info('RestService: get from url: ' + url + ' params ' + params);
+      console.info('RestService: get from url: ' + url + params ? ' params ' + params : '');
       this.getHeader(useToken, showAnimation,
         (headers: any) => {
           if (headers !== null) {
+            
             let options = { headers: headers, params: params };
             return this.http.get<T>(url, options).subscribe({ next: (data) => {
                 if (showAnimation) {
@@ -301,11 +349,11 @@ export class RestService {
           } else {
             return reject(null);
           }
-        });
+        }, addFileHeader);
     });
   }
 
-  private post(url: string, data: any, showAnimation: boolean, useToken: boolean, showError: boolean, params?: any) {
+  private post(url: string, data: any, showAnimation: boolean, useToken: boolean, showError: boolean, params?: any, addFileHeader?: boolean) {
 
     if (showAnimation) {
       this.showLoading("MSG_LOADING");
@@ -341,7 +389,7 @@ export class RestService {
         } else {
           return reject(null);
         }
-      });
+      }, addFileHeader);
     });
   }
 

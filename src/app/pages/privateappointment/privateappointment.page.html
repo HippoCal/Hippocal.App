@@ -120,7 +120,7 @@
       <div *ngSwitchCase="'horses'">
         <ion-row>
           <ion-col size="12">
-            <ion-radio-group [(ngModel)]="appointmentService.appointment.HorseKey" (ionChange)="onChangeHorse()">
+            <!-- <ion-radio-group [(ngModel)]="appointmentService.appointment.HorseKey" (ionChange)="onChangeHorse()">
               <ion-item *ngFor="let horse of dataProvider.Profile.Horses">
                 <ion-avatar item-start>
                   <img class="smallImage" [src]="getHorseImage(horse.ImageUrl)" />
@@ -128,6 +128,16 @@
                 <ion-label>{{ horse.Name }}</ion-label>
                 <ion-radio name="horseName" ngDefaultControl value="{{ horse.HorseKey }}"></ion-radio>
               </ion-item>
+            </ion-radio-group> -->
+            <ion-radio-group [(ngModel)]="appointmentService.appointment.HorseKey" (ionChange)="onChangeHorse()" *ngFor="let horse of dataProvider.Profile.Horses">
+              <ion-row>
+                <ion-col size="10">
+                  <app-horse [horse]="horse" [showappointments]="false" item-start/>
+                </ion-col>
+                <ion-col size="2" color="light" class="radioCol">
+                  <ion-radio name="horseName" ngDefaultControl value="{{ horse.HorseKey }}"></ion-radio>
+                </ion-col>
+              </ion-row>
             </ion-radio-group>
           </ion-col>
         </ion-row>

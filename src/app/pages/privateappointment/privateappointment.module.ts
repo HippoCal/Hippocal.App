@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { PrivateAppointmentPage } from './privateappointment.page';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ComponentsModule } from 'src/app/components/components.module';
 
 const routes: Routes = [
   {
@@ -20,7 +21,8 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     TranslateModule.forChild(),
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    ComponentsModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [ PrivateAppointmentPage ]

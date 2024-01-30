@@ -51,7 +51,7 @@ export class EventdetailsPage {
   }
 
   async getUserImage() {  
-    var image = await this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true);
+    var image = await this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.userImage = image.data;

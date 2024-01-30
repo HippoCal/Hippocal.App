@@ -243,5 +243,8 @@
   "BTN_LOGIN": "Subscribe",
   "LOGOUT_TEXT": "Attention! If you log out here, your HippoCal account will be deactivated. The data will not be deleted immediately and will be available when you log in again with the same email address. Do you really want to unsubscribe from HippoCal?",
   "LOGIN_TEXT": "Welcome back to HippoCal! We only can activate your account, if you are already registered!",
-  "HEADER_HORSEAPPOINTMENTS": "Your horse appointments"
+  "HEADER_HORSEAPPOINTMENTS": "Your horse appointments",
+  "MSG_UPLOAD_SUCCESS": "Upload successful...",
+  "MSG_UPLOAD_FAILURE": "Upload not successful...",
+  "MSG_UPLOAD_IN_PROGRESS": "Image-Upload"
 }

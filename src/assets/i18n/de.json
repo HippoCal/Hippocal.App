@@ -244,5 +244,8 @@
   "BTN_LOGIN": "Anmelden",
   "LOGOUT_TEXT": "Achtung! Wenn Du Dich hier abmeldest, wird Dein HippoCal-Account deaktiviert. Die Daten werden nicht sofort gelöscht und stehen bei erneuter Anmeldung mit der gleichen Mail-Adresse wieder zur Verfügung. Möchtest Du Dich wirklich von HippoCal abmelden?",
   "LOGIN_TEXT": "Hier meldest Du Dich wieder bei HippoCal an! Dein Account kann nur wieder aktiviert werden, wenn Du bereits einen Zugang zu HippoCal hattest!",
-  "HEADER_HORSEAPPOINTMENTS": "Termine für Dein Pferd"
+  "HEADER_HORSEAPPOINTMENTS": "Termine für Dein Pferd",
+  "MSG_UPLOAD_SUCCESS": "Upload erfolgreich...",
+  "MSG_UPLOAD_FAILURE": "Upload nicht erfolgreich...",
+  "MSG_UPLOAD_IN_PROGRESS": "Image-Upload"
 }

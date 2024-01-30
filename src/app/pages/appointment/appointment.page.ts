@@ -22,6 +22,7 @@ export class AppointmentPage implements OnInit {
     private router: Router, 
     private zone: NgZone, 
     public translate: TranslateService, 
+    public dataProvider: DataService,
     public imageService: ImageService,
     public toastervice: ToastService, 
     public appointmentService: AppointmentService) {
@@ -82,7 +83,7 @@ export class AppointmentPage implements OnInit {
 
 
   async getUserImage() {
-      var image = await this.imageService.get(this.appointmentService.appointment.ImageUrl, this.appointmentService.appointment.UserKey, "user", true);
+      var image = await this.imageService.get(this.appointmentService.appointment.ImageUrl, this.appointmentService.appointment.UserKey, "user", true, this.dataProvider.Profile.UserKey);
       if(image) {
         this.zone.run(() => {
           this.userImage = image.data;
@@ -91,7 +92,7 @@ export class AppointmentPage implements OnInit {
   }
 
   async getHorseImage() {
-    var image = await this.imageService.get(this.appointmentService.appointment.HorseImageUrl, this.appointmentService.appointment.HorseKey, "horse", true);
+    var image = await this.imageService.get(this.appointmentService.appointment.HorseImageUrl, this.appointmentService.appointment.HorseKey, "horse", true, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.horseImage = image.data;

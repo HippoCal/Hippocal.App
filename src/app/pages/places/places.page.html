@@ -13,27 +13,11 @@
 <ion-content class="ion-padding">
   <ion-list>
     <ion-item-divider color="secondary">{{ 'LIST_HEADER_PRIVATE_APPOINTMENT' | translate }}</ion-item-divider>
-    <!-- <ion-item color="light" (click)="onPrivateAppointment()">
-      <ion-avatar item-start>
-        <img class="smallImage" [src]="dataProvider.getDefaultImage('appointment')" />
-      </ion-avatar>
-      <p>{{ 'BTN_NEW_PRIVATEAPPOINTMENT' | translate }}</p>
-      <p>{{ 'BTN_NEW_PRIVATEAPPOINTMENT_DESCRIPTION' | translate }}</p>
-    </ion-item> -->
     <app-place [place]="privatePlace" [color]="color" (click)="onPrivateAppointment()"></app-place>
   </ion-list>
   <ion-list>
     <ion-item-divider *ngIf="!dataProvider.IsPrivate" color="secondary">{{ 'LIST_HEADER_PLACES' | translate }}</ion-item-divider>
-    <!-- <ion-item color="light" (click)="selectPlace(place)" *ngFor="let place of dataProvider.Profile.Places">
-      <ion-avatar item-start>
-        <img class="smallImage" [src]="place.LocalImage" />
-      </ion-avatar>
-      <p>{{place.Name}}</p>
-      <p>{{place.OwnerName}}</p> 
-    </ion-item> -->
-      <!-- <app-place [place]="place" [clickEvent]="selectPlace(place)" *ngFor="let place of dataProvider.Profile.Places"></app-place> -->
       <app-place [place]="place" [color]="color" (click)="selectPlace(place)" *ngFor="let place of dataProvider.Profile.Places"></app-place>
-    
   </ion-list>
 
 </ion-content>

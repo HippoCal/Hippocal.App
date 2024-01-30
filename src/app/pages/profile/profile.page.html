@@ -72,13 +72,6 @@
         <ion-list>
           <ion-item-divider color="secondary">{{ 'LIST_HEADER_PLACES' | translate }}</ion-item-divider>
           <ion-item-sliding *ngFor="let place of dataProvider.Profile.Places" (click)="onPlaceDetails()">
-            <!-- <ion-item color="light">
-              <ion-avatar item-start>
-                <img class="smallImage" [src]="place.LocalImage" />
-              </ion-avatar>
-              <p>{{place.Name}}</p>
-              <p>{{place.OwnerName}}</p>
-            </ion-item> -->
             <app-place [place]="place" [color]="color" (click)="onPlaceDetails(place)"></app-place>
             <ion-item-options side="right">
               <ion-button color="danger" [disabled]="!dataProvider.IsOnline" (click)="onDeletePlace($event, place)">

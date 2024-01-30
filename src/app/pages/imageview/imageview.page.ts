@@ -36,7 +36,7 @@ export class ImageviewPage {
   }
 
   async getImage() {
-    var image = await this.imageProvider.get(this.data.imageUrl, this.data.key, this.data.type, false);
+    var image = await this.imageProvider.get(this.data.imageUrl, this.data.key, this.data.type, false, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.image = image.data;

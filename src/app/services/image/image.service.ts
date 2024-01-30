@@ -6,10 +6,8 @@ import { HttpClient } from '@angular/common/http';
 import { RestService, TokenService } from "../services";
 import { TranslateService } from '@ngx-translate/core';
 import { UUID } from 'angular2-uuid';
-import { FileViewmodel } from 'src/app/viewmodels/fileviewmodel';
-import { HorseViewmodel } from 'src/app/viewmodels/horseviewmodel';
-import { NewsViewmodel } from 'src/app/viewmodels/newsviewmodel';
-import { PlaceViewmodel } from 'src/app/viewmodels/placeviewmodel';
+import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
+import { exhaustMap } from 'rxjs';
 
 @Injectable()
 export class ImageService {
@@ -17,11 +15,9 @@ export class ImageService {
   IMAGE_DIR: string = "hippocal_images";
 
   public imageName: string = '';
-  private uploadUrl: string = '';
-  private thumbExtension: string = "thumb_";
-  private fullExtension: string = "fullsize_";
+  
 
-  images: FileViewmodel[] = [];
+  images: ImageViewmodel[] = [];
 
   constructor(private restProvider: RestService,
     //private transfer: FileTransfer,
@@ -30,7 +26,7 @@ export class ImageService {
     private http: HttpClient,
     public platform: Platform,
     public actionSheetCtrl: ActionSheetController) {
-    this.uploadUrl = this.restProvider.WebUrl + '/Upload/UploadHandler.ashx';
+    
     this.loadImages();
   }
 
@@ -55,54 +51,17 @@ export class ImageService {
         return "longierhalle.png";
       case "loading":
         return "loading.png";
-      case "appointment":
+      case "private":
         return "private.png";
       default:
         return '';
     }
   }
 
-  upload(fileName: string, url: string, key: string, userKey: string, type: string, callback: any) {
-    // Todo: Fix it
-    // let options: FileUploadOptions = {
-    //   fileKey: key,
-    //   fileName: fileName,
-    //   chunkedMode: false,
-    //   mimeType: 'image/jpeg',
-    //   params: {
-    //     uploadType: type,
-    //     key: key,
-    //     userkey: userKey
-    //   }
-    // };
-
-    // this.initFileTransfer();
-    // console.info('File upload: File-Url: ' + url + ' FileName: ' + fileName + ' Remote URL: ' + this.uploadUrl + ' Key: ' + key + ' UserKey: ' + userKey + ' Type: ' + type);
-    // this.fileTransfer.upload(url, this.uploadUrl, options).then((data: any) => {
-    //   var result = JSON.parse(data.response);
-    //   if (result[0].name) {
-    //     console.log('Uploaded image successfully ' + result[0].name);
-    //     callback(result[0].name);
-    //   } else {
-    //     callback("");
-    //   }
-    // },
-    //   (err: any) => {
-    //     callback("");
-    //     console.log('upload failed!' + err);
-    //   });
+  async upload(file: ImageViewmodel, userKey: string) {
+    await this.restProvider.uploadImage(file, userKey, true);
   }
 
-  download(fileName: string, url: string) {
-    // Todo: Fix it
-    // console.info('File download: File-Url: ' + url + ' FileName: ' + fileName + ' ImagePath: ' + this.restProvider.defaultImagePath());
-    // this.initFileTransfer();
-    // return this.fileTransfer.download(encodeURI(url), this.restProvider.defaultImagePath() + fileName, false, {
-    //   headers: {
-    //     "Authorization": "Bearer " + this.tokenProvider.Token.Token
-    //   }
-    // });
-  }
 
   createFileName(ext: string) {
     if (ext === 'jpg' || ext === 'jpeg' || ext === 'png') {
@@ -142,10 +101,10 @@ export class ImageService {
     }
   }
 
-  public async get(fileUrl: string, key: string, imageType: string, loadThumb: boolean): Promise<FileViewmodel> {
+  public async get(fileUrl: string, key: string, imageType: string, loadThumb?: boolean, userKey?: string): Promise<ImageViewmodel> {
 
     var fileName = fileUrl; //loadThumb ? this.thumbExtension + fileUrl : fileUrl;
-    var result: FileViewmodel = {
+    var result: ImageViewmodel = {
       fileName: fileName,
       data: '',
       key: key,
@@ -158,18 +117,27 @@ export class ImageService {
       if (file) {
         return file;
       }
-      // Filesystem.readFile({
-      //   directory: Directory.Data,
-      //   path: this.getFilePath(fileName)
-      // }).then(fileData => {
-      //   result.data = `data:image/jpeg;base64,${fileData.data}`;
-      //   this.images.push(result);
-      //   return result;
-      // }, async err => {
-      //   console.log(err);
-      // });
+      // suche im FileSystem
+      try 
+      {
+        var fileData = await Filesystem.readFile({
+          directory: Directory.Data,
+          path: this.getFilePath(fileName)
+        });
+        if(fileData) {
+          result.data = `data:image/jpeg;base64,${fileData.data}`;
+          return result;
+        }
+      } catch {}
+
+      result = await this.download(result);
+      if (result.data !== '') {
+        result.data = `data:image/jpeg;base64,${result.data}`;
+        result.fileName = fileName;
+        await this.saveImageViewModel(result)
+        return result;
+      }
     }
-    // Todo: add Download...
     // nicht gefunden
     result.data = `assets/imgs/${this.getDefaultImage(imageType)}`;
     return result;
@@ -203,34 +171,34 @@ export class ImageService {
     });
   }
 
-  private downloadFile(imageUrl: string, key: string, defaultImage: string, type: string, loadThumb: boolean, callback: any) {
-    var url = this.getApiUrl(imageUrl, key, type, loadThumb);
-    var fileName = loadThumb ? imageUrl : this.fullExtension + imageUrl;
-    // Todo: Fix it
-    // this.download(fileName, url).then((result: any) => {
-    //   console.info("Download successful! " + result.nativeURL);
-    //   callback(this.pathForImage(fileName, type));
-    // },
-    //   (err) => {
-    //     console.warn("Download error! " + err);
-    //     callback(this.pathForImage('', type));
-    //   });
+  async download(image: ImageViewmodel): Promise<ImageViewmodel> {
+    image = this.getExtension(image);
+    await this.restProvider.loadImage(image).then((result: any) => {
+      if (result) {
+        image = result;
+        return image;
+      } else {
+        return image;
+      }
+    });
+    return image;
 
   }
 
-  public getApiUrl(imageUrl: string, key: string, type: string, loadThumb: boolean): string {
+  getExtension(image: ImageViewmodel): ImageViewmodel {
 
-    var fileName: string = imageUrl;
+    var fileName: string = image.fileName;
     var ext: string = "";
-    if (imageUrl !== undefined && imageUrl !== null) {
-      var imageUrlSplit = imageUrl.split('.');
+    if (image.fileName !== undefined && image.fileName !== null) {
+      var imageUrlSplit = image.fileName.split('.');
       if (imageUrlSplit.length == 2) {
         fileName = imageUrlSplit[0];
         ext = imageUrlSplit[1];
       }
     }
-    fileName = loadThumb ? this.thumbExtension + fileName : fileName;
-    return this.restProvider.WebUrl + "/api/media/" + key + "/" + fileName + "/" + ext + "/" + type;
+    image.fileName = fileName;
+    image.ext = ext;
+    return image;
   }
 
   public getImage(imageType: string, key: string, callback: any) {
@@ -262,19 +230,19 @@ export class ImageService {
     });
   }
 
-  async uploadImage(file: FileViewmodel) {
-    const response = await fetch(file.data);
-    const blob = await response.blob();
-    const formData = new FormData();
-    formData.append('bytes', blob, file.fileName)
-    this.http.post
-  }
+  
 
-  async deleteImage(file: FileViewmodel) {
+  async deleteImage(fileName: string) {
     await Filesystem.deleteFile({
-      path: this.getFilePath(file.fileName),
+      path: this.getFilePath(fileName),
       directory: Directory.Data
     })
+    var file = this.images.find(e => e.fileName == fileName);
+    if(file) {
+      const index = this.images.indexOf(file);
+      this.images.splice(index, 1);
+    }
+
   }
 
   private async readAsBase64(photo: Photo) {
@@ -305,7 +273,7 @@ export class ImageService {
     reader.readAsDataURL(blob);
   });
 
-  async saveImage(photo: Photo, imageType: string, key: string) {
+  async saveImage(photo: Photo, imageType: string, key: string): Promise<ImageViewmodel> {
     const base64Data = await this.readAsBase64(photo);
     const fileName: string = this.createFileName(photo.format);
     var options: WriteFileOptions = {
@@ -316,14 +284,25 @@ export class ImageService {
 
     const savedFile = await Filesystem.writeFile(options);
     console.log('Saved: ', savedFile);
-    var result: FileViewmodel = {
+    var result: ImageViewmodel = {
       fileName: fileName,
       data: `${base64Data}`,
       key: key,
       imageType: imageType
     };
     this.images.push(result);
-    return fileName;
+    return result;
+  }
+
+  async saveImageViewModel(image: ImageViewmodel) {
+
+    var options: WriteFileOptions = {
+      directory: Directory.Data,
+      path: this.getFilePath(image.fileName),
+      data: image.data
+    };
+    await Filesystem.writeFile(options);
+    this.images.push(image);
   }
 
   getFilePath(fileName: string): string {
@@ -357,8 +336,8 @@ export class ImageService {
     // Get the data of an image
     const image = await Camera.getPhoto(options);
     if (image) {
-      var fileName = await this.saveImage(image, imageType, key);
-      callback(fileName, fileName)
+      var result = await this.saveImage(image, imageType, key);
+      callback(result)
     }
   }
 }
