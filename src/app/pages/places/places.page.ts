@@ -19,7 +19,6 @@ export class PlacesPage {
     public dataProvider: DataService, 
     private translate: TranslateService,
     public imageProvider: ImageService) {
-    this.imageProvider.loadPlaceImages(this.dataProvider.Profile.Places);
     this.createPrivatePlace();
   }
   

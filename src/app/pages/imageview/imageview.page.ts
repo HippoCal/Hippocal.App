@@ -20,13 +20,13 @@ export class ImageviewPage {
     public imageProvider: ImageService) {
     this.resolveParams();
     this.image = dataProvider.getDefaultImage("loading");
-    this.getImage();
   }
 
   resolveParams() {
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.data = this.router.getCurrentNavigation().extras.state['data'];
+        this.getImage();
       }
     });
   }
@@ -35,12 +35,13 @@ export class ImageviewPage {
     console.log('ionViewDidLoad ImageviewPage');
   }
 
-  getImage() {
-    this.imageProvider.get(this.data.imageUrl, this.data.key, this.data.type, false, (url) => {
+  async getImage() {
+    var image = await this.imageProvider.get(this.data.imageUrl, this.data.key, this.data.type, false);
+    if(image) {
       this.zone.run(() => {
-        this.image = url;
-      });
-    });
+        this.image = image.data;
+      }); 
+    }
   }
 
 }

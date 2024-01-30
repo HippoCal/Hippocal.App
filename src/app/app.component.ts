@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@capacitor/splash-screen';
@@ -18,10 +18,13 @@ export class AppComponent {
 
   pages: any[];
 
+  public profileImage: string;
+
   constructor(
     public dataProvider: DataService,
     private translate: TranslateService,
     private router: Router,
+    private zone: NgZone, 
     public imageProvider: ImageService,
     public storageProvider: StorageService,
     public platform: Platform) {
@@ -34,6 +37,7 @@ export class AppComponent {
     });
 
   }
+
 
   public getTitle() {
     if (this.dataProvider.Profile?.DisplayName !== "") {
@@ -99,10 +103,6 @@ export class AppComponent {
     // }
   }
 
-  get profileImage(): string {
-    return this.dataProvider.pathForImage(this.dataProvider.Profile?.ImageUrl, "user");
-  }
-
   openProfile() {
     this.router.navigate(['/profile']);
   }
@@ -150,6 +150,7 @@ export class AppComponent {
     if (this.dataProvider.Profile.EmailConfirmed && this.dataProvider.Profile.IsActive) {
       if (doRefresh) {
         this.dataProvider.refreshData(false).then(() => {
+          this.getProfileImage();
           return;
         });
       }
@@ -174,6 +175,16 @@ export class AppComponent {
     // active but not yet email confirmed - hint page to confirm email
     if (!this.dataProvider.Profile.EmailConfirmed) {
       this.router.navigate(['confirmemail/']);
+    }
+
+  }
+
+  async getProfileImage() {
+    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true);
+    if(image) {
+      this.zone.run(() => {
+        this.profileImage = image.data;
+      });    
     }
   }
 

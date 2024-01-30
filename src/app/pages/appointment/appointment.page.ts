@@ -81,20 +81,22 @@ export class AppointmentPage implements OnInit {
 
 
 
-  getUserImage() {
-    this.imageService.get(this.appointmentService.appointment.ImageUrl, this.appointmentService.appointment.UserKey, "user", true, (url) => {
-      this.zone.run(() => {
-        this.userImage = url;
-      });
-    });
+  async getUserImage() {
+      var image = await this.imageService.get(this.appointmentService.appointment.ImageUrl, this.appointmentService.appointment.UserKey, "user", true);
+      if(image) {
+        this.zone.run(() => {
+          this.userImage = image.data;
+        });
+      }
   }
 
-  getHorseImage() {
-    this.imageService.get(this.appointmentService.appointment.HorseImageUrl, this.appointmentService.appointment.HorseKey, "horse", true, (url) => {
+  async getHorseImage() {
+    var image = await this.imageService.get(this.appointmentService.appointment.HorseImageUrl, this.appointmentService.appointment.HorseKey, "horse", true);
+    if(image) {
       this.zone.run(() => {
-        this.horseImage = url;
+        this.horseImage = image.data;
       });
-    });
+    }
   }
 
   get appointment(): AppointmentViewmodel {

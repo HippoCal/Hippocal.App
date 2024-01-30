@@ -16,7 +16,8 @@ export class EdithorsePage {
 
   public isNew: boolean = true;
   public horse: HorseViewmodel = new HorseViewmodel('', '', '', '', this.dataProvider.Profile.UserKey);
-
+  
+  public horseImage: string;
   horseForm: FormGroup;
 
   constructor(
@@ -33,6 +34,7 @@ export class EdithorsePage {
     this.horseForm = formBuilder.group({
       horseName: ['', Validators.compose([Validators.maxLength(30), Validators.required, Validators.minLength(2)])]
     });
+    this.gethorseImage();
   }
 
   resolveParams() {
@@ -71,9 +73,11 @@ export class EdithorsePage {
   }
 
   onGetImage() {
-    this.imageProvider.getImage((fileName, url) => {
+
+    this.imageProvider.getImage("horse", this.horse.HorseKey, (fileName, url) => {
       this.saveImage(fileName);
       this.uploadImage(fileName, url);
+      this.gethorseImage();
     });
   }
 
@@ -129,7 +133,12 @@ export class EdithorsePage {
     return this.dataProvider.Profile.Horses.length < 2;
   }
 
-  get horseImage(): string {
-    return this.dataProvider.pathForImage(this.horse.ImageUrl, "horse");
+  async gethorseImage() {
+    var image = await this.imageProvider.get(this.horse.ImageUrl, this.horse.HorseKey, "horse", true);
+    if(image) {
+      this.zone.run(() => {
+        this.horseImage = image.data;
+      });    
+    }
   }
 }

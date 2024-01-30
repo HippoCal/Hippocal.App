@@ -2,6 +2,7 @@ import { Component, NgZone} from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { HorseViewmodel, PlaceViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from 'src/app/services/services';
+import { FileViewmodel } from 'src/app/viewmodels/fileviewmodel';
 
 @Component({
   selector: 'page-profile',
@@ -26,9 +27,7 @@ export class ProfilePage {
     if (!this.dataProvider.Profile.IsRegistered) {
       this.router.navigate(['/register'], {state: { animate: true, direction: 'forward' }});
     }
-    this.imageProvider.loadHorseImages(this.dataProvider.Profile.Horses);
-    this.imageProvider.loadPlaceImages(this.dataProvider.Profile.Places);
-    this.userImage = dataProvider.getDefaultImage("user");
+
     this.getUserImage();
     this.area = "basic";
     this.color = 'divider';
@@ -44,12 +43,16 @@ export class ProfilePage {
     this.getUserImage();
   }
 
-  getUserImage() {
-    this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true, (url) => {
+  async getUserImage() {
+
+    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true);
+    if(image) {
       this.zone.run(() => {
-        this.userImage = url;
-      });
-    });
+        this.userImage = image.data;
+      }); 
+    }
+      
+
   }
 
   onAddHorse() {

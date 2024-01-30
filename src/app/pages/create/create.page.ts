@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 import { AppointmentViewmodel, ResultIdViewmodel } from "src/app/viewmodels/viewmodels";
 import { AppointmentTypeEnum, JobTypeEnum } from 'src/app/enums/enums';
@@ -180,10 +180,6 @@ export class CreatePage {
 
   formatTime(dt: any): string {
     return this.dataProvider.formatDate(new Date(dt), "HH:mm");
-  }
-
-  getHorseImage(imageUrl: string) {
-    return this.dataProvider.pathForImage(imageUrl, "horse");
   }
 
   handleError(error: number) {

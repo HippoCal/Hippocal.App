@@ -34,12 +34,13 @@ export class NewsdetailsPage {
     });
   }
 
-  getImage() {
-    this.imageProvider.get(this.News.ImageUrl, this.News.NewsEntryKey, "news", false, (url) => {
+  async getImage() {
+    var image = await this.imageProvider.get(this.News.ImageUrl, this.News.NewsEntryKey, "news", false);
+    if(image) {
       this.zone.run(() => {
-        this.image = url;
-      });
-    });
+        this.image = image.data;
+      }); 
+    }
   }
 
   onRefresh() {

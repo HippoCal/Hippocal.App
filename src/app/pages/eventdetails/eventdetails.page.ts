@@ -50,12 +50,13 @@ export class EventdetailsPage {
     this.router.navigate(['imageview', navigationExtras]);
   }
 
-  getUserImage() {
-    this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true, (url) => {
+  async getUserImage() {  
+    var image = await this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true);
+    if(image) {
       this.zone.run(() => {
-        this.userImage = url;
-      });
-    });
+        this.userImage = image.data;
+      });    
+    }
   }
 
   formatDate(): string {

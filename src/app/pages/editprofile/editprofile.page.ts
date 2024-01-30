@@ -12,6 +12,8 @@ export class EditprofilePage {
 
   showEventsOldValue: boolean;
 
+  public profileImage: string;
+
   constructor(
     private router: Router,
     public dataProvider: DataService,
@@ -19,7 +21,7 @@ export class EditprofilePage {
     private locationStrategy: LocationStrategy,
     private zone: NgZone,
     private toastSvc: ToastService) {
-    
+    this.getProfileImage();
   }
 
   ionViewDidLoad() {
@@ -41,9 +43,10 @@ export class EditprofilePage {
   }
 
   onGetImage() {
-    this.imageProvider.getImage((fileName, url) => {
+    this.imageProvider.getImage("user", this.dataProvider.Profile.UserKey, (fileName, url) => {
       this.saveImage(fileName);
       this.uploadImage(fileName, url);
+      this.getProfileImage();
     });
   }
 
@@ -73,8 +76,13 @@ export class EditprofilePage {
       "MSG_CONFIRM_EDITPROFILE");
   }
 
-  get profileImage(): string {
-    return this.dataProvider.pathForImage(this.dataProvider.Profile.ImageUrl, "user");
+  async getProfileImage() {
+    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true);
+    if(image) {
+      this.zone.run(() => {
+        this.profileImage = image.data;
+      });    
+    }
   }
 
 }

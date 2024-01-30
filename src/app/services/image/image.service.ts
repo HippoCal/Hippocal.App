@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core';
-//import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { Platform, ActionSheetController } from '@ionic/angular';
-import { Filesystem, Directory, Encoding, WriteFileOptions } from '@capacitor/filesystem';
+import { Filesystem, Directory, WriteFileOptions, FileInfo } from '@capacitor/filesystem';
 import { Camera, CameraResultType, CameraSource, ImageOptions, Photo } from '@capacitor/camera';
-//import { HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { RestService, TokenService } from "../services";
 import { TranslateService } from '@ngx-translate/core';
 import { UUID } from 'angular2-uuid';
+import { FileViewmodel } from 'src/app/viewmodels/fileviewmodel';
+import { HorseViewmodel } from 'src/app/viewmodels/horseviewmodel';
+import { NewsViewmodel } from 'src/app/viewmodels/newsviewmodel';
+import { PlaceViewmodel } from 'src/app/viewmodels/placeviewmodel';
 
 @Injectable()
 export class ImageService {
@@ -18,29 +21,21 @@ export class ImageService {
   private thumbExtension: string = "thumb_";
   private fullExtension: string = "fullsize_";
 
-  //fileTransfer: FileTransferObject = null;
+  images: FileViewmodel[] = [];
 
   constructor(private restProvider: RestService,
     //private transfer: FileTransfer,
     public tokenProvider: TokenService,
     public translate: TranslateService,
+    private http: HttpClient,
     public platform: Platform,
     public actionSheetCtrl: ActionSheetController) {
-    this.uploadUrl = this.restProvider.WebUrl + '/Upload/UploadHandler.ashx'
-    this.initFileTransfer();
+    this.uploadUrl = this.restProvider.WebUrl + '/Upload/UploadHandler.ashx';
+    this.loadImages();
   }
 
-  private initFileTransfer() {
-    // Todo: Fix it
-    // if (this.fileTransfer == null) {
-    //   this.platform.ready().then(() => {
-    //     this.fileTransfer = this.transfer.create();
-    //   });
-    // }
-  }
-
-  public pathForImage(fileName: string, type: string): string {
-    var defaultImage: string = this.getDefaultImage(type);
+  public pathForImage(fileName: string, imageType: string, key: string): string {
+    var defaultImage: string = this.getDefaultImage(imageType);
     if (fileName === null || fileName === '') {
       return 'assets/imgs/' + defaultImage;
     } else {
@@ -48,81 +43,24 @@ export class ImageService {
     }
   };
 
-  public getDefaultImage(type: string) : string {
+  public getDefaultImage(type: string): string {
     switch (type) {
-    case "user":
-      return "defaultProfile.png";
-    case "news":
-      return "defaultNews.png";
-    case "horse":
-      return "hippocal300.png";
-    case "places":
+      case "user":
+        return "defaultProfile.png";
+      case "news":
+        return "defaultNews.png";
+      case "horse":
+        return "hippocal300.png";
+      case "places":
         return "longierhalle.png";
-    case "loading":
+      case "loading":
         return "loading.png";
-    case "appointment":
+      case "appointment":
         return "private.png";
-    default:
+      default:
         return '';
     }
   }
-
-  public async loadNewsImages(news: any) {
-    var hasChanges = false;
-    await Promise.all(news.map(async (entry: any) => {
-      if (entry.LocalImage === undefined ||
-        entry.LocalImage === '' ||
-        entry.LocalImage === this.pathForImage('', "news")) {
-        this.get(entry.ImageUrl, entry.NewsEntryKey, "news", true, (url: any) => {
-          entry.LocalImage = url;
-          hasChanges = true;
-        });
-      }
-    }));
-    return hasChanges;
-  }
-
-  public async loadHorseImages(horses: any) {
-    var hasChanges = false;
-    await Promise.all(horses.map(async (entry: any) => {
-      if (entry.LocalImage === undefined ||
-        entry.LocalImage === '' ||
-        entry.LocalImage === this.pathForImage('', "horse")) {
-        this.get(entry.ImageUrl, entry.HorseKey, "horse", true, (url: any) => {
-          entry.LocalImage = url;
-          hasChanges = true;
-        });
-      }
-    }));
-    return hasChanges;
-  }
-
-  public async loadPlaceImages(places: any) {
-    var hasChanges = false;
-    await Promise.all(places.map(async (entry: any) => {
-      if (entry.LocalImage === undefined ||
-        entry.LocalImage === '' ||
-        entry.LocalImage === this.pathForImage('', "places")) {
-        this.get(entry.ImageUrl, entry.PlaceKey, "places", true, (url: any) => {
-          entry.LocalImage = url;
-          hasChanges = true;
-        });
-      }
-    }));
-    return hasChanges;
-  }
-
-  
-  //places.forEach((entry) => {
-  //    if (entry.LocalImage === undefined || entry.LocalImage === '' || entry.LocalImage === this.restProvider.pathForImage('', "places")) {
-  //      this.get(entry.ImageUrl, entry.PlaceKey, "places", true, (url) => {
-  //        entry.LocalImage = url;
-  //        hasChanges = true;
-  //      });
-  //    }
-  //  });
-  //  return hasChanges;
-  //}
 
   upload(fileName: string, url: string, key: string, userKey: string, type: string, callback: any) {
     // Todo: Fix it
@@ -186,17 +124,16 @@ export class ImageService {
     return "";
   }
 
-  public async imageExists(fileName: string): Promise<boolean> {
+  public async imageExists(fileName: string, imageType: string, key: string): Promise<boolean> {
     try {
       await Filesystem.stat(
         {
           directory: Directory.Data,
           path: this.getFilePath(fileName)
         })
-        return true;
+      return true;
     }
-    catch(checkDirException)
-    {
+    catch (checkDirException) {
       if (checkDirException.message === 'File does not exist') {
         return false;
       } else {
@@ -205,60 +142,69 @@ export class ImageService {
     }
   }
 
-  public deleteLocalImage(fileName: string) {
-    this.initFileTransfer();
-    this.imageExists(fileName).then(async (exists: boolean) => {
-      if (exists) {
-        await Filesystem.deleteFile(
-          {
-            path: this.getFilePath(fileName),
-            directory: Directory.Data
-          }
-        );
-      }
-    });
+  public async get(fileUrl: string, key: string, imageType: string, loadThumb: boolean): Promise<FileViewmodel> {
 
-    var fullFileName = this.fullExtension + fileName;
+    var fileName = fileUrl; //loadThumb ? this.thumbExtension + fileUrl : fileUrl;
+    var result: FileViewmodel = {
+      fileName: fileName,
+      data: '',
+      key: key,
+      imageType: imageType
+    };
 
-    this.imageExists(fullFileName).then(async (exists: boolean) => {
-      if (exists) {
-        await Filesystem.deleteFile(
-          {
-            path: this.getFilePath(fullFileName),
-            directory: Directory.Data
-          }
-        );
+    if (fileName !== '' && fileName !== undefined) {
+      var file = this.images.find(e => e.fileName == fileName);
+      // ist im Cache...
+      if (file) {
+        return file;
       }
-    });
+      // Filesystem.readFile({
+      //   directory: Directory.Data,
+      //   path: this.getFilePath(fileName)
+      // }).then(fileData => {
+      //   result.data = `data:image/jpeg;base64,${fileData.data}`;
+      //   this.images.push(result);
+      //   return result;
+      // }, async err => {
+      //   console.log(err);
+      // });
+    }
+    // Todo: add Download...
+    // nicht gefunden
+    result.data = `assets/imgs/${this.getDefaultImage(imageType)}`;
+    return result;
+
   }
 
-  public get(imageUrl: string, key: string, type: string, loadThumb: boolean, callback: any) {
-    var defaultImage: string = this.getDefaultImage(type);
-    var fileName = loadThumb ? imageUrl : this.fullExtension + imageUrl;
-    if (this.platform.is('cordova')) {
-      if (imageUrl === undefined || imageUrl === '') {
-        callback(this.pathForImage('', type));
-      }
-      this.initFileTransfer();
-
-    // Todo: Fix it
-    //   this.file.checkFile(this.restProvider.defaultImagePath(), fileName).then((result: any) => {
-    //     if (result) {
-    //       callback(this.pathForImage(fileName, type));
-    //     } else {
-    //       this.downloadFile(imageUrl, key, defaultImage, type, loadThumb, callback);
-    //     }
-    //   },
-    //     (err) => {
-    //       this.downloadFile(imageUrl, key, defaultImage, type, loadThumb, callback);
-    //     });
-    // } else {
-    //   callback(this.pathForImage(fileName, type));
+  async loadImages() {
+    var options = {
+      directory: Directory.Data,
+      path: this.IMAGE_DIR
     }
+    Filesystem.readdir(options).then(result => {
+      this.loadFileData(result.files);
+    }, async err => {
+      await Filesystem.mkdir(options);
+    })
+  }
+
+  async loadFileData(files: FileInfo[]) {
+    files.forEach(async file => {
+      Filesystem.readFile({
+        directory: Directory.Data,
+        path: this.getFilePath(file.name)
+      }).then(result => {
+        this.images.push({
+          fileName: file.name,
+          data: `data:image/jpeg;base64,${result.data}`
+        })
+      }, async err => { })
+
+    });
   }
 
   private downloadFile(imageUrl: string, key: string, defaultImage: string, type: string, loadThumb: boolean, callback: any) {
-    var url = this.getDownloadUrl(imageUrl, key, type, loadThumb);
+    var url = this.getApiUrl(imageUrl, key, type, loadThumb);
     var fileName = loadThumb ? imageUrl : this.fullExtension + imageUrl;
     // Todo: Fix it
     // this.download(fileName, url).then((result: any) => {
@@ -272,7 +218,7 @@ export class ImageService {
 
   }
 
-  public getDownloadUrl(imageUrl: string, key: string, type: string, loadThumb: boolean): string {
+  public getApiUrl(imageUrl: string, key: string, type: string, loadThumb: boolean): string {
 
     var fileName: string = imageUrl;
     var ext: string = "";
@@ -287,7 +233,7 @@ export class ImageService {
     return this.restProvider.WebUrl + "/api/media/" + key + "/" + fileName + "/" + ext + "/" + type;
   }
 
-  public getImage(callback: any) {
+  public getImage(imageType: string, key: string, callback: any) {
     this.actionSheetCtrl.create({
       header: this.translate.instant('LBL_PROFILE_SELECT_IMAGE_SOURCE'),
       buttons: [
@@ -295,14 +241,14 @@ export class ImageService {
           text: this.translate.instant('LBL_PROFILE_IMAGE_SOURCE_LIB'),
           icon: 'images',
           handler: () => {
-            this.takePicture(0, callback);
+            this.takePicture(imageType, key, 0, callback);
           }
         },
         {
           text: this.translate.instant('LBL_PROFILE_IMAGE_SOURCE_CAMERA'),
           icon: 'camera',
           handler: () => {
-            this.takePicture(1, callback);
+            this.takePicture(imageType, key, 1, callback);
           }
         },
         {
@@ -311,9 +257,24 @@ export class ImageService {
           role: 'cancel'
         }
       ]
-    }).then( (actionSheet: any) => {
+    }).then((actionSheet: any) => {
       actionSheet.present();
     });
+  }
+
+  async uploadImage(file: FileViewmodel) {
+    const response = await fetch(file.data);
+    const blob = await response.blob();
+    const formData = new FormData();
+    formData.append('bytes', blob, file.fileName)
+    this.http.post
+  }
+
+  async deleteImage(file: FileViewmodel) {
+    await Filesystem.deleteFile({
+      path: this.getFilePath(file.fileName),
+      directory: Directory.Data
+    })
   }
 
   private async readAsBase64(photo: Photo) {
@@ -323,14 +284,14 @@ export class ImageService {
       const file = await Filesystem.readFile({
         path: photo.path!
       });
-  
+
       return file.data;
     }
     else {
       // Fetch the photo, read as a blob, then convert to base64 format
       const response = await fetch(photo.webPath!);
       const blob = await response.blob();
-  
+
       return await this.convertBlobToBase64(blob) as string;
     }
   }
@@ -339,28 +300,37 @@ export class ImageService {
     const reader = new FileReader();
     reader.onerror = reject;
     reader.onload = () => {
-        resolve(reader.result);
+      resolve(reader.result);
     };
     reader.readAsDataURL(blob);
   });
-  
-  async saveImage(photo: Photo) {
-    const base64Data = await this.readAsBase64(photo);
 
-    const fileName: string = new Date().getTime() + '.jpeg';
+  async saveImage(photo: Photo, imageType: string, key: string) {
+    const base64Data = await this.readAsBase64(photo);
+    const fileName: string = this.createFileName(photo.format);
     var options: WriteFileOptions = {
       directory: Directory.Data,
       path: this.getFilePath(fileName),
       data: base64Data
-    }; 
+    };
+
     const savedFile = await Filesystem.writeFile(options);
+    console.log('Saved: ', savedFile);
+    var result: FileViewmodel = {
+      fileName: fileName,
+      data: `${base64Data}`,
+      key: key,
+      imageType: imageType
+    };
+    this.images.push(result);
+    return fileName;
   }
 
   getFilePath(fileName: string): string {
     return `${this.IMAGE_DIR}/${fileName}`;
   }
 
-  public async takePicture(sourceTypeIndex: any, callback: any) {
+  public async takePicture(imageType: string, key: string, sourceTypeIndex: any, callback: any) {
 
     var sourceType: CameraSource;
 
@@ -380,14 +350,15 @@ export class ImageService {
       quality: 70,
       allowEditing: true,
       source: sourceType,
-      resultType: CameraResultType.Base64,
+      resultType: CameraResultType.Uri,
       correctOrientation: true
     };
 
     // Get the data of an image
     const image = await Camera.getPhoto(options);
     if (image) {
-      await this.saveImage(image);
+      var fileName = await this.saveImage(image, imageType, key);
+      callback(fileName, fileName)
     }
   }
 }

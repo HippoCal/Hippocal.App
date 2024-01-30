@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
 import { HorseViewmodel, HorseAppointmentsViewmodel, TypeAppointmentsViewmodel, OwnAppointmentViewmodel, IOwnAppointmentViewmodel } from "src/app/viewmodels/viewmodels";
 import { AppointmentService, DataService, ImageService, ToastService } from 'src/app/services/services';
@@ -14,17 +14,22 @@ export class HorseComponent {
   @Input('showappointments') showAppointments: boolean;
   public horseKey: string;
   public horseAppointments: HorseAppointmentsViewmodel;
-  
+  public horseImage: string;
+
   constructor(
     public dataProvider: DataService, 
+    private zone: NgZone, 
     public appointmentProvider: AppointmentService, 
     public imageProvider: ImageService,
     private toastsvc: ToastService) {
-    this.imageProvider.loadHorseImages(this.dataProvider.Profile.Horses);
+
+    
     this.horseAppointments = new HorseAppointmentsViewmodel();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.gethorseImage();
+  }
   
   onClick(horse: HorseViewmodel) {
     if (this.showAppointments) {
@@ -97,6 +102,15 @@ export class HorseComponent {
 
   get isLastHorse(): boolean {
     return this.dataProvider.Profile.Horses.length < 2;
+  }
+
+  async gethorseImage() {
+    var image = await this.imageProvider.get(this.horse && this.horse.ImageUrl ? this.horse.ImageUrl : '', this.horse.HorseKey, "horse", true);
+    if(image) {
+      this.zone.run(() => {
+        this.horseImage = image.data;
+      });    
+    }
   }
 
 }

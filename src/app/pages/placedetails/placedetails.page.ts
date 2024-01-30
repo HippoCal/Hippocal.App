@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { DataService, ImageService } from 'src/app/services/services';
 
@@ -9,15 +9,17 @@ import { DataService, ImageService } from 'src/app/services/services';
 })
 export class PlacedetailsPage {
 
+  public placeImage: string;
 
   constructor(
     private router: Router,
+    private zone: NgZone,
     public dataProvider: DataService, 
     public imageProvider: ImageService) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad PlacedetailsPage');
+  ngOnInit() {
+    this.getPlaceImage();
   }
 
   zoom() {
@@ -29,7 +31,12 @@ export class PlacedetailsPage {
     return this.dataProvider.Profile.CurrentPlace.Description !== null && this.dataProvider.Profile.CurrentPlace.Description !== undefined ? this.dataProvider.Profile.CurrentPlace.Description : "";
   }
 
-  get placeImage(): string {
-    return this.dataProvider.pathForImage(this.dataProvider.Profile.CurrentPlace.ImageUrl, "places");
+  async getPlaceImage() {
+    var image = await this.imageProvider.get(this.dataProvider.Profile.CurrentPlace.ImageUrl, this.dataProvider.Profile.CurrentPlace.PlaceKey, "places", true);
+    if(image) {
+      this.zone.run(() => {
+        this.placeImage = image.data;
+      });    
+    }
   }
 }

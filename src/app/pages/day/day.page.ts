@@ -69,18 +69,18 @@ export class DayPage {
     }
   }
 
-  public onShowAppointment(event: Event, appointment: AppointmentViewmodel) {
-    event.stopPropagation();
+  public onShowAppointment(appointment: AppointmentViewmodel) {
+    //event.stopPropagation();
     this.navigate('tabs/tab3//create', appointment, appointment.StartDate);
   }
 
-  public onShowPrivateAppointment(event: Event, appointment: AppointmentViewmodel) {
-    event.stopPropagation();
+  public onShowPrivateAppointment(appointment: AppointmentViewmodel) {
+    //event.stopPropagation();
     this.navigate('tabs/tab3/privateappointment', appointment, appointment.StartDate);
   }
 
-  public onShowOtherAppointment(event: Event, appointment: AppointmentViewmodel) {
-    event.stopPropagation();
+  public onShowOtherAppointment(appointment: AppointmentViewmodel) {
+    //event.stopPropagation();
     this.navigate('tabs/tab3//otherappointment', appointment);
   }
 

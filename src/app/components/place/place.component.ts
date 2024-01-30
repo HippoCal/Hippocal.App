@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, NgZone, OnInit, Output } from '@angular/core';
+import { ImageService } from 'src/app/services/services';
 import { PlaceViewmodel } from 'src/app/viewmodels/placeviewmodel';
 
 @Component({
@@ -8,14 +9,29 @@ import { PlaceViewmodel } from 'src/app/viewmodels/placeviewmodel';
 })
 export class PlaceComponent  implements OnInit {
 
+  public placeImage: string;
+
   @Input('place') place: PlaceViewmodel;
   @Input('color') color: string;
   @Output() click = new EventEmitter<PlaceViewmodel>();
-  constructor() { }
+  constructor(
+    private zone: NgZone,
+    private imageProvider: ImageService) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.getPlaceImage();
+  }
 
   onClick(){
     this.click.emit(this.place);
+  }
+
+  async getPlaceImage() {
+    var image = await this.imageProvider.get(this.place.ImageUrl, this.place.PlaceKey, "places", true);
+    if(image) {
+      this.zone.run(() => {
+        this.placeImage = image.data;
+      });    
+    }
   }
 }

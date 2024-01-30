@@ -154,11 +154,11 @@ export class DataService {
   }
 
   public getDefaultImage(type: any): string {
-    return this.imageProvider.pathForImage("", type);
+    return this.imageProvider.pathForImage("", type, "");
   }
 
   public pathForImage(img: any, type: any): string {
-    return this.imageProvider.pathForImage(img, type);
+    return this.imageProvider.pathForImage(img, type, "");
   }
 
   activateUser() {
@@ -197,9 +197,7 @@ export class DataService {
           }
         }
       });
-      if (await this.imageProvider.loadPlaceImages(this.Profile.Places)) {
-        this.saveProfile(this.Profile);
-      }
+      this.saveProfile(this.Profile);
       if (this.Profile.Places.length === 1) {
         this.Profile.CurrentPlace = PlaceViewmodel.Clone(this.Profile.Places[0]);
       }
@@ -227,9 +225,7 @@ export class DataService {
         tmphorses.push(newHorse);
       });
       this.Profile.Horses = tmphorses;
-      if (await this.imageProvider.loadHorseImages(this.Profile.Horses)) {
-        this.saveProfile(this.Profile);
-      }
+      this.saveProfile(this.Profile);
     }
   }
 
@@ -424,11 +420,9 @@ export class DataService {
               this.saveProfile(this.Profile);
             }
           }
-          if (await this.imageProvider.loadNewsImages(this.news)) {
-            this.saveNews();
-            if (callback !== undefined) {
-              callback();
-            }
+          this.saveNews();
+          if (callback !== undefined) {
+            callback();
           }
         }, (err) => { });
     }
@@ -465,8 +459,11 @@ export class DataService {
         newList.push(item);
       } else {
         if (item.ImageUrl !== "")
-          this.imageProvider.deleteLocalImage(item.ImageUrl);
+        {
+        // Todo: fix it  
+        //this.imageProvider.deleteImage(item.ImageUrl);
       }
+    }
     });
     this.news = newList;
     this.saveNews();

@@ -51,20 +51,22 @@ export class OtherAppointmentPage {
     this.router.navigate(['/imageview'], { state: { data: { imageUrl: url, key: this.appointment.HorseKey, type: "horse" } } });
   }
 
-  getUserImage() {
-    this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true, (url) => {
+  async getUserImage() {
+    var image = await this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true);
+    if(image) {
       this.zone.run(() => {
-        this.userImage = url;
-      });
-    });
+        this.userImage = image.data;
+      });     
+    }
   }
 
-  getHorseImage() {
-    this.imageProvider.get(this.appointment.HorseImageUrl, this.appointment.HorseKey, "horse", true, (url) => {
+  async getHorseImage() {
+    var image = await this.imageProvider.get(this.appointment.HorseImageUrl, this.appointment.HorseKey, "horse", true);
+    if(image) {
       this.zone.run(() => {
-        this.horseImage = url;
-      });
-    });
+        this.horseImage = image.data;
+      }); 
+    }
   }
 
   onSendMessage() {

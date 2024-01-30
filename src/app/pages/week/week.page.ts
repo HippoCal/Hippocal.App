@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { Router, NavigationExtras  } from '@angular/router';
 import { DataService, ImageService } from 'src/app/services/services';
 import * as moment from 'moment';
@@ -20,6 +20,7 @@ export class WeekPage implements OnInit {
   constructor(private router: Router, 
     public dataProvider: DataService, 
     public imageService: ImageService, 
+    private zone: NgZone, 
     private translate: TranslateService) {
     this.firstDay = moment(new Date()).toDate();
     this.dataProvider.initWeek(this.firstDay);
@@ -38,10 +39,10 @@ export class WeekPage implements OnInit {
     }
   }
 
-  createPrivatePlace() {
+  async createPrivatePlace() {
     this.privatePlace = new PlaceViewmodel(this.dataProvider.Profile.CurrentPlace.Name, '');
     this.privatePlace.OwnerName = this.dataProvider.Profile.CurrentPlace.OwnerName;
-    this.privatePlace.LocalImage = this.placeImage();
+    this.privatePlace.LocalImage = await this.placeImage();
     this.color = 'secondary-contrast';
   }
   
@@ -158,13 +159,18 @@ export class WeekPage implements OnInit {
     return this.hasPlace() ? this.dataProvider.Profile.CurrentPlace.Name : this.translate.instant("HEADER_PRIVATEAPPOINTMENTS");
   }
 
-  placeImage(): string {
+  async placeImage(): Promise<string> {
     var entry = this.dataProvider.Profile.CurrentPlace;
-    if (entry.LocalImage !== undefined) {
-      return entry.LocalImage;
-    } else {
-      return this.imageService.getDownloadUrl(entry.ImageUrl, entry.PlaceKey, "places", true);
+    if (entry.LocalImage === undefined) {
+      var image = await this.imageService.get(entry.ImageUrl, entry.PlaceKey, "places", true);
+      if(image) {
+        this.zone.run(() => {
+          entry.LocalImage = image.data;
+        });     
+      }
+      
     }
+    return entry.LocalImage;
   }
 
 }
