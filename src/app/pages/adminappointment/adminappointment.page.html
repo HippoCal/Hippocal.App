@@ -1,0 +1,86 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+<ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    <ion-title>{{ dataProvider.getHeader('HEADER_ADMINAPPOINTMENT') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-row *ngIf="isNew">
+    <ion-col size="3"><h6>{{ 'LBL_DATE' | translate }}</h6></ion-col>
+    <ion-col size="9"><h6>{{ appointmentService.getDateText() }}</h6></ion-col>
+  </ion-row>
+  <ion-row *ngIf="isNew">
+    <ion-col size="3"><h6>{{ 'LBL_TIME' | translate }}</h6></ion-col>
+    <ion-col size="9"><h6>{{ appointmentService.getDurationText() }}</h6></ion-col>
+  </ion-row>
+  <ion-row *ngIf="!isNew">
+      <ion-col size="1"><ion-button class ="btnSmall" icon-only clear color="primary" expand="block"(click)="appointmentService.decDate()"><ion-icon name="arrow-dropleft"></ion-icon></ion-button></ion-col>
+      <ion-col size="10" class="buttonMiddle"><h6>{{ appointmentService.getDateText() }}</h6></ion-col>
+      <ion-col size="1"><ion-button class ="btnSmall" icon-only clear color="primary" expand="block" (click)="appointmentService.incDate()"><ion-icon name="arrow-dropright"></ion-icon></ion-button></ion-col>
+    </ion-row>
+    <ion-row *ngIf="!isNew">
+      <ion-col size="1"><ion-button class ="btnSmall" icon-only clear color="primary" expand="block" (click)="appointmentService.decTime()"><ion-icon name="arrow-dropleft"></ion-icon></ion-button></ion-col>
+      <ion-col size="10" class="buttonMiddle"><h6>{{appointmentService.getDurationText()}}</h6></ion-col>
+      <ion-col size="1"><ion-button class ="btnSmall" icon-only clear color="primary" expand="block" (click)="appointmentService.incTime()"><ion-icon name="arrow-dropright"></ion-icon></ion-button></ion-col>
+    </ion-row>
+  <ion-row>
+      <ion-col size="3"><h6>{{ 'LBL_PLACE' | translate }}</h6></ion-col>
+      <ion-col size="9"><h6>{{place.Name}}</h6></ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="3"><h6>{{ 'LBL_DURATION' | translate }}</h6></ion-col>
+      <ion-col size="9"><h6>{{ appointmentService.getTimeText()}}</h6></ion-col>
+    </ion-row>
+    <ion-row *ngIf="hasName">
+        <ion-col size="3"><h6>{{ 'LBL_TEXT' | translate }}</h6></ion-col>
+        <ion-col size="9"><h6>{{ appointmentService.appointment.AppointmentName }}</h6></ion-col>
+    </ion-row>
+    <ion-row *ngIf="!isNew">
+      <ion-col size="6">
+        <ion-button color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrModify()" expand="block">{{ buttonText }}</ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button color="orange" [disabled]="!dataProvider.IsOnline || !appointmentService.appointment.IsInTheFuture" (click)="onDelete()" expand="block">{{ 'BTN_DELETEADMINAPPOINTMENT' | translate }}</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-button *ngIf="isNew" color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrModify()" expand="block">{{ buttonText }}</ion-button>
+    <ion-item>
+      <ion-range min="30" max="240" step="30" snaps="true" color="success" [(ngModel)]="appointmentService.appointment.Duration">
+        <ion-label range-left>30min</ion-label>
+        <ion-label range-right>4h</ion-label>
+      </ion-range>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">{{ 'LBL_JOBTYPE' | translate }}</ion-label>
+      <ion-select [(ngModel)]="appointmentService.appointment.JobType" interface="popover" multiple="false" (ionChange)="onChangeJobType()">
+        <ion-option *ngFor="let jobtype of appointmentService.JobTypes" [value]="jobtype.id">{{jobtype.text}}</ion-option>
+      </ion-select>
+      <ion-select [(ngModel)]="appointmentService.appointment.AppointmentType" interface="popover" multiple="false" (ionChange)="onChangeAppointmentType()">
+        <ion-option *ngFor="let appointmenttype of appointmentService.AppointmentTypes" [value]="appointmenttype.id">{{appointmenttype.text}}</ion-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">{{ 'LBL_JOBNAME' | translate }}</ion-label>
+      <ion-input type="text" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">{{ 'LBL_NUMSLOTS' | translate }}</ion-label>
+      <ion-input autocorrect="on" type="number" min="1" max="8" [(ngModel)]="appointmentService.appointment.NumSlots"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'LBL_BLOCK_PLACE' | translate }}</ion-label>
+      <ion-checkbox [(ngModel)]="appointmentService.appointment.BlockPlace"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label>{{ 'LBL_FREE_SLOTS' | translate }}</ion-label>
+      <ion-checkbox [(ngModel)]="appointmentService.appointment.FreeSlots"></ion-checkbox>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">{{ 'LBL_COMMENT' | translate }}</ion-label>
+      <ion-textarea #comment id="comment" rows="2" maxLength="500" (keyup)="resize()" [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
+    </ion-item>
+</ion-content>

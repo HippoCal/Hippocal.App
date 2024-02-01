@@ -1,0 +1,26 @@
+<ion-col size="6" class="align-self-start" *ngIf="showTime">
+  <div *ngIf="appointment.AppointmentType === 0" class="hasData textcenter" (click)="$event.stopPropagation(); onClick()">
+    <h6>{{ formatTime(appointment) }}</h6>
+    <h6 class="threeDots">{{appointment.HorseName}}</h6>
+  </div>
+  <div *ngIf="appointment.IsPrivate" class="privateData textcenter" (click)="$event.stopPropagation(); onClick()">
+    <h6>{{ formatTime(appointment) }}</h6>
+    <h6 class="threeDots">{{appointment.AppointmentName}}</h6>
+  </div>
+</ion-col>
+<ion-col size="6" class="align-self-start"  *ngIf="!showTime">
+  <div *ngIf="appointment.OwnAppointment && appointment.AppointmentType === 0" class="hasData textcenter" (click)="$event.stopPropagation(); onClick()">
+    <h6 *ngIf="appointment.AppointmentName === '' || appointment.AppointmentName === undefined" class="threeDots" >{{appointment.UserName}}</h6>
+    <h6 *ngIf="appointment.AppointmentName !== '' && appointment.AppointmentName !== undefined" class="threeDots" >{{appointment.AppointmentName}}</h6>
+    <h6 class="threeDots">{{appointment.HorseName}}</h6>
+  </div>
+  <div *ngIf="!appointment.OwnAppointment && appointment.AppointmentType === 0" class="otherData textcenter" (click)="$event.stopPropagation(); onClick()">
+    <h6 class="threeDots">{{appointment.UserName}}</h6>
+    <h6 *ngIf="appointment.AppointmentName !== '' && appointment.AppointmentName !== undefined" class="threeDots" >{{appointment.AppointmentName}}</h6>
+    <h6 class="threeDots">{{appointment.HorseName}}</h6>
+  </div>
+  <div *ngIf="appointment.IsPrivate" class="privateData textcenter" (click)="$event.stopPropagation(); onClick()">
+    <h6 class="threeDots">{{appointment.HorseName}}</h6>
+    <h6 class="threeDots">{{appointment.AppointmentName}}</h6>
+  </div>
+</ion-col>

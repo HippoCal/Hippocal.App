@@ -1,0 +1,43 @@
+.hasData {
+  background-color: #32db64;
+  border-radius: 6px;
+  border-style: solid;
+  border-color: #5cbb12;
+  border-width: 1px;
+}
+
+.isValid {
+  background-color: #ccf171;
+}
+
+.otherData {
+  background-color: #ffd800;
+  border-radius: 6px;
+  border-style: solid;
+  border-color: #5cbb12;
+  border-width: 1px;
+}
+
+.textcenter {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  text-align: center;
+  padding-top: 6px;
+  padding-bottom: 3px;
+}
+
+.threeDots {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+  ion-label {
+    margin: 0 3px 0 0 !important;
+  }
+
+  [col-10] {
+    padding: 0px;
+  }

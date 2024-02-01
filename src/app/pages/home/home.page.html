@@ -1,0 +1,69 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+    <ion-title>{{ dataProvider.getHeader('HEADER_HOME') }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button icon-only (click)="onRefreshBtn()">
+        <ion-icon name="refresh-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" drag-content="false">
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" refreshingSpinner="circles" progress="4"
+      refreshingText="{{ 'REFRESH_WAIT_TEXT' | translate }}">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-grid>
+    <ion-row *ngIf="dataProvider.HasPlaces">
+      <ion-col size="12">
+        <ion-button color="primary" (click)="onNewAppointment()" expand="block">{{ 'BTN_NEWAPPOINTMENT' | translate }}</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="!dataProvider.HasPlaces">
+      <ion-col size="12">
+        <ion-button color="tertiary" (click)="onPrivateAppointment()" expand="block">{{ 'BTN_NEW_PRIVATEAPPOINTMENT' |
+          translate }}</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div *ngIf="dataProvider.PlaceAppointments.length !== 0">
+    <ion-item lines="none" class="ion-text-center">
+      <h2>{{ 'LBL_NEXTAPPOINTMENTS' | translate }}</h2>
+    </ion-item>
+    <ion-list *ngFor="let place of dataProvider.PlaceAppointments">
+      <ion-item-divider color="secondary" (click)="onSelectPlace(place.PlaceKey)">
+        {{place.PlaceName}}
+        <ion-button slot="end" color="orange">{{ 'BTN_NEW' | translate }}</ion-button>
+      </ion-item-divider>
+      <app-appointment [appointment]="appointment" *ngFor="let appointment of place.Appointments.slice(0, 12)" [canDelete]="true" (showAppointment)="onShowAppointment(appointment)"></app-appointment>
+    </ion-list>
+  </div>
+  <div *ngIf="dataProvider.PlaceAppointments.length === 0">
+    <ion-row>
+      <img src="assets/imgs/empty.png" class="center" />
+    </ion-row>
+    <ion-row>&nbsp;</ion-row>
+    <ion-row class="ion-text-center">
+      <h2 class="textcenter">{{ 'LBL_NO_APPOINTMENTS' | translate }}</h2>
+    </ion-row>
+  </div>
+  <div *ngIf="dataProvider.UnreadMessages !== 0">
+    <ion-item lines="none">
+      <h2>{{ 'LBL_NEWMESSAGES' | translate }}</h2>
+    </ion-item>
+    <ion-list>
+      <ion-item-divider color="secondary">{{ 'LIST_HEADER_NEWS' | translate }}</ion-item-divider>
+      <app-news [news]="news" (showNews)="onNewsDetails(news)" [color]="color" *ngFor="let news of dataProvider.UnreadNews"></app-news>
+    </ion-list>
+  </div>
+</ion-content>

@@ -1,0 +1,18 @@
+<ion-item (click)="onSelectHalfHour()" [class.isValid]="halfHour.CanCreate && halfHour.DataLoaded"
+  [style.--background]="halfHour.BackgroundColor" [style.--color]="halfHour.Color">
+  <ion-grid>
+    <ion-row wrap class="justify-content-start align-items-center">
+      <ion-col size="2">
+          <h6>{{halfHour.Name}}</h6>
+      </ion-col>
+      <ion-col size="10">
+        <span class="caption" *ngIf="halfHour.HasEvent">{{halfHour.Caption}}</span>
+        <ion-row wrap class="justify-content-center align-items-center" *ngIf="halfHour.HasData">
+          <app-appointmentbubble [appointment]="appointment" [showTime]="false"
+            (showAppointment)="onShowAppointment(appointment)"
+            *ngFor="let appointment of halfHour.Appointments"></app-appointmentbubble>
+        </ion-row>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-item>

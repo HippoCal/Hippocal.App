@@ -1,0 +1,24 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+    <ion-title>{{ dataProvider.getHeader('HEADER_NEWS') }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button icon-only (click)="onRefresh()">
+        <ion-icon name="refresh-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item-divider color="secondary">{{ 'LIST_HEADER_NEWS' | translate }}</ion-item-divider>
+    <app-news [news]="news" (showNews)="onDetails(news)" [color]="color" *ngFor="let news of dataProvider.News"></app-news>
+  </ion-list>
+</ion-content>
+

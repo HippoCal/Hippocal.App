@@ -1,0 +1,57 @@
+.hasData {
+    background-color: #32db64;
+    box-shadow: 2px 1px 1px #193d24;
+    border-color:#193d24;
+  }
+  
+  .privateData {
+    background-color: #00a1ff;
+    box-shadow: 2px 1px 1px #0e212c;
+    border-color:#0e212c;
+  }
+
+  .otherData {
+    background-color: #ffd800;
+    box-shadow: 2px 1px 1px #322d11;
+    border-color:#322d11;
+  }
+  
+  .whiteColor {
+    color: #ffffff;
+  }
+
+  .textcenter {
+    font-size: 0.9em;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    padding: 2px;
+    border-radius: 6px;
+    border-style: solid;
+    text-align: center;
+    border-width: 1px;
+    width: 100px;
+  }
+
+  .threeDots {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+  }
+
+  h6 {
+    font-size: 0.9em;
+    margin: 1px;
+  }
+
+  // h6 {
+  //   font-size: 14px;
+  //   color: #0f130b;
+  //   margin: 1px;
+  //   padding: 1px;
+  // }
+
+  ion-col {
+    padding: 0px;
+  }

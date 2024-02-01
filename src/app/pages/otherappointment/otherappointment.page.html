@@ -1,0 +1,39 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+<ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    <ion-title>{{ dataProvider.getHeader(appointment.UserName) }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-item class="imgcenter">
+    <ion-avatar>
+      <img [src]="userImage" class="center" (click)="zoom()"/>
+    </ion-avatar>
+  </ion-item>
+  <ion-row>
+    <ion-col size="3"><h6>{{ 'LBL_DATE' | translate }}</h6></ion-col>
+    <ion-col size="9"><h6>{{formatDate(appointment.StartDate)}}</h6></ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="3"><h6>{{ 'LBL_TIME' | translate }}</h6></ion-col>
+    <ion-col size="9"><h6>{{formatTime(appointment.StartDate)}}</h6></ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="3"><h6>{{ 'LBL_PLACE' | translate }}</h6></ion-col>
+    <ion-col size="9"><h6>{{appointment.PlaceName}}</h6></ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size="12"><h6>{{ 'LBL_HORSE' | translate }}</h6></ion-col>
+    <ion-item lines="none">
+      <ion-avatar item-start>
+        <img class="smallImage" [src]="horseImage" (click)="horsezoom()" />
+      </ion-avatar>
+      <h2>{{appointment.HorseName}}</h2>
+    </ion-item>
+  </ion-row>
+  <ion-button color="primary" (click)="onSendMessage()" [disabled]="!canSendMessage()" expand="block">{{ 'BTN_SENDMESSAGE' | translate }}</ion-button>
+</ion-content>

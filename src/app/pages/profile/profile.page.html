@@ -1,0 +1,113 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+    <ion-title>{{ dataProvider.getHeader('HEADER_PROFILE') }}</ion-title>
+    <ion-buttons *ngIf="dataProvider.Profile.IsActive" slot="end">
+      <ion-button icon-only (click)="onRefresh()">
+        <ion-icon ios="ios-refresh-circle" md="md-refresh-circle"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <div *ngIf="!lockedOut">
+    <ion-segment [(ngModel)]="area">
+      <ion-segment-button value="basic">{{ 'SEG_LBL_BASIC' | translate }}</ion-segment-button>
+      <ion-segment-button value="horses">{{ 'SEG_LBL_HORSES' | translate }}</ion-segment-button>
+      <ion-segment-button value="places">{{ 'SEG_LBL_PLACES' | translate }}</ion-segment-button>
+    </ion-segment>
+    <div [ngSwitch]="area">
+      <div *ngSwitchCase="'basic'">
+        <ion-item>
+          <div class="imgcenter">
+            <ion-avatar>
+              <img [src]="userImage" class="center" (click)="onChangeProfile()" />
+            </ion-avatar>
+          </div>
+        </ion-item>
+        <ion-button color="primary" (click)="onChangeProfile()" [disabled]="!dataProvider.IsOnline" expand="block">{{
+          'BTN_CHANGEPROFILE' | translate }}</ion-button>
+        <ion-row wrap class="justify-content-center align-items-center">
+          <ion-col size="6"><h6>{{ 'LBL_FIRSTNAME' | translate }}</h6></ion-col>
+          <ion-col size="6"><h6>{{ dataProvider.Profile.FirstName }}</h6></ion-col>
+        </ion-row>
+        <ion-row wrap class="justify-content-center align-items-center">
+          <ion-col size="6"><h6>{{ 'LBL_NAME' | translate }}</h6></ion-col>
+          <ion-col size="6"><h6>{{ dataProvider.Profile.Name }}</h6></ion-col>
+        </ion-row>
+        <ion-row wrap class="justify-content-center align-items-center">
+          <ion-col size="6"><h6>{{ 'LBL_DISPLAYNAME' | translate }}</h6></ion-col>
+          <ion-col size="6"><h6>{{ dataProvider.Profile.DisplayName }}</h6></ion-col>
+        </ion-row>
+        <ion-row wrap class="justify-content-center align-items-center">
+          <ion-col size="6"><h6>{{ 'PUBLICPROFILE' | translate }}</h6></ion-col>
+          <ion-col size="6"><h6>{{ publicprofileallowed() | translate }}</h6></ion-col>
+        </ion-row>
+        <ion-row wrap class="justify-content-center align-items-center">
+          <ion-col size="6"><h6>{{ 'LBL_NOTIFICATION' | translate }}</h6></ion-col>
+          <ion-col size="6"><h6>{{ notificationallowed() | translate }}</h6></ion-col>
+        </ion-row>
+        <ion-row wrap class="justify-content-center align-items-center">
+          <ion-col size="6"><h6>{{ 'LBL_SHOWEVENTS' | translate }}</h6></ion-col>
+          <ion-col size="6"><h6>{{ showeventsallowed() | translate }}</h6></ion-col>
+        </ion-row>
+      </div>
+      <div *ngSwitchCase="'horses'">
+        <ion-item-divider color="secondary">{{ 'LIST_HEADER_HORSES' | translate }}</ion-item-divider>
+        <ion-list>
+          <app-horse [horse]="horse" [showappointments]="false" [canDelete]="true" (click)="onModifyHorse(horse)"
+            *ngFor="let horse of dataProvider.Profile.Horses"></app-horse>
+        </ion-list>
+        <ion-button color="primary" (click)="onAddHorse()" [disabled]="!dataProvider.IsOnline" expand="block">{{
+          'BTN_NEWHORSE' |
+          translate }}</ion-button>
+      </div>
+      <div *ngSwitchCase="'places'">
+        <ion-list>
+          <ion-item-divider color="secondary">{{ 'LIST_HEADER_PLACES' | translate }}</ion-item-divider>
+          <ion-item-sliding *ngFor="let place of dataProvider.Profile.Places" (click)="onPlaceDetails()">
+            <app-place [place]="place" [color]="color" (click)="onPlaceDetails(place)" [canDelete]="true"></app-place>
+            <ion-item-options slot="start">
+              <ion-button color="danger" [disabled]="!dataProvider.IsOnline" (click)="onDeletePlace($event, place)">
+                <ion-icon name="trash"></ion-icon>
+                {{ 'BTN_DELETE_NEWS' | translate }}
+              </ion-button>
+            </ion-item-options>
+          </ion-item-sliding>
+        </ion-list>
+        <ion-button color="primary" (click)="onAddPlace()" [disabled]="!dataProvider.IsOnline" expand="block">{{
+          'BTN_NEWPLACE' |
+          translate }}</ion-button>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="lockedOut">
+    <ion-row wrap class="justify-content-center align-items-center">
+      <ion-col size="5"><h6>{{ 'LBL_FIRSTNAME' | translate }}</h6></ion-col>
+      <ion-col size="7"><h6>{{ dataProvider.Profile.FirstName }}</h6></ion-col>
+    </ion-row>
+    <ion-row wrap class="justify-content-center align-items-center">
+      <ion-col size="5"><h6>{{ 'LBL_NAME' | translate }}</h6></ion-col>
+      <ion-col size="7"><h6>{{ dataProvider.Profile.Name }}</h6></ion-col>
+    </ion-row>
+    <ion-row wrap class="justify-content-center align-items-center">
+      <ion-col size="5"><h6>{{ 'LBL_EMAIL' | translate }}</h6></ion-col>
+      <ion-col size="7"><h6>{{ dataProvider.Profile.Email }}</h6></ion-col>
+    </ion-row>
+    <div *ngIf="!lockOutReasonEMail">
+      <ion-item text-wrap lines="none">{{ 'LBL_PROFILE_NOT_ACTIVE' | translate }}</ion-item>
+      <ion-button color="light" (click)="onActivate()" expand="block">{{ 'BTN_ACTIVATEPROFILE' | translate
+        }}</ion-button>
+    </div>
+    <div *ngIf="lockOutReasonEMail">
+      <ion-item text-wrap lines="none">{{ 'LBL_PROFILE_MAIL_NOT_CONFIRMED' | translate }}</ion-item>
+      <ion-button color="primary" (click)="onSendMail()" expand="block">{{ 'BTN_RESENDMAIL' | translate }}</ion-button>
+    </div>
+  </div>
+</ion-content>

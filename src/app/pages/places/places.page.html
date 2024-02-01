@@ -1,0 +1,23 @@
+<ion-header class="opaque">
+  <ion-toolbar color="primary" align-title="middle">
+    <ion-buttons slot="start">
+      <ion-menu-toggle>
+        <ion-button>
+          <ion-icon name="menu"></ion-icon>
+        </ion-button>
+      </ion-menu-toggle>
+    </ion-buttons>
+    <ion-title>{{ dataProvider.getHeader('HEADER_PLACES') }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item-divider color="secondary">{{ 'LIST_HEADER_PRIVATE_APPOINTMENT' | translate }}</ion-item-divider>
+    <app-place [place]="privatePlace" [color]="color" (click)="onPrivateAppointment()"></app-place>
+  </ion-list>
+  <ion-list>
+    <ion-item-divider *ngIf="!dataProvider.IsPrivate" color="secondary">{{ 'LIST_HEADER_PLACES' | translate }}</ion-item-divider>
+      <app-place [place]="place" [color]="color" (click)="selectPlace(place)" *ngFor="let place of dataProvider.Profile.Places"></app-place>
+  </ion-list>
+
+</ion-content>

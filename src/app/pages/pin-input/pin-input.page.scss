@@ -1,0 +1,48 @@
+
+  .otp {
+    color: darkgray;
+    border-style: solid;
+    height: 90px;
+    font-size: 55px;
+    text-align: center;
+    background-color: white;
+  }
+  .otp1 {
+    color: darkgray;
+    border-style: solid;
+    height: 70px;
+    width: 18%;
+    margin-left: 2px;
+    margin-right: 2px;
+    font-size: 55px;
+    text-align: center;
+    background-color: white;
+  }
+  
+  ion-input.has-focus {
+    border: 4px solid #5b9bd1 !important;
+    border-spacing: 2px;
+  }
+
+  .centerInputFields {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    align-content: center;
+    align-items: center;
+    border-style: none;
+  }
+  .inputFields {
+    align-content: center;
+    align-items: center;
+    border-style: none;
+  }
+
+  ion-input {
+    input {
+      text-align: center;
+      }
+    }
+
+  ion-row {
+    min-height: 100px;
+  }

@@ -1,0 +1,107 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+
+.contentRow {
+	margin-top: 5px;
+	margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+    gap: 15px;
+  }
+
+.barcode-scanner-active {
+    opacity: 0;
+    visibility: hidden;
+    --background: transparent !important;
+    --ion-background-color: transparent;
+    background: transparent;
+  }
+  
+.alerttoast, .infotoast {
+	.toast-wrapper {
+		opacity: 0.9;
+		border-radius: 5px !important;
+		text-align: center;
+		white-space: pre-line;
+	}
+}
+
+.alerttoast {
+	.toast-wrapper {
+		background: #ff0000;
+		color: #ffffff;
+	}
+}
+
+.infotoast {
+	.toast-wrapper {
+		background: var(--ion-color-primary, #1ab749);
+		color: var(--ion-color-secondary, #32db64);
+	}
+}
+
+ion-button {
+	font-size: 0.8em;
+}
+
+h2 {
+	font-size: 1.4em;
+}
+
+h3 {
+	font-size: 1.0em;
+}
+
+h4 {
+	font-size: 0.9em;
+}
+
+ion-icon {
+	font-size: 28px;
+}
+
+ion-back-button {
+	font-size: 0.8em;
+}
+
+ion-app.cameraView, ion-app.cameraView ion-content, ion-app.cameraView .nav-decor {
+	background: transparent !important;
+	--background: transparent !important;
+	background-color: transparent;
+}
+
+.custom-loading {
+	--background: var(--ion-color-secondary);
+	--spinner-color: var(--ion-color-tertiary);
+	color: #ffffff;
+}
+
