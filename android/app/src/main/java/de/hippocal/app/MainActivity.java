@@ -1,4 +1,4 @@
-package com.hippocal;
+package de.hippocal.app;
 
 import com.getcapacitor.BridgeActivity;
 

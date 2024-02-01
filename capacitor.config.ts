@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.hippocal',
+  appId: 'de.hippocal.app',
   appName: 'HippoCal',
   webDir: 'www',
   server: {
