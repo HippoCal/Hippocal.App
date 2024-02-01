@@ -1,15 +1,46 @@
-<ion-col size="6" align-self-start>
-    <div *ngIf="appointment.AppointmentType === 0" class="hasData textcenter">
-      <h6>{{ formatTime(appointment) }}</h6>
-      <h6 class="threeDots" *ngIf="appointment.AppointmentName !== '' && appointment.AppointmentName !== undefined">{{appointment.AppointmentName}}</h6>
-      <h6 class="threeDots">{{appointment.HorseName}}</h6>
-    </div>
-    <div *ngIf="appointment.AppointmentType > 0 && appointment.AppointmentType < 5" class="hasEvent textcenter" [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
-      <h6>{{ formatTime(appointment) }}</h6>
-      <h6 class="threeDots">{{appointment.AppointmentName}}</h6>
-    </div>
-    <div *ngIf="appointment.AppointmentType > 4" class="hasEvent textcenter" [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
-      <h6>{{ formatTime(appointment) }}</h6>
-      <h6 class="threeDots">{{appointment.AppointmentName}}</h6>
-    </div>
-</ion-col>
+  <ion-item-sliding #item (click)="onClick()">
+    <ion-item *ngIf="appointment.AppointmentType===0" [color]="getColor(appointment)">
+      <div class="contentRow">
+        <ion-avatar item-start>
+          <img class="smallImage" [src]="horseImage" />
+        </ion-avatar>
+        <div>
+          <h6 class="component">{{formatDate(appointment.StartDate)}}</h6>
+          <h6 class="component">
+            <span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.HorseName}}</span></h6>
+          <h6 class="component threeDots"
+            *ngIf="appointment.AppointmentName !== '' && appointment.AppointmentName !== undefined">
+            {{appointment.AppointmentName}}</h6>
+        </div>
+      </div>
+    </ion-item>
+    <ion-item *ngIf="appointment.AppointmentType>4" [color]="getColor(appointment)">
+      <div class="contentRow">
+        <ion-avatar item-start>
+          <img class="smallImage" [src]="horseImage" />
+        </ion-avatar>
+        <div>
+          <h6 class="component">{{formatDate(appointment.StartDate)}}</h6>
+          <h6 class="component">
+            <span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.HorseName}}</span></h6>
+          <h6 class="component"><span>{{appointment.AppointmentName}}</span></h6>
+        </div>
+      </div>
+
+    </ion-item>
+    <ion-item *ngIf="appointment.AppointmentType!==0 && appointment.AppointmentType<5"
+      [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
+      <div>
+        <h6 class="component">{{formatDate(appointment.StartDate)}}</h6>
+        <h6 class="component">
+          <span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.AppointmentName}}</span></h6>
+      </div>
+    </ion-item>
+    <ion-item-options *ngIf="appointment.OwnAppointment && canDelete">
+      <ion-item-option color="danger" (click)="onDelete($event, appointment)"
+        [disabled]="!dataProvider.IsOnline || !appointment.IsInTheFuture">
+        <ion-icon name="trash"></ion-icon>
+        {{ 'BTN_DELETE_NEWS' | translate }}
+      </ion-item-option>
+    </ion-item-options>
+  </ion-item-sliding>

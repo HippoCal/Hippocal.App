@@ -246,5 +246,7 @@
   "HEADER_HORSEAPPOINTMENTS": "Your horse appointments",
   "MSG_UPLOAD_SUCCESS": "Upload successful...",
   "MSG_UPLOAD_FAILURE": "Upload not successful...",
-  "MSG_UPLOAD_IN_PROGRESS": "Image-Upload"
+  "MSG_UPLOAD_IN_PROGRESS": "Image-Upload",
+  "HEADER_CONFIRM_DELETE_NEWS": "Delete message",
+  "MSG_CONFIRM_DELETE_NEWS": "Do you really want to delete this message?"
 }

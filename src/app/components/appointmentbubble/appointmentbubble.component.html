@@ -4,8 +4,8 @@
     <h6 class="threeDots">{{appointment.HorseName}}</h6>
   </div>
   <div *ngIf="appointment.IsPrivate" class="privateData textcenter" (click)="$event.stopPropagation(); onClick()">
-    <h6 class="whiteColor">{{ formatTime(appointment) }}</h6>
-    <h6 class="threeDots whiteColor">{{appointment.AppointmentName}}</h6>
+    <h6>{{ formatTime(appointment) }}</h6>
+    <h6 class="threeDots">{{appointment.AppointmentName}}</h6>
   </div>
 </ion-col>
 <ion-col size="6" class="align-self-start"  *ngIf="!showTime">
@@ -20,7 +20,7 @@
     <h6 class="threeDots">{{appointment.HorseName}}</h6>
   </div>
   <div *ngIf="appointment.IsPrivate" class="privateData textcenter" (click)="$event.stopPropagation(); onClick()">
-    <h6 class="threeDots whiteColor">{{appointment.HorseName}}</h6>
-    <h6 class="threeDots whiteColor">{{appointment.AppointmentName}}</h6>
+    <h6 class="threeDots">{{appointment.HorseName}}</h6>
+    <h6 class="threeDots">{{appointment.AppointmentName}}</h6>
   </div>
 </ion-col>

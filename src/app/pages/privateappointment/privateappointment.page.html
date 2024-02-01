@@ -100,35 +100,25 @@
     <div [ngSwitch]="area">
       <div *ngSwitchCase="'advanced'">
         <ion-item>
-          <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTTYPE' | translate }}</ion-label>
-          <ion-select [(ngModel)]="appointmentService.appointment.AppointmentType" name="appointmentType" ngDefaultControl interface="popover" multiple="false"
+          <ion-label name ="lblAppointmentType" position="floating">{{ 'LBL_PRIVATEAPPOINTMENTTYPE' | translate }}</ion-label>
+          <ion-select aria-label="lblAppointmentType" [(ngModel)]="appointmentService.appointment.AppointmentType" name="appointmentType" ngDefaultControl interface="popover" multiple="false"
             (ionChange)="onChangeAppointmentType()">
             <ion-select-option *ngFor="let appointmenttype of appointmentService.PrivateAppointmentTypes" [value]="appointmenttype.id">{{appointmenttype.text}}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTNAME' | translate }}</ion-label>
-          <ion-input type="text" [(ngModel)]="appointmentService.appointment.AppointmentName"
-            name="jobname"></ion-input>
+          <ion-label name="lblJobname" position="floating">{{ 'LBL_PRIVATEAPPOINTMENTNAME' | translate }}</ion-label>
+          <ion-input type="text" aria-label="lblJobname" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">{{ 'LBL_PRIVATEAPPOINTMENTCOMMENT' | translate }}</ion-label>
-          <ion-textarea name="comment" #comment id="comment" rows="6" maxLength="500" (keyup)="resize()"
+          <ion-label name="lblComment" position="floating">{{ 'LBL_PRIVATEAPPOINTMENTCOMMENT' | translate }}</ion-label>
+          <ion-textarea aria-label="lblComment" name="comment" #comment id="comment" rows="6" maxLength="500" (keyup)="resize()"
             [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
         </ion-item>
       </div>
       <div *ngSwitchCase="'horses'">
         <ion-row>
           <ion-col size="12">
-            <!-- <ion-radio-group [(ngModel)]="appointmentService.appointment.HorseKey" (ionChange)="onChangeHorse()">
-              <ion-item *ngFor="let horse of dataProvider.Profile.Horses">
-                <ion-avatar item-start>
-                  <img class="smallImage" [src]="getHorseImage(horse.ImageUrl)" />
-                </ion-avatar>
-                <ion-label>{{ horse.Name }}</ion-label>
-                <ion-radio name="horseName" ngDefaultControl value="{{ horse.HorseKey }}"></ion-radio>
-              </ion-item>
-            </ion-radio-group> -->
             <ion-radio-group [(ngModel)]="appointmentService.appointment.HorseKey" (ionChange)="onChangeHorse()" *ngFor="let horse of dataProvider.Profile.Horses">
               <ion-row>
                 <ion-col size="10">

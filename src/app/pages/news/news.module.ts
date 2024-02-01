@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { IonicModule } from '@ionic/angular';
 
 import { NewsPage } from './news.page';
+import { ComponentsModule } from 'src/app/components/components.module';
 
 const routes: Routes = [
   {
@@ -20,7 +21,9 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     TranslateModule.forChild(),
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    ComponentsModule
+
   ],
   declarations: [NewsPage]
 })

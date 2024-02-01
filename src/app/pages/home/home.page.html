@@ -37,57 +37,15 @@
   </ion-grid>
 
   <div *ngIf="dataProvider.PlaceAppointments.length !== 0">
-    <ion-item lines="none">
-      <h1>{{ 'LBL_NEXTAPPOINTMENTS' | translate }}</h1>
+    <ion-item lines="none" class="ion-text-center">
+      <h2>{{ 'LBL_NEXTAPPOINTMENTS' | translate }}</h2>
     </ion-item>
     <ion-list *ngFor="let place of dataProvider.PlaceAppointments">
       <ion-item-divider color="secondary" (click)="onSelectPlace(place.PlaceKey)">
         {{place.PlaceName}}
         <ion-button slot="end" color="orange">{{ 'BTN_NEW' | translate }}</ion-button>
       </ion-item-divider>
-      <ion-item-sliding #item *ngFor="let appointment of place.Appointments.slice(0, 12)" (click)="onShowAppointment($event, appointment)">
-        <ion-item *ngIf="appointment.AppointmentType===0" [color]="getColor(appointment)">
-          <ion-avatar item-start>
-            <img class="smallImage" [src]="getHorseImage(appointment.HorseImageUrl)" />
-          </ion-avatar>
-          <div class="leftPad">
-            <h6>{{formatDate(appointment.StartDate)}}</h6>
-            <h6><span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.HorseName}}</span></h6>
-            <h6 class="threeDots"
-              *ngIf="appointment.AppointmentName !== '' && appointment.AppointmentName !== undefined">
-              {{appointment.AppointmentName}}</h6>
-          </div>
-          <ion-icon item-end color="danger" name="alert"
-            *ngIf="appointment.isOffline !== undefined && appointment.isOffline"></ion-icon>
-        </ion-item>
-        <ion-item *ngIf="appointment.AppointmentType>4" [color]="getColor(appointment)">
-          <ion-avatar item-start>
-            <img class="smallImage" [src]="getHorseImage(appointment.HorseImageUrl)" />
-          </ion-avatar>
-          <div class="leftPad">
-            <h6>{{formatDate(appointment.StartDate)}}</h6>
-            <h6><span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.HorseName}}</span></h6>
-            <h6><span>{{appointment.AppointmentName}}</span></h6>
-          </div>
-          <ion-icon item-end color="danger" name="alert"
-            *ngIf="appointment.isOffline !== undefined && appointment.isOffline"></ion-icon>
-        </ion-item>
-        <ion-item *ngIf="appointment.AppointmentType!==0 && appointment.AppointmentType<5"
-          [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
-          <div style="padding: 1px">
-            <h6>{{formatDate(appointment.StartDate)}}</h6>
-            <h6><span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.AppointmentName}}</span></h6>
-          </div>
-          <ion-icon item-end color="danger" name="alert"
-            *ngIf="appointment.isOffline !== undefined && appointment.isOffline"></ion-icon>
-        </ion-item>
-        <ion-item-options *ngIf="appointment.OwnAppointment">
-          <ion-item-option color="danger" (click)="onDelete($event, appointment)" [disabled]="!dataProvider.IsOnline || !appointment.IsInTheFuture">
-            <ion-icon name="trash"></ion-icon>
-            {{ 'BTN_DELETE_NEWS' | translate }}
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
+      <app-appointment [appointment]="appointment" *ngFor="let appointment of place.Appointments.slice(0, 12)" [canDelete]="true" (showAppointment)="onShowAppointment(appointment)"></app-appointment>
     </ion-list>
   </div>
   <div *ngIf="dataProvider.PlaceAppointments.length === 0">
@@ -95,30 +53,17 @@
       <img src="assets/imgs/empty.png" class="center" />
     </ion-row>
     <ion-row>&nbsp;</ion-row>
-    <ion-row>
+    <ion-row class="ion-text-center">
       <h2 class="textcenter">{{ 'LBL_NO_APPOINTMENTS' | translate }}</h2>
     </ion-row>
   </div>
   <div *ngIf="dataProvider.UnreadMessages !== 0">
     <ion-item lines="none">
-      <h1>{{ 'LBL_NEWMESSAGES' | translate }}</h1>
+      <h2>{{ 'LBL_NEWMESSAGES' | translate }}</h2>
     </ion-item>
     <ion-list>
       <ion-item-divider color="secondary">{{ 'LIST_HEADER_NEWS' | translate }}</ion-item-divider>
-      <ion-item-sliding #item *ngFor="let news of dataProvider.UnreadNews">
-        <ion-item color="light" (click)="onNewsDetails(news)">
-          <ion-avatar item-start>
-            <img class="smallImage" [src]="news.LocalImage" />
-          </ion-avatar>
-          <p>{{news.Headline}}</p>
-        </ion-item>
-        <ion-item-options *ngIf="appointment.OwnAppointment">
-          <ion-item-option color="danger" (click)="onDeleteNews($event, appointment)" [disabled]="!dataProvider.IsOnline || !appointment.IsInTheFuture">
-            <ion-icon name="trash"></ion-icon>
-            {{ 'BTN_DELETE_NEWS' | translate }}
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
+      <app-news [news]="news" (showNews)="onNewsDetails(news)" [color]="color" *ngFor="let news of dataProvider.UnreadNews"></app-news>
     </ion-list>
   </div>
 </ion-content>

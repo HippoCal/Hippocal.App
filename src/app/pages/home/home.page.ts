@@ -12,15 +12,22 @@ import * as moment from 'moment';
 })
 export class HomePage {
 
+  public color: string;
+
   constructor(
     private router: Router,
     public dataProvider: DataService, 
     public appointmentService: AppointmentService, 
     public imageProvider: ImageService,
     private toastSvc: ToastService) {
-      this.dataProvider.refresh();
+      
   }
 
+  ngOnInit() { 
+    //this.dataProvider.refresh();
+    this.color = 'divider';
+  }
+  
   navigate(route: string, appointment?: AppointmentViewmodel, dt?: Date, news?: NewsViewmodel, place?: PlaceViewmodel) {
     let navigationExtras: NavigationExtras = {
       state: {
@@ -33,9 +40,13 @@ export class HomePage {
     this.router.navigate([route], navigationExtras);
   };
 
-  refresh() {
+  refresh(refresher?) {
     this.dataProvider.loadProfile();
     this.dataProvider.refresh();
+    if(refresher) {
+      refresher.target.complete();
+    }
+    
   }
 
   onRefreshBtn() {
@@ -43,18 +54,16 @@ export class HomePage {
   }
 
   onRefresh(refresher) {
-    this.refresh();
+    this.refresh(refresher);
     setTimeout(() => {
-      refresher.complete();
-    }, 1000);
+      if(refresher) {
+        refresher.target.complete();
+      }
+    }, 4000);
   }
 
   onNewsDetails(news: NewsViewmodel) {
     this.navigate('/newsdetails', null, null, news);
-  }
-
-  onDeleteNews(event: Event, news: NewsViewmodel) {
-    this.dataProvider.deleteNews(news);
   }
 
   onNewAppointment() {
@@ -63,8 +72,8 @@ export class HomePage {
     this.router.navigate(['tabs/tab3/week']);
   }
 
-  public onShowAppointment(event: Event, appointment: AppointmentViewmodel) {
-    event.stopPropagation();
+  public onShowAppointment(appointment: AppointmentViewmodel) {
+    //event.stopPropagation();
     var place: any;
     if (appointment.AppointmentType === 0) {
       this.navigate('/create', appointment, appointment.StartDate);
@@ -77,11 +86,9 @@ export class HomePage {
           }
         });
         this.navigate('/adminappointment', appointment, appointment.StartDate, null, place );
-      } else {
-        this.navigate('/eventdetails', appointment);
-      }
+      } 
     } else if (appointment.AppointmentType > 4) {
-      this.navigate('/privateAppointment', appointment, appointment.StartDate);
+      this.navigate('/privateappointment', appointment, appointment.StartDate);
     }
   }
 
@@ -113,27 +120,11 @@ export class HomePage {
 
   }
 
-  onDelete(event: Event, appointment: AppointmentViewmodel) {
-    if (event.cancelable) {
-      event.preventDefault();
-    }
-    event.stopPropagation();
-    this.toastSvc.confirm(() => {
-      appointment.UserKey = this.dataProvider.Profile.UserKey;
-      this.appointmentService.appointment = appointment;
-      this.appointmentService.deleteAppointment().then((result) => {
-        if (result) {
-          this.appointmentService.RefreshData(true);
-        } else {
-          this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
-        }
-      });
-    }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
-  }
-
   onSelectPlace(placeKey: string) {
     if(placeKey === '' || placeKey === undefined) {
       this.onPrivateAppointment();
+    } else {
+      this.selectPlace(placeKey);
     }
   }
 

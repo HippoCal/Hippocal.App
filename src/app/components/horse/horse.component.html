@@ -1,12 +1,14 @@
-<ion-item lines="none">
+<ion-item lines="none" color="{{color}}">
   <ion-item-sliding (click)="onClick(horse)" lines="none">
     <ion-item>
-      <ion-avatar item-start>
-        <img class="smallImage" [src]="horseImage" />
-      </ion-avatar>
-      <h6>{{ horse.Name }}</h6>
+      <div class="contentRow">
+        <ion-avatar item-start>
+          <img class="smallImage" [src]="horseImage" />
+        </ion-avatar>
+        <h6>{{ horse.Name }}</h6>
+      </div>
     </ion-item>
-    <ion-item-options lines="none">
+    <ion-item-options lines="none" *ngIf="canDelete">
       <ion-item-option color="danger" [disabled]="!dataProvider.IsOnline || isLastHorse"
         (click)="onDeleteHorse($event, horse)">
         <ion-icon name="trash"></ion-icon>
@@ -19,7 +21,8 @@
       <ion-list-header color="primary">
         <ion-label>{{ 'HEADER_HORSEAPPOINTMENTS' | translate }}</ion-label>
       </ion-list-header>
-      <ion-item color="secondary" lines="none" *ngFor="let typeappointment of horseAppointments.TypeAppointments" (click)="onTypeClick(typeappointment)" class="bottomPadding">
+      <ion-item color="secondary" lines="none" *ngFor="let typeappointment of horseAppointments.TypeAppointments"
+        (click)="onTypeClick(typeappointment)" class="bottomPadding">
         <div>
           <div>{{getCaption(typeappointment.JobType, typeappointment.AppointmentType) }}</div>
           <div *ngIf="typeappointment.Visible">

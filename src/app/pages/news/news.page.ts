@@ -9,16 +9,18 @@ import { DataService, ImageService } from 'src/app/services/services';
   styleUrls: ['./news.page.scss'],
 })
 export class NewsPage {
+  
+  public color: string;
 
   constructor(
     private router: Router,
     public dataProvider: DataService,
     public imageProvider: ImageService) {
-    this.dataProvider.loadNews();
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad NewsPage');
+  ngOnInit() { 
+    this.dataProvider.loadNews();
+    this.color = 'divider';
   }
 
   load() {

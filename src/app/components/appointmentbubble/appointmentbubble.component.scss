@@ -21,6 +21,7 @@
   }
 
   .textcenter {
+    font-size: 0.9em;
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -29,6 +30,7 @@
     border-style: solid;
     text-align: center;
     border-width: 1px;
+    width: 100px;
   }
 
   .threeDots {
@@ -39,11 +41,16 @@
   }
 
   h6 {
-    font-size: 14px;
-    color: #0f130b;
+    font-size: 0.9em;
     margin: 1px;
-    padding: 1px;
   }
+
+  // h6 {
+  //   font-size: 14px;
+  //   color: #0f130b;
+  //   margin: 1px;
+  //   padding: 1px;
+  // }
 
   ion-col {
     padding: 0px;

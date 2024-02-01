@@ -1,10 +1,10 @@
 <ion-header class="opaque">
   <ion-toolbar color="primary" align-title="middle">
-    <ion-button icon-only menuToggle>
-      <ion-icon name="menu"></ion-icon>
-    </ion-button>
+    <ion-buttons slot="start">
+      <ion-back-button icon="close-outline"></ion-back-button>
+    </ion-buttons>
     <ion-title>{{ dataProvider.getHeader('HEADER_NEWSDETAILS') }}</ion-title>
-    <ion-buttons end>
+    <ion-buttons *ngIf="dataProvider.Profile.IsActive" slot="end">
       <ion-button icon-only (click)="onRefresh()">
         <ion-icon ios="ios-refresh-circle" md="md-refresh-circle"></ion-icon>
       </ion-button>

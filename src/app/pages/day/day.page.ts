@@ -33,6 +33,7 @@ export class DayPage {
         }
         this.dataProvider.getAppointments(this.dt);
         this.dayString = this.formatDate(this.dt);
+        var dayData = this.dataProvider.DayData;
       }
     });
   }
@@ -70,22 +71,14 @@ export class DayPage {
   }
 
   public onShowAppointment(appointment: AppointmentViewmodel) {
-    //event.stopPropagation();
-    this.navigate('tabs/tab3//create', appointment, appointment.StartDate);
-  }
-
-  public onShowPrivateAppointment(appointment: AppointmentViewmodel) {
-    //event.stopPropagation();
-    this.navigate('tabs/tab3/privateappointment', appointment, appointment.StartDate);
-  }
-
-  public onShowOtherAppointment(appointment: AppointmentViewmodel) {
-    //event.stopPropagation();
-    this.navigate('tabs/tab3//otherappointment', appointment);
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad DayPage');
+    if(appointment.OwnAppointment) {
+      if(!appointment.IsPrivate) {
+        this.navigate('tabs/tab3//create', appointment, appointment.StartDate);
+      } else {
+        this.navigate('tabs/tab3/privateappointment', appointment, appointment.StartDate);
+      }
+    } 
+    
   }
 
 }

@@ -61,7 +61,7 @@
       <div *ngSwitchCase="'horses'">
         <ion-item-divider color="secondary">{{ 'LIST_HEADER_HORSES' | translate }}</ion-item-divider>
         <ion-list>
-          <app-horse [horse]="horse" [showappointments]="false" (click)="onModifyHorse(horse)"
+          <app-horse [horse]="horse" [showappointments]="false" [canDelete]="true" (click)="onModifyHorse(horse)"
             *ngFor="let horse of dataProvider.Profile.Horses"></app-horse>
         </ion-list>
         <ion-button color="primary" (click)="onAddHorse()" [disabled]="!dataProvider.IsOnline" expand="block">{{
@@ -72,8 +72,8 @@
         <ion-list>
           <ion-item-divider color="secondary">{{ 'LIST_HEADER_PLACES' | translate }}</ion-item-divider>
           <ion-item-sliding *ngFor="let place of dataProvider.Profile.Places" (click)="onPlaceDetails()">
-            <app-place [place]="place" [color]="color" (click)="onPlaceDetails(place)"></app-place>
-            <ion-item-options side="right">
+            <app-place [place]="place" [color]="color" (click)="onPlaceDetails(place)" [canDelete]="true"></app-place>
+            <ion-item-options slot="start">
               <ion-button color="danger" [disabled]="!dataProvider.IsOnline" (click)="onDeletePlace($event, place)">
                 <ion-icon name="trash"></ion-icon>
                 {{ 'BTN_DELETE_NEWS' | translate }}

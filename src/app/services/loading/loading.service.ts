@@ -24,6 +24,10 @@ export class LoadingService {
 
   async hide() {
 
+    try {
+    if(!this.isLoading) {
+      return;
+    }
       await this.loading.dismiss().then(() => 
       {
         this.isLoading = false;
@@ -32,6 +36,8 @@ export class LoadingService {
         this.isLoading = false;
         console.log('error: ', error);
       });
+    }
+    catch {}
 
   }
 }

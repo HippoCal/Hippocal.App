@@ -1,15 +1,21 @@
+.threeDots {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
 
-  .threeDots {
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden !important;
-    text-overflow: ellipsis;
-  }
-  
-  h6 {
-    font-size: 14px;
-    margin: 1px;
-    padding: 1px;
-  }
+ion-avatar {
+  width: 45px !important;
+  height: 45px !important;
+}
 
+img.smallImage {
+  width: 45px !important;
+  height: 45px !important;
+}
 
+h6.component {
+  font-size: 0.9em;
+  margin: 1px;
+}

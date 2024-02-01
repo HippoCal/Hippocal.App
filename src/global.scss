@@ -25,6 +25,27 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
+
+.contentRow {
+	margin-top: 5px;
+	margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+    gap: 15px;
+  }
+
+.barcode-scanner-active {
+    opacity: 0;
+    visibility: hidden;
+    --background: transparent !important;
+    --ion-background-color: transparent;
+    background: transparent;
+  }
+  
 .alerttoast, .infotoast {
 	.toast-wrapper {
 		opacity: 0.9;

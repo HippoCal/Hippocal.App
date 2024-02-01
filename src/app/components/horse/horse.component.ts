@@ -11,6 +11,8 @@ import { AppointmentService, DataService, ImageService, ToastService } from 'src
 export class HorseComponent {
 
   @Input('horse') horse: HorseViewmodel;
+  @Input('color') color: string;
+  @Input('canDelete') canDelete: boolean;
   @Input('showappointments') showAppointments: boolean;
   public horseKey: string;
   public horseAppointments: HorseAppointmentsViewmodel;

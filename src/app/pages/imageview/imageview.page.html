@@ -6,15 +6,17 @@
     <ion-title>{{ dataProvider.getHeader('HEADER_IMAGEVIEW') }}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content>
-  <ion-item>
-    <swiper-container>
-      <swiper-slide>
-        <div class="swiper-zoom-container">
-          <img [src]="image">
-        </div>
-      </swiper-slide>
-    </swiper-container>
-  </ion-item>
-</ion-content>
 
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item>
+      <!-- <swiper-container>
+        <swiper-slide> -->
+          <div class="swiper-zoom-container">
+            <img [src]="image">
+          </div>
+        <!-- </swiper-slide>
+      </swiper-container> -->
+    </ion-item>
+  </ion-list>
+</ion-content>

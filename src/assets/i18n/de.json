@@ -148,7 +148,7 @@
   "BTN_ADMINAPPOINTMENT": "Veranstaltung eintragen",
   "LBL_DURATION": "Dauer:",
   "LBL_OCLOCK": "Uhr",
-  "JOBTYPE_OTHER": "Standard-Termin",
+  "JOBTYPE_OTHER": "Reiten",
   "JOBTYPE_DRESSAGE": "Dressur",
   "JOBTYPE_JUMPING": "Springen",
   "JOBTYPE_LUNGING": "Longieren",
@@ -167,7 +167,7 @@
   "APPOINTMENTTYPE_VACCINATION": "Impfung",
   "APPOINTMENTTYPE_VET": "Tierarzt",
   "APPOINTMENTTYPE_SADDLER": "Sattler",
-  "APPOINTMENTTYPE_CUSTOM": "Anderer Termin",
+  "APPOINTMENTTYPE_CUSTOM": "Privater Termin",
   "LBL_JOBTYPE": "Typ:",
   "LBL_JOBNAME": "Name der Veranstaltung",
   "LBL_PRIVATEAPPOINTMENTTYPE": "Termintyp",
@@ -247,5 +247,7 @@
   "HEADER_HORSEAPPOINTMENTS": "Termine für Dein Pferd",
   "MSG_UPLOAD_SUCCESS": "Upload erfolgreich...",
   "MSG_UPLOAD_FAILURE": "Upload nicht erfolgreich...",
-  "MSG_UPLOAD_IN_PROGRESS": "Image-Upload"
+  "MSG_UPLOAD_IN_PROGRESS": "Image-Upload",
+  "HEADER_CONFIRM_DELETE_NEWS": "Nachricht löschen",
+  "MSG_CONFIRM_DELETE_NEWS": "Möchtest Du wirklich diese Nachricht löschen?"
 }

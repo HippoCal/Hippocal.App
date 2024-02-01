@@ -9,6 +9,7 @@ import { PlaceComponent } from './place/place.component';
 import { AppointmentbubbleComponent } from './appointmentbubble/appointmentbubble.component';
 import { DayComponent } from './day/day.component';
 import { HourComponent } from './hour/hour.component';
+import { NewsComponent } from './news/news.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { HourComponent } from './hour/hour.component';
     PlaceComponent,
     AppointmentbubbleComponent,
     DayComponent,
-    HourComponent
+    HourComponent,
+    NewsComponent
   ],
 
   imports: [
@@ -31,7 +33,8 @@ import { HourComponent } from './hour/hour.component';
     PlaceComponent, 
     AppointmentbubbleComponent,
     DayComponent,
-    HourComponent
+    HourComponent,
+    NewsComponent
   ]
 })
 export class ComponentsModule {}

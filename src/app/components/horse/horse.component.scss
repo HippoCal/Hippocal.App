@@ -1,16 +1,15 @@
-  ion-avatar img {
-    width: 70px !important;
-    height: 70px !important;
-  }
+ion-avatar {
+  width: 45px !important;
+  height: 45px !important;
+}
 
-  ion-avatar img.smallImage {
-    width: 40px !important;
-    height: 40px !important;
-  }
+img.smallImage {
+  width: 45px !important;
+  height: 45px !important;
+}
 
-  h6 {
-    font-size: 14px;
-    margin: 1px;
-    padding-left: 15px;
-  }
+h6.component {
+  font-size: 0.9em;
+margin: 1px;
+}
 

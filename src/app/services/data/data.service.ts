@@ -955,12 +955,14 @@ export class DataService {
   }
 
   private setItemInHalfHour(item: AppointmentViewmodel, halfhour: HalfHourViewmodel) {
+    
     if (item.AppointmentType === 0) {
       if (item.IsAnonymous) {
         item.UserName = this.translate.instant("LBL_ANONYMOUS");
         item.HorseName = this.translate.instant("LBL_ANONYMOUS");
       }
       halfhour.Appointments.push(item);
+      var count = halfhour.Appointments.length > 0 ? halfhour.Appointments.filter( e => e.IsPrivate === false).length : 0;
       halfhour.HasData = true;
       halfhour.CanCreate = true;
       if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
@@ -969,10 +971,10 @@ export class DataService {
           lastDay.setDate(new Date().getDate() + this.Profile.CurrentPlace.WeeksBookingInFuture * 7);
           halfhour.CanCreate = halfhour.Date > new Date() &&
             halfhour.Date < lastDay &&
-            this.profile.CurrentPlace.MaxCapacity > halfhour.Appointments.length;
+            this.profile.CurrentPlace.MaxCapacity > count;
         } else {
           halfhour.CanCreate = halfhour.Date > new Date() &&
-            this.profile.CurrentPlace.MaxCapacity > halfhour.Appointments.length;
+            this.profile.CurrentPlace.MaxCapacity > count;
         }
       }
     } else if (item.AppointmentType > 4) {
@@ -989,10 +991,13 @@ export class DataService {
           this.profile.CurrentPlace.MaxCapacity > halfhour.Appointments.length &&
           !item.BlockPlace;
       }
-      if (halfhour.CanCreate) {
-        halfhour.BackgroundColor = item.Color;
-      }
     }
+    if (halfhour.CanCreate) {
+      halfhour.BackgroundColor = item.Color;
+    } else {
+        halfhour.BackgroundColor ="#ffffff";
+    }
+    
   }
 
   private setHalfHourAppointments(dayAppointments: AppointmentViewmodel[], halfhour: HalfHourViewmodel) {
@@ -1126,7 +1131,7 @@ export class DataService {
   }
 
   get HasPlaces(): boolean {
-    return this.Profile.Places.length !== 0;
+    return this.Profile?.Places?.length !== 0;
   }
 
   get BaseUrl(): string {

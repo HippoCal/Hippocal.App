@@ -1,13 +1,19 @@
-  <ion-toolbar color="{{color}}" align-title="middle" (click)="onClick()" class="ion-no-padding">
-    <ion-buttons slot="start">
-      <ion-button icon-only>
-        <ion-avatar>
-          <img class="smallImage" [src]="placeImage" />
-        </ion-avatar>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>
-      <h6>{{place.Name}}</h6>
-      <h6>{{place.OwnerName}}</h6>
-    </ion-title>
-  </ion-toolbar>
+<ion-item-sliding (click)="onClick()" lines="none">
+  <ion-item color="{{color}}">
+    <div class="contentRow">
+      <ion-avatar>
+        <img class="smallImage" [src]="placeImage" />
+      </ion-avatar>
+      <div>
+        <h6 class="component">{{place.Name}}</h6>
+        <h6 class="component">{{place.OwnerName}}</h6>
+      </div>
+    </div>
+  </ion-item>
+  <ion-item-options lines="none" *ngIf="canDelete">
+    <ion-item-option color="danger" [disabled]="!dataProvider.IsOnline || isLastPlace" (click)="onDeletePlace()">
+      <ion-icon name="trash"></ion-icon>
+      {{ 'BTN_DELETE_NEWS' | translate }}
+    </ion-item-option>
+  </ion-item-options>
+</ion-item-sliding>

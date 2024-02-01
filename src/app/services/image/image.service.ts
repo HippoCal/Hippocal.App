@@ -15,7 +15,7 @@ export class ImageService {
   IMAGE_DIR: string = "hippocal_images";
 
   public imageName: string = '';
-  
+
 
   images: ImageViewmodel[] = [];
 
@@ -26,7 +26,7 @@ export class ImageService {
     private http: HttpClient,
     public platform: Platform,
     public actionSheetCtrl: ActionSheetController) {
-    
+
     this.loadImages();
   }
 
@@ -118,17 +118,16 @@ export class ImageService {
         return file;
       }
       // suche im FileSystem
-      try 
-      {
+      try {
         var fileData = await Filesystem.readFile({
           directory: Directory.Data,
           path: this.getFilePath(fileName)
         });
-        if(fileData) {
+        if (fileData) {
           result.data = `data:image/jpeg;base64,${fileData.data}`;
           return result;
         }
-      } catch {}
+      } catch { }
 
       result = await this.download(result);
       if (result.data !== '') {
@@ -230,18 +229,21 @@ export class ImageService {
     });
   }
 
-  
+
 
   async deleteImage(fileName: string) {
-    await Filesystem.deleteFile({
-      path: this.getFilePath(fileName),
-      directory: Directory.Data
-    })
-    var file = this.images.find(e => e.fileName == fileName);
-    if(file) {
-      const index = this.images.indexOf(file);
-      this.images.splice(index, 1);
+    try {
+      await Filesystem.deleteFile({
+        path: this.getFilePath(fileName),
+        directory: Directory.Data
+      })
+      var file = this.images.find(e => e.fileName == fileName);
+      if (file) {
+        const index = this.images.indexOf(file);
+        this.images.splice(index, 1);
+      }
     }
+    catch { }
 
   }
 
