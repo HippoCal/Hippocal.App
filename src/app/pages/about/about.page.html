@@ -7,10 +7,10 @@
         </ion-button>
       </ion-menu-toggle>
     </ion-buttons>
-    <ion-title>{{ dataService.getHeader('HEADER_ABOUT') }}</ion-title>
+    <ion-title>{{ dataProvider.getHeader('HEADER_ABOUT') }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
   <h2>{{ 'LBL_HIPPOCAL_VERSION' | translate }} {{ version }}</h2>
-  <div [innerHtml]="dataService.RemoteText"></div>
+  <div [innerHtml]="dataProvider.RemoteText"></div>
 </ion-content>

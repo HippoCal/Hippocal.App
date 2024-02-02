@@ -83,7 +83,7 @@ export class CreatePage {
         place: this.dataProvider.Profile.CurrentPlace
       }
     };
-    this.router.navigate(['AdminappointmentPage'], navigationExtras);
+    this.dataProvider.navigate('AdminappointmentPage', '', navigationExtras);
   }
 
   onDelete() {
@@ -92,7 +92,7 @@ export class CreatePage {
       this.appointmentService.deleteAppointment().then((result) => {
         if (result) {
           this.appointmentService.RefreshData(true);
-          this.router.navigate(['tabs/tab1']);
+          this.dataProvider.navigate('home');
         } else {
           this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
         }
@@ -148,7 +148,7 @@ export class CreatePage {
         if (result.Result) {
           this.appointmentService.appointment.Id = result.Id;
           this.appointmentService.RefreshData(false);
-          this.router.navigate(['tabs/tab1']);
+          this.dataProvider.navigate('home');
           this.appointmentService.LoadOwnData();
         } else {
           this.handleError(result.ErrorId);
@@ -164,7 +164,7 @@ export class CreatePage {
         if (result.Result) {
           this.appointmentService.SetOriginalAppointment();
           this.appointmentService.RefreshData(false);
-          this.router.navigate(['tabs/tab1']);
+          this.dataProvider.navigate('home');
           this.appointmentService.LoadOwnData();
         } else {
           this.handleError(result.ErrorId);

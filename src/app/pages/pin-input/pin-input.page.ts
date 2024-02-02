@@ -1,5 +1,4 @@
 import { Component, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
 import { IonInput } from '@ionic/angular';
 import { DataService, ImageService } from 'src/app/services/services';
 import { TokenViewmodel } from "src/app/viewmodels/viewmodels";
@@ -22,7 +21,6 @@ export class PinInputPage {
   pin5: string = '';
 
   constructor(
-    private router: Router,
     public dataProvider: DataService, public imageProvider: ImageService) {
 
   }
@@ -89,6 +87,6 @@ export class PinInputPage {
   }
 
   private navHome() {
-    this.router.navigate(['/start']);
+    this.dataProvider.navigate('home');
   }
 }

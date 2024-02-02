@@ -5,7 +5,6 @@ import { TokenViewmodel } from "../../viewmodels/viewmodels";
 import { DataService, ImageService } from "../../services/services";
 import { AlertController } from '@ionic/angular';
 import { UUID } from 'angular2-uuid';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -29,9 +28,7 @@ export class RegisterPage implements OnInit {
   registerForm: FormGroup;
 
   constructor(
-    private router: Router,
-
-    public dataService: DataService,
+    public dataProvider: DataService,
     public imageService: ImageService,
     private alertController: AlertController,
     private zone: NgZone,
@@ -53,11 +50,11 @@ export class RegisterPage implements OnInit {
   }
 
   onBack() {
-    this.router.navigate(['/tabs']);
+    this.dataProvider.navigate('home', 'tab1');
   }
 
   addPlace() {
-    this.dataService.addPlace().then((response) => {
+    this.dataProvider.addPlace().then((response) => {
       if (response) {
         this.finish();
       } else {
@@ -67,48 +64,48 @@ export class RegisterPage implements OnInit {
   }
 
   signup() {
-    if (this.dataService.Profile.UserKey === '' || this.dataService.Profile.UserKey === undefined) {
-      this.dataService.Profile.UserKey = UUID.UUID();
+    if (this.dataProvider.Profile.UserKey === '' || this.dataProvider.Profile.UserKey === undefined) {
+      this.dataProvider.Profile.UserKey = UUID.UUID();
     }
-    this.dataService.saveProfile(this.dataService.Profile);
-    this.dataService.savedirect().then((res: any) => {
+    this.dataProvider.saveProfile(this.dataProvider.Profile);
+    this.dataProvider.savedirect().then((res: any) => {
       if (res.Result) {
         var token = res.User as TokenViewmodel;
-        if (res.ErrorCode === this.dataService.ErrorCodes.Error_Message_User_Exists) {
+        if (res.ErrorCode === this.dataProvider.ErrorCodes.Error_Message_User_Exists) {
           if (token !== null && token !== undefined) {
-            this.dataService.saveToken(token);
-            this.dataService.Profile.UserKey = token.UserKey;
-            this.dataService.saveProfile(this.dataService.Profile);
+            this.dataProvider.saveToken(token);
+            this.dataProvider.Profile.UserKey = token.UserKey;
+            this.dataProvider.saveProfile(this.dataProvider.Profile);
           }
-          this.router.navigate(['/pin-input']);
+          this.dataProvider.navigate('pin-input', 'tab1');
         } else {
 
           if (token !== null && token !== undefined) {
-            this.dataService.saveToken(token);
-            this.dataService.Profile.UserKey = token.UserKey;
-            this.dataService.Profile.UserPin = token.UserPin;
+            this.dataProvider.saveToken(token);
+            this.dataProvider.Profile.UserKey = token.UserKey;
+            this.dataProvider.Profile.UserPin = token.UserPin;
             this.finish();
           }
         }
 
       } else {
         if (res.Message) {
-          this.dataService.showMessage(res.Message, false);
+          this.dataProvider.showMessage(res.Message, false);
         }
       }
     });
   }
 
   private finish() {
-    this.dataService.Profile.IsRegistered = true;
-    this.dataService.Profile.IsActive = true;
-    this.dataService.saveProfile(this.dataService.Profile);
-    this.dataService.loadProfile();
+    this.dataProvider.Profile.IsRegistered = true;
+    this.dataProvider.Profile.IsActive = true;
+    this.dataProvider.saveProfile(this.dataProvider.Profile);
+    this.dataProvider.loadProfile();
     this.navHome();
   }
 
   private navHome() {
-    this.router.navigate(['tabs/']);
+    this.dataProvider.navigate('home', 'tab1');
   }
 
   get IsEnabled(): boolean {
@@ -150,7 +147,7 @@ export class RegisterPage implements OnInit {
   }
 
   get PrivateMode(): boolean {
-    return this.dataService.Profile.UserKey === '' || this.dataService.Profile.UserKey === undefined;
+    return this.dataProvider.Profile.UserKey === '' || this.dataProvider.Profile.UserKey === undefined;
   }
 
   async requestPermissions(): Promise<boolean> {
@@ -185,11 +182,11 @@ export class RegisterPage implements OnInit {
           if (result.barcode && result.barcode.format === BarcodeFormat.QrCode) {
             this.isLocked = true;
             this.hide();
-            if (this.dataService.Profile.UserKey === '' || this.dataService.Profile.UserKey === undefined) {
-              this.dataService.Profile.UserKey = UUID.UUID();
+            if (this.dataProvider.Profile.UserKey === '' || this.dataProvider.Profile.UserKey === undefined) {
+              this.dataProvider.Profile.UserKey = UUID.UUID();
             }
-            this.dataService.getPlaceOwner(result.barcode.rawValue).then((result: any) => {
-              this.dataService.Profile.PlaceKey = result.PlaceKey;
+            this.dataProvider.getPlaceOwner(result.barcode.rawValue).then((result: any) => {
+              this.dataProvider.Profile.PlaceKey = result.PlaceKey;
               this.placeName = result.PlaceName;
               this.ownerName = result.OwnerName;
               this.isEnabled = true;
@@ -209,10 +206,10 @@ export class RegisterPage implements OnInit {
         // if (ex.code === "UNAVAILABLE" && (this.dataService.Profile.Email === 'com2001@web.de' || this.dataService.Profile.Email === 'steffen.scholz@maerkischer-turnerbund.de')) {
         this.isEnabled = true;
         this.hide();
-        if(this.dataService.Profile.UserKey === "") {
-          this.dataService.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
+        if(this.dataProvider.Profile.UserKey === "") {
+          this.dataProvider.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
         } else {
-          this.dataService.Profile.DummyUserKey = "09e30373-7be0-4ae8-a5a3-7d419b31a247";
+          this.dataProvider.Profile.DummyUserKey = "09e30373-7be0-4ae8-a5a3-7d419b31a247";
         }
         // Staging Longierhalle
         //this.dataService.Profile.PlaceKey = "b66db54b-9493-4cca-a239-8225cd1f5fd9";
@@ -222,7 +219,7 @@ export class RegisterPage implements OnInit {
         
         //this.dataService.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
         // localhost New Reithalle
-        this.dataService.Profile.PlaceKey = "e94e31f6-92e9-47bf-880d-9ab7ab7af8fb";
+        this.dataProvider.Profile.PlaceKey = "e94e31f6-92e9-47bf-880d-9ab7ab7af8fb";
         this.placeName = 'Dummyplace';
         this.ownerName = 'Dummyowner';
       }

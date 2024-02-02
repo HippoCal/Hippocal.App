@@ -55,32 +55,33 @@
       </ion-range>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">{{ 'LBL_JOBTYPE' | translate }}</ion-label>
-      <ion-select [(ngModel)]="appointmentService.appointment.JobType" interface="popover" multiple="false" (ionChange)="onChangeJobType()">
+      <ion-label name="lblJobType" position="floating">{{ 'LBL_JOBTYPE' | translate }}</ion-label>
+      <ion-select aria-label="lblJobType" [(ngModel)]="appointmentService.appointment.JobType" interface="popover" multiple="false" (ionChange)="onChangeJobType()">
         <ion-option *ngFor="let jobtype of appointmentService.JobTypes" [value]="jobtype.id">{{jobtype.text}}</ion-option>
       </ion-select>
-      <ion-select [(ngModel)]="appointmentService.appointment.AppointmentType" interface="popover" multiple="false" (ionChange)="onChangeAppointmentType()">
+      <ion-label name="lblAppointmentType" position="floating">{{ 'LBL_APPOINTMENTTYPE' | translate }}</ion-label>
+      <ion-select aria-label="lblAppointmentType" [(ngModel)]="appointmentService.appointment.AppointmentType" interface="popover" multiple="false" (ionChange)="onChangeAppointmentType()">
         <ion-option *ngFor="let appointmenttype of appointmentService.AppointmentTypes" [value]="appointmenttype.id">{{appointmenttype.text}}</ion-option>
       </ion-select>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">{{ 'LBL_JOBNAME' | translate }}</ion-label>
-      <ion-input type="text" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname"></ion-input>
+      <ion-label name="lblNumAppointmentName" position="floating">{{ 'LBL_JOBNAME' | translate }}</ion-label>
+      <ion-input aria-label="lblNumAppointmentName" type="text" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">{{ 'LBL_NUMSLOTS' | translate }}</ion-label>
-      <ion-input autocorrect="on" type="number" min="1" max="8" [(ngModel)]="appointmentService.appointment.NumSlots"></ion-input>
+      <ion-label name="lblNumSlots" position="floating">{{ 'LBL_NUMSLOTS' | translate }}</ion-label>
+      <ion-input aria-label="lblNumSlots" autocorrect="on" type="number" min="1" max="8" [(ngModel)]="appointmentService.appointment.NumSlots"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label>{{ 'LBL_BLOCK_PLACE' | translate }}</ion-label>
-      <ion-checkbox [(ngModel)]="appointmentService.appointment.BlockPlace"></ion-checkbox>
+      <ion-label name="lblBlockPlace">{{ 'LBL_BLOCK_PLACE' | translate }}</ion-label>
+      <ion-checkbox aria-label="lblBlockPlace" [(ngModel)]="appointmentService.appointment.BlockPlace"></ion-checkbox>
     </ion-item>
     <ion-item>
-      <ion-label>{{ 'LBL_FREE_SLOTS' | translate }}</ion-label>
-      <ion-checkbox [(ngModel)]="appointmentService.appointment.FreeSlots"></ion-checkbox>
+      <ion-label name="lblFreeSlots">{{ 'LBL_FREE_SLOTS' | translate }}</ion-label>
+      <ion-checkbox aria-label="lblFreeSlots" [(ngModel)]="appointmentService.appointment.FreeSlots"></ion-checkbox>
     </ion-item>
     <ion-item>
-      <ion-label position="floating">{{ 'LBL_COMMENT' | translate }}</ion-label>
-      <ion-textarea #comment id="comment" rows="2" maxLength="500" (keyup)="resize()" [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
+      <ion-label name="lblComment" position="floating">{{ 'LBL_COMMENT' | translate }}</ion-label>
+      <ion-textarea aria-label="lblComment" #comment id="comment" rows="2" maxLength="500" (keyup)="resize()" [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
     </ion-item>
 </ion-content>

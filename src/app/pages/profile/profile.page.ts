@@ -1,5 +1,4 @@
 import { Component, NgZone} from '@angular/core';
-import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { HorseViewmodel, PlaceViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from 'src/app/services/services';
 
@@ -17,14 +16,12 @@ export class ProfilePage {
   public color: string;
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute, 
     public dataProvider: DataService, 
     private zone: NgZone, 
     public imageProvider: ImageService,
     private toastSvc: ToastService) {
     if (!this.dataProvider.Profile.IsRegistered) {
-      this.router.navigate(['/register'], {state: { animate: true, direction: 'forward' }});
+      this.dataProvider.navigate('register','tab1', {state: { animate: true, direction: 'forward' }});
     }
     this.area = "basic";
     this.color = 'divider';
@@ -52,11 +49,11 @@ export class ProfilePage {
   }
 
   onAddHorse() {
-    this.router.navigate(['/edithorse'], {state: { isNew: true }});
+    this.dataProvider.navigate('edithorse', 'tab1', {state: { isNew: true }});
   }
 
   onAddPlace() {
-    this.router.navigate(['tabs/tab1/register']);
+    this.dataProvider.navigate('register', 'tab1');
   }
 
   onRefresh() {
@@ -64,15 +61,15 @@ export class ProfilePage {
   }
 
   onSendMail() {
-    this.router.navigate(['/getEmail'], {state: { email: this.dataProvider.Profile.Email }});
+    this.dataProvider.navigate('getEmail', 'tab1', {state: { email: this.dataProvider.Profile.Email }});
   }
 
   onChangeProfile() {
-    this.router.navigate(['/editprofile']);
+    this.dataProvider.navigate('editprofile', 'tab1');
   }
 
   onModifyHorse(horse: HorseViewmodel) {
-    this.router.navigate(['/edithorse'], {state: { isNew: false, horse: horse }});
+    this.dataProvider.navigate('edithorse', 'tab1', {state: { isNew: false, horse: horse }});
   }
 
   notificationallowed(): string {
@@ -94,7 +91,7 @@ export class ProfilePage {
           if (result) {
             this.dataProvider.Profile.IsActive = true;
             this.dataProvider.saveProfile(this.dataProvider.Profile);
-            this.router.navigate(['/start']);
+            this.dataProvider.navigate('home', 'tab1');
           }
         });
       },
@@ -103,7 +100,7 @@ export class ProfilePage {
   }
 
   public onPlaceDetails() {
-    this.router.navigate(['/placedetails']);
+    this.dataProvider.navigate('placedetails', 'tab1');
   }
 
   onDeletePlace(event: Event, place: PlaceViewmodel) {

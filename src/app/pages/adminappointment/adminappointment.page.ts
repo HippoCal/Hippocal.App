@@ -118,7 +118,7 @@ export class AdminappointmentPage {
       this.appointmentService.deleteAppointment().then((result) => {
         if (result) {
           this.appointmentService.RefreshData(true);
-          this.router.navigate(['/home']);
+          this.dataProvider.navigate('home','tab3');
         } else {
           this.toastSvc.showMessage("ERR_NO_DELETE_APPOINTMENT", '', true);
         }

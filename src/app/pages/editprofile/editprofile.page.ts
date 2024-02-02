@@ -1,6 +1,5 @@
 import { LocationStrategy } from '@angular/common';
 import { Component, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
 import { DataService, ImageService, ToastService } from "src/app/services/services";
 import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
 
@@ -18,7 +17,6 @@ export class EditprofilePage {
   private file: ImageViewmodel;
 
   constructor(
-    private router: Router,
     public dataProvider: DataService,
     public imageProvider: ImageService,
     private locationStrategy: LocationStrategy,

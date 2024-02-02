@@ -77,6 +77,6 @@ export class GetEmailPage {
   }
 
   private finish() {
-    this.router.navigate(["/start"]);
+    this.dataProvider.navigate('home', 'tab1');
   }
 }

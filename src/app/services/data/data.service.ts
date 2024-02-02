@@ -1,5 +1,4 @@
 import { Platform } from '@ionic/angular';
-import { Storage } from '@ionic/storage-angular';
 import { Injectable } from '@angular/core';
 import { ProfileViewmodel, PlaceViewmodel, TokenViewmodel, HorseViewmodel, PlaceAppointmentsViewmodel, NewsViewmodel, HalfHourViewmodel, WeekViewmodel, AppointmentViewmodel, DayViewmodel } from "src/app/viewmodels/viewmodels";
 import { AppointmentTypeEnum } from 'src/app/enums/enums';
@@ -7,6 +6,7 @@ import { ImageService, RestService, StorageService, ToastService } from '../serv
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { UUID } from 'angular2-uuid';
+import { Router } from '@angular/router';
 
 
 @Injectable()
@@ -17,6 +17,7 @@ export class DataService {
   private NEWS_KEY: string = '_news';
   private locale: string = '';
 
+  private currentTab: string = 'tab1';
   public IsLoaded: boolean;
 
   private profile: ProfileViewmodel;
@@ -45,6 +46,7 @@ export class DataService {
     public storage: StorageService,
     public restProvider: RestService,
     public imageProvider: ImageService,
+    private router: Router,
     public platform: Platform) {
 
     this.IsLoaded = false;
@@ -69,6 +71,7 @@ export class DataService {
       return this.offlineResponse();
     }
   }
+
 
   getWeek(dt: Date, placeKey: string, userKey: string) {
     if (this.IsOnline) {
@@ -296,20 +299,20 @@ export class DataService {
     return result;
   }
 
-  loadProfile(callback? : any): void {
+  loadProfile(callback?: any): void {
     if (this.IsOnline) {
-      var userKey = this.Profile.UserKey; 
-      if(userKey === '' || userKey === undefined) {
-          var token = this.restProvider.Token;
-          if(token !== undefined && token !== null) {
-            userKey = token.UserKey;
-          }
+      var userKey = this.Profile.UserKey;
+      if (userKey === '' || userKey === undefined) {
+        var token = this.restProvider.Token;
+        if (token !== undefined && token !== null) {
+          userKey = token.UserKey;
+        }
       }
-      if(userKey === '' || userKey === undefined) {
-        if(callback) {
+      if (userKey === '' || userKey === undefined) {
+        if (callback) {
           callback();
         }
-      } 
+      }
       this.restProvider.loadProfile(userKey).then((response: any) => {
         if (response !== null && response !== undefined) {
           var data: any = response;
@@ -324,14 +327,14 @@ export class DataService {
             }
             this.Profile.IsRegistered = this.Profile.UserKey !== '' && this.Profile.UserKey === userKey;
             this.saveProfile(this.Profile);
-            if(callback) {
+            if (callback) {
               callback();
             }
           }
         }
       }, (err) => {
         console.log(err);
-        if(callback) {
+        if (callback) {
           callback();
         }
       });
@@ -458,12 +461,11 @@ export class DataService {
         (item.NewsEntryKey === news.NewsEntryKey && item.LastModification !== news.LastModification)) {
         newList.push(item);
       } else {
-        if (item.ImageUrl !== "")
-        {
-        // Todo: fix it  
-        //this.imageProvider.deleteImage(item.ImageUrl);
+        if (item.ImageUrl !== "") {
+          // Todo: fix it  
+          //this.imageProvider.deleteImage(item.ImageUrl);
+        }
       }
-    }
     });
     this.news = newList;
     this.saveNews();
@@ -659,9 +661,9 @@ export class DataService {
   }
 
   async load(callback: any) {
-      this.getProfileFromStorage().then( () => {
-          callback();
-      });
+    this.getProfileFromStorage().then(() => {
+      callback();
+    });
   }
 
   async loadAppointments() {
@@ -775,11 +777,10 @@ export class DataService {
   }
 
   saveProfile(value: ProfileViewmodel): void {
-    if(value.UserKey !== '' && value.UserKey !== undefined)
-    {
-      if(value.Email === '' || value.Email === undefined) {
+    if (value.UserKey !== '' && value.UserKey !== undefined) {
+      if (value.Email === '' || value.Email === undefined) {
         var token = this.restProvider.Token;
-        if(token !== null && token !== undefined) {
+        if (token !== null && token !== undefined) {
           value.Email = token.EMail;
         }
       }
@@ -955,14 +956,14 @@ export class DataService {
   }
 
   private setItemInHalfHour(item: AppointmentViewmodel, halfhour: HalfHourViewmodel) {
-    
+
     if (item.AppointmentType === 0) {
       if (item.IsAnonymous) {
         item.UserName = this.translate.instant("LBL_ANONYMOUS");
         item.HorseName = this.translate.instant("LBL_ANONYMOUS");
       }
       halfhour.Appointments.push(item);
-      var count = halfhour.Appointments.length > 0 ? halfhour.Appointments.filter( e => e.IsPrivate === false).length : 0;
+      var count = halfhour.Appointments.length > 0 ? halfhour.Appointments.filter(e => e.IsPrivate === false).length : 0;
       halfhour.HasData = true;
       halfhour.CanCreate = true;
       if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
@@ -995,9 +996,9 @@ export class DataService {
     if (halfhour.CanCreate) {
       halfhour.BackgroundColor = item.Color;
     } else {
-        halfhour.BackgroundColor ="#ffffff";
+      halfhour.BackgroundColor = "#ffffff";
     }
-    
+
   }
 
   private setHalfHourAppointments(dayAppointments: AppointmentViewmodel[], halfhour: HalfHourViewmodel) {
@@ -1062,8 +1063,15 @@ export class DataService {
     return moment(d1).isSame(moment(d2), "day");
   }
 
+  async navigate(url: string, tab?: string, extras?: any): Promise<boolean> {
+    if (tab) {
+      this.currentTab = tab;
+    }
+    return this.router.navigate([`tabs/${this.currentTab}/${url}`], extras);
+  }
+
   get Profile(): ProfileViewmodel {
-      return this.profile;
+    return this.profile;
   }
 
   get FreeLogins(): number {
@@ -1144,6 +1152,10 @@ export class DataService {
 
   get RemoteText(): string {
     return this.remoteText;
+  }
+
+  setCurrentTab(tab: string) {
+    this.currentTab = tab;
   }
 
 

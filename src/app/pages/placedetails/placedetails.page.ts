@@ -1,5 +1,4 @@
 import { Component, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
 import { DataService, ImageService } from 'src/app/services/services';
 
 @Component({
@@ -12,7 +11,6 @@ export class PlacedetailsPage {
   public placeImage: string;
 
   constructor(
-    private router: Router,
     private zone: NgZone,
     public dataProvider: DataService, 
     public imageProvider: ImageService) {
@@ -24,7 +22,7 @@ export class PlacedetailsPage {
 
   zoom() {
     var url = this.dataProvider.Profile.CurrentPlace.ImageUrl.replace("thumb_", "");
-    this.router.navigate(['/imageview'], { state: { data: { imageUrl: url, key: this.dataProvider.Profile.CurrentPlace.PlaceKey, type: "places" } } });
+    this.dataProvider.navigate('imageview', '', { state: { data: { imageUrl: url, key: this.dataProvider.Profile.CurrentPlace.PlaceKey, type: "places" } } });
   }
 
   get details(): string {

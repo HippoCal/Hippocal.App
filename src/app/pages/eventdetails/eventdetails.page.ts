@@ -47,7 +47,7 @@ export class EventdetailsPage {
         type: "user"
       }
     };
-    this.router.navigate(['imageview', navigationExtras]);
+    this.dataProvider.navigate('imageview', '', navigationExtras);
   }
 
   async getUserImage() {  

@@ -1,6 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { ProfileViewmodel } from 'src/app/viewmodels/viewmodels';
 import { DataService } from 'src/app/services/services';
 
 @Component({
@@ -12,20 +10,20 @@ export class LogoutPage {
 
   public isActive: boolean
   constructor(
-    private router: Router,
+
     public dataProvider: DataService) {
       
   }
 
   onBack() {
-    this.router.navigate(["tabs/tab1"]);
+    this.dataProvider.navigate("home", 'tab1');
   }
   
   onLogout() {
     this.dataProvider.unsubscribe().then((result: boolean) => {
       if (result) {
         this.dataProvider.toggleActive(false);
-        this.router.navigate(['tabs/tab1']);
+        this.dataProvider.navigate('home', 'tab1');
       }
     });
   }
@@ -38,7 +36,7 @@ export class LogoutPage {
     this.dataProvider.subscribeBack().then((result: boolean) => {
       if (result) {
         this.dataProvider.toggleActive(true);
-        this.router.navigate(['tabs/tab1']);
+        this.dataProvider.navigate('home', 'tab1');
       }
     });
   }

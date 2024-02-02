@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, NavigationExtras } from '@angular/router';
+import { NavigationExtras } from '@angular/router';
 import { AppointmentViewmodel, NewsViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService, AppointmentService, ToastService } from "src/app/services/services";
 import { PlaceViewmodel } from 'src/app/viewmodels/placeviewmodel';
@@ -15,20 +15,21 @@ export class HomePage {
   public color: string;
 
   constructor(
-    private router: Router,
     public dataProvider: DataService, 
     public appointmentService: AppointmentService, 
-    public imageProvider: ImageService,
-    private toastSvc: ToastService) {
+    public imageProvider: ImageService) {
       
   }
 
+  ionViewWillEnter() { 
+    this.dataProvider.setCurrentTab('tab1');
+  };
+
   ngOnInit() { 
-    //this.dataProvider.refresh();
     this.color = 'divider';
   }
   
-  navigate(route: string, appointment?: AppointmentViewmodel, dt?: Date, news?: NewsViewmodel, place?: PlaceViewmodel) {
+  navigate(route: string, tab: string, appointment?: AppointmentViewmodel, dt?: Date, news?: NewsViewmodel, place?: PlaceViewmodel, ) {
     let navigationExtras: NavigationExtras = {
       state: {
         dt: dt,
@@ -37,7 +38,7 @@ export class HomePage {
         place: place
       }
     };
-    this.router.navigate([route], navigationExtras);
+    this.dataProvider.navigate(route, tab, navigationExtras);
   };
 
   refresh(refresher?) {
@@ -63,20 +64,20 @@ export class HomePage {
   }
 
   onNewsDetails(news: NewsViewmodel) {
-    this.navigate('/newsdetails', null, null, news);
+    this.navigate('newsdetails', '', null, null, news);
   }
 
   onNewAppointment() {
     this.dataProvider.setIsPrivate(false);
     this.dataProvider.setToWeek(false);
-    this.router.navigate(['tabs/tab3/week']);
+    this.dataProvider.navigate('places', 'tab3');
   }
 
   public onShowAppointment(appointment: AppointmentViewmodel) {
     //event.stopPropagation();
     var place: any;
     if (appointment.AppointmentType === 0) {
-      this.navigate('/create', appointment, appointment.StartDate);
+      this.navigate('create', '', appointment, appointment.StartDate);
     } else if (appointment.AppointmentType < 5) {
       if (appointment.OwnAppointment) {
         this.dataProvider.Profile.Places.forEach((item) => {
@@ -85,10 +86,10 @@ export class HomePage {
             return;
           }
         });
-        this.navigate('/adminappointment', appointment, appointment.StartDate, null, place );
+        this.navigate('adminappointment', '', appointment, appointment.StartDate, null, place );
       } 
     } else if (appointment.AppointmentType > 4) {
-      this.navigate('/privateappointment', appointment, appointment.StartDate);
+      this.navigate('privateappointment', '', appointment, appointment.StartDate);
     }
   }
 
@@ -131,14 +132,14 @@ export class HomePage {
   selectPlace(placeKey: string) {
     this.dataProvider.setIsPrivate(false);
     this.dataProvider.setCurrentPlace(placeKey);
-    this.router.navigate(['tabs/tab3/week']);
+    this.dataProvider.navigate('week', 'tab3');
   }
 
   onPrivateAppointment() {
     this.dataProvider.setIsPrivate(true);
     this.dataProvider.Profile.CurrentPlace.Name = '';
     this.dataProvider.Profile.CurrentPlace.PlaceKey = '';
-    this.router.navigate(['tabs/tab3/week']);
+    this.dataProvider.navigate('week', 'tab3');
   }
 
   formatDate(dt: string): string {

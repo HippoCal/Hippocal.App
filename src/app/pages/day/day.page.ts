@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
 import { AppointmentViewmodel, HalfHourViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService } from "src/app/services/services";
-import * as moment from 'moment';
 
 @Component({
   selector: 'page-day',
@@ -46,7 +45,7 @@ export class DayPage {
         appointment: appointment
       }
     };
-    this.router.navigate([route], navigationExtras);
+    this.dataProvider.navigate(route, '', navigationExtras);
   };
 
   formatDate(dt: Date): string {
@@ -59,9 +58,9 @@ export class DayPage {
     if (halfhour.CanCreate) {
       if (this.dataProvider.IsOnline) {
         if (!this.dataProvider.IsPrivate) {
-          this.navigate('tabs/tab3/create', null, halfhour.Date, halfhour.HasEvent);
+          this.navigate('create', null, halfhour.Date, halfhour.HasEvent);
         } else {
-          this.navigate('tabs/tab3/privateappointment', null, halfhour.Date);
+          this.navigate('privateappointment', null, halfhour.Date);
         }
 
       } else {
@@ -73,9 +72,9 @@ export class DayPage {
   public onShowAppointment(appointment: AppointmentViewmodel) {
     if(appointment.OwnAppointment) {
       if(!appointment.IsPrivate) {
-        this.navigate('tabs/tab3//create', appointment, appointment.StartDate);
+        this.navigate('create', appointment, appointment.StartDate);
       } else {
-        this.navigate('tabs/tab3/privateappointment', appointment, appointment.StartDate);
+        this.navigate('privateappointment', appointment, appointment.StartDate);
       }
     } 
     

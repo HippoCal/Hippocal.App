@@ -1,5 +1,5 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { Router, NavigationExtras  } from '@angular/router';
+import { NavigationExtras  } from '@angular/router';
 import { DataService, ImageService } from 'src/app/services/services';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
@@ -17,7 +17,7 @@ export class WeekPage implements OnInit {
  public privatePlace: PlaceViewmodel;
  public color: string;
 
-  constructor(private router: Router, 
+  constructor(
     public dataProvider: DataService, 
     public imageService: ImageService, 
     private zone: NgZone, 
@@ -26,6 +26,10 @@ export class WeekPage implements OnInit {
     this.dataProvider.initWeek(this.firstDay);
     this.createPrivatePlace();
   }
+
+  ionViewWillEnter() { 
+    this.dataProvider.setCurrentTab('tab3');
+  };
 
   ngOnInit() {
     console.log('Load Week');
@@ -65,7 +69,7 @@ export class WeekPage implements OnInit {
   }
 
   public onnowinplace() {
-    this.router.navigate(['tabs/tab3/nowinplace']);
+    this.dataProvider.navigate('nowinplace');
   }
 
   public onSelectDay(day: any) {
@@ -75,7 +79,7 @@ export class WeekPage implements OnInit {
         day: dt,
       }
     };
-    this.router.navigate(['tabs/tab3/day'], navigationExtras);
+    this.dataProvider.navigate('day', '', navigationExtras);
   }
 
   public onShowEvent(appointment: AppointmentViewmodel) {
@@ -86,7 +90,7 @@ export class WeekPage implements OnInit {
           appointment: appointment
         }
       };
-      this.router.navigate(['tabs/tab3/privateappointment'], navigationExtras);
+      this.dataProvider.navigate('privateappointment','', navigationExtras);
     } else if (appointment.OwnAppointment) {
       var place: any;
       this.dataProvider.Profile.Places.forEach((item) => {
@@ -102,14 +106,14 @@ export class WeekPage implements OnInit {
           place: place
         }
       };
-      this.router.navigate(['tabs/tab3/adminappointment'], navigationExtras);
+      this.dataProvider.navigate('adminappointment', '', navigationExtras);
     } else {
       let navigationExtras: NavigationExtras = {
         state: {
           appointment: appointment,
         }
       };
-      this.router.navigate(['tabs/tab3/eventdetails'], navigationExtras);
+      this.dataProvider.navigate('eventdetails', '',  navigationExtras);
     }
     
   }
@@ -135,7 +139,7 @@ export class WeekPage implements OnInit {
       }
     };
     if(appointment.AppointmentType === 0) {
-      this.router.navigate(['tabs/tab3/create'], navigationExtras);
+      this.dataProvider.navigate('create', '',  navigationExtras);
     } else {
       this.onShowEvent(appointment);
     }
@@ -152,7 +156,7 @@ export class WeekPage implements OnInit {
   }
 
   public onPlaceDetails() {
-    this.router.navigate(['tabs/tab3/placedetails']);
+    this.dataProvider.navigate('placedetails');
   }
 
 

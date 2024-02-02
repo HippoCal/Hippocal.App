@@ -26,6 +26,7 @@ export class PlaceComponent  implements OnInit {
   }
 
   onClick(){
+    this.dataProvider.Profile.CurrentPlace = this.place;
     this.click.emit(this.place);
   }
 

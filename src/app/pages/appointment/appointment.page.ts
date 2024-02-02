@@ -48,7 +48,7 @@ export class AppointmentPage implements OnInit {
           this.dataService.initWeek(this.dataService.CurrentDay);
           this.dataService.refreshData(false).then(() => {
             this.dataService.setNotification(this.appointmentService.appointment, true);
-            this.router.navigate(['home']);
+            this.dataProvider.navigate('home','tab1');
           });
         });
     }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
@@ -72,12 +72,12 @@ export class AppointmentPage implements OnInit {
 
   zoom() {
     var url = this.appointmentService.appointment.ImageUrl.replace("thumb_", "");
-    this.router.navigate(['imageview', { data: { imageUrl: url, key: this.appointmentService.appointment.UserKey, type: "user" }}]);
+    this.dataProvider.navigate('imageview', '', { data: { imageUrl: url, key: this.appointmentService.appointment.UserKey, type: "user" }});
   }
 
   horsezoom() {
     var url = this.appointmentService.appointment.HorseImageUrl.replace("thumb_", "");
-    this.router.navigate(['imageview', { data: { imageUrl: url, key: this.appointmentService.appointment.HorseKey, type: "horse" } }]);
+    this.dataProvider.navigate('/imageview', '', { data: { imageUrl: url, key: this.appointmentService.appointment.HorseKey, type: "horse" } });
   }
 
 

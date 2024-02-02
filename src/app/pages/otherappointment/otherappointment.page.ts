@@ -43,12 +43,12 @@ export class OtherAppointmentPage {
 
   zoom() {
     var url = this.appointment.ImageUrl.replace("thumb_", "");
-    this.router.navigate(['/imageview'], { state: { data: { imageUrl: url, key: this.appointment.UserKey, type: "user" } } });
+    this.dataProvider.navigate('imageview','', { state: { data: { imageUrl: url, key: this.appointment.UserKey, type: "user" } } });
   }
 
   horsezoom() {
     var url = this.appointment.HorseImageUrl.replace("thumb_", "");
-    this.router.navigate(['/imageview'], { state: { data: { imageUrl: url, key: this.appointment.HorseKey, type: "horse" } } });
+    this.dataProvider.navigate('imageview', '', { state: { data: { imageUrl: url, key: this.appointment.HorseKey, type: "horse" } } });
   }
 
   async getUserImage() {

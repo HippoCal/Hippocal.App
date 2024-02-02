@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationExtras, Router } from '@angular/router';
+import { NavigationExtras} from '@angular/router';
 import { DataService } from '../../services/data/data.service';
 
 @Component({
@@ -10,7 +10,6 @@ import { DataService } from '../../services/data/data.service';
 export class ConfirmEmailPage implements OnInit {
 
   constructor(
-    private router: Router, 
     public dataProvider: DataService) {
   }
   onSendMail() {
@@ -19,11 +18,11 @@ export class ConfirmEmailPage implements OnInit {
         email: this.dataProvider.Profile.Email
       }
     };
-    this.router.navigate(['/get-email'], navigationExtras );
+    this.dataProvider.navigate('get-email', 'tab1', navigationExtras );
   }
 
   onBack() {
-    this.router.navigate(["start"]);
+    this.dataProvider.navigate("home", 'tab1');
   }
 
   ngOnInit() {

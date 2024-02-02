@@ -1,13 +1,13 @@
 <ion-header class="opaque">
   <ion-toolbar color="primary" align-title="middle">
-    <ion-buttons slot="start" *ngIf="dataService.Profile.IsRegistered">
+    <ion-buttons slot="start" *ngIf="dataProvider.Profile.IsRegistered">
       <ion-menu-toggle>
         <ion-button>
           <ion-icon name="menu"></ion-icon>
         </ion-button>
       </ion-menu-toggle>
     </ion-buttons>
-    <ion-title>{{ dataService.getHeader(!dataService.Profile.IsRegistered ? 'HEADER_REGISTER' : 'HEADER_REGISTER_PLACE') }}</ion-title>
+    <ion-title>{{ dataProvider.getHeader(!dataProvider.Profile.IsRegistered ? 'HEADER_REGISTER' : 'HEADER_REGISTER_PLACE') }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -29,38 +29,38 @@
             <ion-col size="8"><ion-label class="ion-text-wrap"><h5>{{ ownerName }}</h5></ion-label></ion-col>
           </ion-row>
         </div>
-        <div *ngIf="!dataService.Profile.IsRegistered">
+        <div *ngIf="!dataProvider.Profile.IsRegistered">../
           <ion-item lines="none">
-            <ion-label position="floating">{{ 'FIRSTNAME' | translate }}</ion-label>
-            <ion-input type="text" [(ngModel)]="dataService.Profile.FirstName" formControlName="firstName" name="firstname" [class.invalid]="!registerForm.controls.firstName.valid && (registerForm.controls.firstName.dirty)"></ion-input>
+            <ion-label name="lblFirstName" position="floating">{{ 'FIRSTNAME' | translate }}</ion-label>
+            <ion-input aria-label="lblFirstName" type="text" [(ngModel)]="dataProvider.Profile.FirstName" formControlName="firstName" name="firstname" [class.invalid]="!registerForm.controls.firstName.valid && (registerForm.controls.firstName.dirty)"></ion-input>
           </ion-item>
           <ion-item lines="none" *ngIf="!registerForm.controls.firstName.valid  && (registerForm.controls.firstName.dirty)">
             <p class="errormsg">{{ 'MSG_REGISTER_VALIDATION_FIRSTNAME' | translate }}</p>
           </ion-item>
           <ion-item lines="none">
-            <ion-label position="floating">{{ 'NAME' | translate }}</ion-label>
-            <ion-input type="text" [(ngModel)]="dataService.Profile.Name" formControlName="surName" name="name" [class.invalid]="!registerForm.controls.surName.valid && (registerForm.controls.surName.dirty)"></ion-input>
+            <ion-label name="lblName" position="floating">{{ 'NAME' | translate }}</ion-label>
+            <ion-input aria-label="lblName" type="text" [(ngModel)]="dataProvider.Profile.Name" formControlName="surName" name="name" [class.invalid]="!registerForm.controls.surName.valid && (registerForm.controls.surName.dirty)"></ion-input>
           </ion-item>
           <ion-item lines="none" *ngIf="!registerForm.controls.surName.valid && (registerForm.controls.surName.dirty)">
             <p class="errormsg">{{ 'MSG_REGISTER_VALIDATION_NAME' | translate }}</p>
           </ion-item>
           <ion-item lines="none">
-            <ion-label position="floating">{{ 'EMAIL' | translate }}</ion-label>
-            <ion-input type="text" [(ngModel)]="dataService.Profile.Email" formControlName="email" name="email" [class.invalid]="!registerForm.controls.email.valid && (registerForm.controls.email.dirty)"></ion-input>
+            <ion-label name="lblEmail" position="floating">{{ 'EMAIL' | translate }}</ion-label>
+            <ion-input aria-label="lblEmail" type="text" [(ngModel)]="dataProvider.Profile.Email" formControlName="email" name="email" [class.invalid]="!registerForm.controls.email.valid && (registerForm.controls.email.dirty)"></ion-input>
           </ion-item>
           <ion-item lines="none" *ngIf="!registerForm.controls.email.valid && (registerForm.controls.email.dirty)">
             <p class="errormsg">{{ 'MSG_REGISTER_VALIDATION_EMAIL' | translate }}</p>
           </ion-item>
           <ion-item lines="none">
-            <ion-label position="floating">{{ 'HORSENAME' | translate }}</ion-label>
-            <ion-input type="text" [(ngModel)]="dataService.Profile.HorseName" formControlName="horseName" name="horsename"></ion-input>
+            <ion-label name="lblHorse" position="floating">{{ 'HORSENAME' | translate }}</ion-label>
+            <ion-input aria-label="lblHorse" type="text" [(ngModel)]="dataProvider.Profile.HorseName" formControlName="horseName" name="horsename"></ion-input>
           </ion-item>
           <ion-item lines="none" *ngIf="!registerForm.controls.horseName.valid && (registerForm.controls.horseName.dirty)">
             <p class="errormsg">{{ 'MSG_REGISTER_VALIDATION_HORSENAME' | translate }}</p>
           </ion-item>
         </div>
-        <ion-button *ngIf="IsEnabled && !dataService.Profile.IsRegistered" color="primary" (click)="signup()" [disabled]="!registerForm.valid" expand="block">{{ 'SIGNUP_BUTTON' | translate }}</ion-button>
-        <ion-button *ngIf="IsEnabled && dataService.Profile.IsRegistered" [disabled]="isLocked" color="primary" (click)="addPlace()" expand="block">{{ 'BTN_ADD_PLACE' | translate }}</ion-button>
+        <ion-button *ngIf="IsEnabled && !dataProvider.Profile.IsRegistered" color="primary" (click)="signup()" [disabled]="!registerForm.valid" expand="block">{{ 'SIGNUP_BUTTON' | translate }}</ion-button>
+        <ion-button *ngIf="IsEnabled && dataProvider.Profile.IsRegistered" [disabled]="isLocked" color="primary" (click)="addPlace()" expand="block">{{ 'BTN_ADD_PLACE' | translate }}</ion-button>
 
         <ion-grid *ngIf="!IsEnabled && PrivateMode">
           <ion-row>

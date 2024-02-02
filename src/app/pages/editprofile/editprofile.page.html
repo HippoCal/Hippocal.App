@@ -25,39 +25,39 @@
     <ion-button color="primary" (click)="onSaveProfile()" expand="block">{{ 'BTN_EDITPROFILE' | translate }}</ion-button>
       <ion-list lines="none">
         <ion-item>
-          <ion-label position="floating">{{ 'FIRSTNAME' | translate }}</ion-label>
-          <ion-input type="text" [(ngModel)]="dataProvider.Profile.FirstName" ></ion-input>
+          <ion-label name="lblFirstName" position="floating">{{ 'FIRSTNAME' | translate }}</ion-label>
+          <ion-input aria-label="lblFirstName" type="text" [(ngModel)]="dataProvider.Profile.FirstName" ></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">{{ 'NAME' | translate }}</ion-label>
-          <ion-input type="text" [(ngModel)]="dataProvider.Profile.Name"></ion-input>
+          <ion-label name="lblName" position="floating">{{ 'NAME' | translate }}</ion-label>
+          <ion-input aria-label="lblName" type="text" [(ngModel)]="dataProvider.Profile.Name"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">{{ 'DISPLAYNAME' | translate }}</ion-label>
-          <ion-input type="text" [(ngModel)]="dataProvider.Profile.DisplayName"></ion-input>
+          <ion-label name="lblDisplayName" position="floating">{{ 'DISPLAYNAME' | translate }}</ion-label>
+          <ion-input aria-label="lblDisplayName" type="text" [(ngModel)]="dataProvider.Profile.DisplayName"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">{{ 'EMAIL' | translate }}</ion-label>
-          <ion-input type="text" [(ngModel)]="dataProvider.Profile.Email" disabled="true"></ion-input>
+          <ion-label name="lblEmail" position="floating">{{ 'EMAIL' | translate }}</ion-label>
+          <ion-input aria-label="lblEmail" type="text" [(ngModel)]="dataProvider.Profile.Email" disabled="true"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label>{{ 'PUBLICPROFILE' | translate }}</ion-label>
-          <ion-checkbox [(ngModel)]="dataProvider.Profile.IsPublicProfile"></ion-checkbox>
+          <ion-label name="lblIsPublic">{{ 'PUBLICPROFILE' | translate }}</ion-label>
+          <ion-checkbox aria-label="lblIsPublic" [(ngModel)]="dataProvider.Profile.IsPublicProfile"></ion-checkbox>
         </ion-item>
         <ion-row wrap class="justify-content-center align-items-center">
           <ion-col size="10"><span>{{ 'PUBLICPROFILE_TEXT' | translate }}</span></ion-col>
         </ion-row>
         <ion-item>
-          <ion-label>{{ 'SHOWEVENTS' | translate }}</ion-label>
-          <ion-checkbox [(ngModel)]="dataProvider.Profile.ShowEvents"></ion-checkbox>
+          <ion-label name="lblShowEvents">{{ 'SHOWEVENTS' | translate }}</ion-label>
+          <ion-checkbox aria-label="lblShowEvents" [(ngModel)]="dataProvider.Profile.ShowEvents"></ion-checkbox>
         </ion-item>
         <ion-item>
-          <ion-label>{{ 'NOTIFICATION' | translate }}</ion-label>
-          <ion-checkbox [(ngModel)]="dataProvider.Profile.NotificationsAllowed"></ion-checkbox>
+          <ion-label name="lblNotificationAllowed">{{ 'NOTIFICATION' | translate }}</ion-label>
+          <ion-checkbox aria-label="lblNotificationAllowed" [(ngModel)]="dataProvider.Profile.NotificationsAllowed"></ion-checkbox>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">{{ 'NOTIFICATION_DELAY' | translate }}</ion-label>
-          <ion-input autocorrect="on" type="number" min="10" max="3600" [(ngModel)]="dataProvider.Profile.NotificationDelay"></ion-input>
+          <ion-label name="lblNotificationDelay" position="floating">{{ 'NOTIFICATION_DELAY' | translate }}</ion-label>
+          <ion-input aria-label="lblNotificationDelay" autocorrect="on" type="number" min="10" max="3600" [(ngModel)]="dataProvider.Profile.NotificationDelay"></ion-input>
         </ion-item>
       </ion-list>
   </ion-content>

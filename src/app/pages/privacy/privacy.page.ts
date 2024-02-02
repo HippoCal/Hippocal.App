@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Router, NavigationExtras } from '@angular/router';
 import { DataService } from 'src/app/services/services';
 
 @Component({
@@ -10,13 +9,12 @@ import { DataService } from 'src/app/services/services';
 export class PrivacyPage {
 
   constructor(
-    private router: Router,
     public dataProvider: DataService) {
     
   }
 
   onBack() {
-    this.router.navigate(['/start']);
+    this.dataProvider.navigate('home', 'tab1');
   }
 
   ionViewWillEnter() {

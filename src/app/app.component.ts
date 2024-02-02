@@ -2,7 +2,6 @@ import { Component, NgZone } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@capacitor/splash-screen';
-import { Router } from '@angular/router';
 import { register } from 'swiper/element/bundle';
 import { DataService, ImageService, StorageService } from './services/services';
 
@@ -23,7 +22,7 @@ export class AppComponent {
   constructor(
     public dataProvider: DataService,
     private translate: TranslateService,
-    private router: Router,
+
     private zone: NgZone, 
     public imageProvider: ImageService,
     public storageProvider: StorageService,
@@ -104,16 +103,16 @@ export class AppComponent {
   }
 
   openProfile() {
-    this.router.navigate(['/profile']);
+    this.dataProvider.navigate('profile', 'tab1');
   }
 
   openPage(page) {
 
     if (!this.dataProvider.Profile.IsActive ||
       (!this.dataProvider.Profile.EmailConfirmed && this.dataProvider.Profile.NumLogins > 5)) {
-      this.router.navigate(['/profile']);
+      this.dataProvider.navigate('profile', 'tab1');
     } else {
-      this.router.navigate(['/start']);
+      this.dataProvider.navigate('home', 'tab1');
     }
   }
 
@@ -128,7 +127,7 @@ export class AppComponent {
           this.dataProvider.Profile.Email === undefined ||
           this.dataProvider.Profile.Email === null)) {
           console.log("No email... calling email page");
-          this.router.navigate(['getemail/']);
+          this.dataProvider.navigate('getemail', 'tab1');
           return;
         }
         if(this.dataProvider.Profile.UserKey === '') {
@@ -157,24 +156,24 @@ export class AppComponent {
     }
     // not registered yet
     if (this.dataProvider.Profile.UserKey === '') {
-      this.router.navigate(['register/']);
+      this.dataProvider.navigate('register', 'tab1');
       return;
     }
 
      // registered but not active any more, try to re-enter
      if (!this.dataProvider.Profile.IsActive) {
-      this.router.navigate(['logout/']);
+      this.dataProvider.navigate('logout', 'tab1');
       return;
     }
 
     // registered but not active any more, try to re-enter
     if (!this.dataProvider.Profile.EmailConfirmed && this.dataProvider.Profile.NumLogins > 5) {
-      this.router.navigate(['profile/']);
+      this.dataProvider.navigate('profile', 'tab1');
       return;
     }
     // active but not yet email confirmed - hint page to confirm email
     if (!this.dataProvider.Profile.EmailConfirmed) {
-      this.router.navigate(['confirmemail/']);
+      this.dataProvider.navigate('confirmemail', 'tab1');
     }
 
   }
@@ -190,7 +189,7 @@ export class AppComponent {
 
   // callErrorStart() {
   //   if (!this.dataProvider.Profile.IsRegistered) {
-  //     this.router.navigate(['register/']);
+  //     this.dataProvider.navigate('register/']);
   //   }
   // }
 }

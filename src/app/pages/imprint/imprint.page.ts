@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from 'src/app/services/services';
-import { Router } from '@angular/router';
 
 @Component({ 
   selector: 'app-imprint',
@@ -9,7 +8,7 @@ import { Router } from '@angular/router';
 })
 export class ImprintPage implements OnInit {
 
-  constructor(private router: Router, public dataProvider: DataService) {
+  constructor(public dataProvider: DataService) {
     
   }
   ngOnInit() {
@@ -17,7 +16,7 @@ export class ImprintPage implements OnInit {
   }
 
   onBack() {
-    this.router.navigate(['/start']);
+    this.dataProvider.navigate('home', 'tab1');
   }
 
   ionViewWillEnter() {

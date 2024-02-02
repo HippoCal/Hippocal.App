@@ -6,8 +6,7 @@
 <ion-content class="ion-padding">
   <div>{{ 'TEXT_PININPUT' | translate }}</div>
   <ion-item class="centerInputFields" lines="none">
-  
-    <!-- <ion-input type="number" class="otp" [(ngModel)]="pin" pattern="[0-9]{1}" max="5"></ion-input> -->
+
     <ion-item lines="none">
       <ion-input #Field1 class="otp1" [(ngModel)]="pin1" pattern="[0-9]{1}" maxlength="1" [autofocus]="true" [clearOnEdit]="true" (keyup)="gotoNextField(Field1, Field2)"></ion-input>
       <ion-input #Field2 class="otp1" [(ngModel)]="pin2" pattern="[0-9]{1}" maxlength="1" [clearOnEdit]="true" (keyup)="gotoNextField(Field2, Field3)"></ion-input>

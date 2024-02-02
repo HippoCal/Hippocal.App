@@ -249,5 +249,6 @@
   "MSG_UPLOAD_FAILURE": "Upload nicht erfolgreich...",
   "MSG_UPLOAD_IN_PROGRESS": "Image-Upload",
   "HEADER_CONFIRM_DELETE_NEWS": "Nachricht löschen",
-  "MSG_CONFIRM_DELETE_NEWS": "Möchtest Du wirklich diese Nachricht löschen?"
+  "MSG_CONFIRM_DELETE_NEWS": "Möchtest Du wirklich diese Nachricht löschen?",
+  "LBL_APPOINTMENTTYPE": "Termintyp"
 }
