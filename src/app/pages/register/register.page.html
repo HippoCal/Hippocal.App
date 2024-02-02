@@ -29,7 +29,7 @@
             <ion-col size="8"><ion-label class="ion-text-wrap"><h5>{{ ownerName }}</h5></ion-label></ion-col>
           </ion-row>
         </div>
-        <div *ngIf="!dataProvider.Profile.IsRegistered">../
+        <div *ngIf="!dataProvider.Profile.IsRegistered">
           <ion-item lines="none">
             <ion-input label="{{ 'FIRSTNAME' | translate }}" type="text" labelPlacement="floating" [(ngModel)]="dataProvider.Profile.FirstName" formControlName="firstName" name="firstname" [class.invalid]="!registerForm.controls.firstName.valid && (registerForm.controls.firstName.dirty)"></ion-input>
           </ion-item>
