@@ -1,72 +1,65 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
 import { HorseViewmodel } from "src/app//viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from "src/app/services/services";
 import { UUID } from 'angular2-uuid';
 import { LocationStrategy } from '@angular/common';
 import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
+import { ModalController } from '@ionic/angular';
 
 
-@Component({ 
+@Component({
   selector: 'page-edithorse',
   templateUrl: './edithorse.page.html',
   styleUrls: ['./edithorse.page.scss'],
 })
+
 export class EdithorsePage {
 
-  public isNew: boolean = true;
-  public horse: HorseViewmodel = new HorseViewmodel('', '', '', '', this.dataProvider.Profile.UserKey);
-  
   public horseImage: string;
   public oldImageName: string;
   horseForm: FormGroup;
   private file: ImageViewmodel;
 
+  @Input("horse") horse: HorseViewmodel;
+  @Input("isNew") isNew: boolean;
   constructor(
-    private router: Router,
-    private route: ActivatedRoute, 
     public dataProvider: DataService,
     public imageProvider: ImageService,
+    private modalCtrl: ModalController,
     private zone: NgZone,
-    private locationStrategy: LocationStrategy,
     public formBuilder: FormBuilder,
+    
     private toastSvc: ToastService) {
+  }
 
-      this.resolveParams();
-    this.horseForm = formBuilder.group({
+  ngOnInit() {
+    this.horseForm = this.formBuilder.group({
       horseName: ['', Validators.compose([Validators.maxLength(30), Validators.required, Validators.minLength(2)])]
     });
-    
   }
 
+  ionViewWillEnter() {
+    this.oldImageName = this.horse.ImageUrl;
+    this.gethorseImage();
 
-  resolveParams() {
-    this.route.queryParams.subscribe(params => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        this.isNew = this.router.getCurrentNavigation().extras.state['isNew'];
-        if (!this.isNew) {
-          this.horse = this.router.getCurrentNavigation().extras.state['horse'];
-        } else {
-          this.horse.HorseKey = UUID.UUID();
-        }
-      }
-      this.oldImageName = this.horse.ImageUrl;
-      this.gethorseImage();
-    });
+    if (this.isNew) {
+      this.horse.HorseKey = UUID.UUID();
+    }
+
   }
-  
+
   ionViewDidLoad() {
     console.log('ionViewDidLoad AddhorsePage');
+  }
+
+  cancel() {
+    return this.modalCtrl.dismiss(this.horse, 'cancel');
   }
 
   saveImage(fileName: string) {
     this.zone.run(() => {
       this.horse.ImageUrl = fileName;
-      if(this.horse.ImageUrl !== this.oldImageName && this.oldImageName !== '') {
-        this.imageProvider.deleteImage(this.oldImageName)
-      } 
-      this.dataProvider.saveProfile(this.dataProvider.Profile);
       this.gethorseImage();
     });
 
@@ -87,9 +80,9 @@ export class EdithorsePage {
     });
   }
 
-  refreshImage() {
-    if(this.oldImageName != this.horse.ImageUrl) {
-      this.uploadImage();
+  async refreshImage() {
+    if (this.oldImageName != this.horse.ImageUrl) {
+      await this.uploadImage();
     }
   }
 
@@ -97,13 +90,8 @@ export class EdithorsePage {
     this.toastSvc.confirm(
       () => {
         this.horse.UserKey = this.dataProvider.Profile.UserKey;
-        this.dataProvider.deleteHorse(this.horse).then(data => {
-          if (data) {
-            this.dataProvider.loadProfile(() => {
-              this.locationStrategy.back();
-            });
-          }
-        });
+        return this.modalCtrl.dismiss(this.horse, 'delete'); 
+        
       }, "HEADER_CONFIRM_DELETE_HORSE", "MSG_CONFIRM_DELETE_HORSE");
   }
 
@@ -118,29 +106,34 @@ export class EdithorsePage {
       header = "HEADER_CONFIRM_MODIFYHORSE";
       msg = "MSG_CONFIRM_MODIFYHORSE";
     }
-    this.toastSvc.confirm(() => {
-      if (this.isNew) {
-        this.dataProvider.addHorse(this.horse).then(data => {
-          if (data) {
-            this.refreshImage();
-            this.dataProvider.loadProfile(() => {
-              this.locationStrategy.back();
-            });
-          }
-        });
-      } else {
-        this.horse.UserKey = this.dataProvider.Profile.UserKey;
-        this.dataProvider.addHorse(this.horse).then(data => {
-          if (data) {
-            this.refreshImage();
-            this.dataProvider.loadProfile(() => {
-              this.locationStrategy.back();
-            });
-          }
-        });
-      }
+    this.toastSvc.confirm(async () => {
+      await this.refreshImage();
+      return this.modalCtrl.dismiss(this.horse, 'save');    
+      }, header, msg);
 
-    }, header, msg);
+    // this.toastSvc.confirm(() => {
+    //   if (this.isNew) {
+    //     this.dataProvider.addHorse(this.horse).then(data => {
+    //       if (data) {
+    //         this.refreshImage();
+    //         this.dataProvider.loadProfile(() => {
+    //           this.locationStrategy.back();
+    //         });
+    //       }
+    //     });
+    //   } else {
+    //     this.horse.UserKey = this.dataProvider.Profile.UserKey;
+    //     this.dataProvider.addHorse(this.horse).then(data => {
+    //       if (data) {
+    //         this.refreshImage();
+    //         this.dataProvider.loadProfile(() => {
+    //           this.locationStrategy.back();
+    //         });
+    //       }
+    //     });
+    //   }
+
+    // }, header, msg);
   }
 
   get isLastHorse(): boolean {
@@ -149,10 +142,10 @@ export class EdithorsePage {
 
   async gethorseImage() {
     var image = await this.imageProvider.get(this.horse.ImageUrl, this.horse.HorseKey, "horse", true, this.dataProvider.Profile.UserKey);
-    if(image) {
+    if (image) {
       this.zone.run(() => {
         this.horseImage = image.data;
-      });    
+      });
     }
   }
 }

@@ -16,4 +16,11 @@ export class HorseViewmodel {
     this.UserKey = userKey !== undefined ? userKey : '';
     this.Appointments = [];
   }
+
+  public static PartialClone(data: HorseViewmodel, existing?: HorseViewmodel): HorseViewmodel {
+    const profile = existing !== undefined ? existing :new HorseViewmodel() 
+    profile.Name = data.Name;
+    profile.ImageUrl = data.ImageUrl;
+    return profile;
+  }
 }

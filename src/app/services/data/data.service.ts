@@ -366,6 +366,8 @@ export class DataService {
   }
 
   addHorse(horse: HorseViewmodel) {
+    horse.UserKey = this.Profile.UserKey;
+    this.Profile.Horses.push(horse);
     if (this.IsOnline) {
       return this.restProvider.addHorse(horse);
     } else {
@@ -660,7 +662,7 @@ export class DataService {
     });
   }
 
-  async load(callback: any) {
+  async load(callback?: any) {
     this.getProfileFromStorage().then(() => {
       callback();
     });

@@ -61,6 +61,7 @@ const routes: Routes = [
                     { path: 'day', loadChildren: () => import('../day/day.module').then(m => m.DayPageModule) },
                     { path: 'eventdetails', loadChildren: () => import('../eventdetails/eventdetails.module').then(m => m.EventdetailsPageModule) },
                     { path: 'imageview', loadChildren: () => import('../imageview/imageview.module').then(m => m.ImageviewPageModule) },
+                    { path: 'nowinplace', loadChildren: () => import('../nowinplace/nowinplace.module').then(m => m.NowinplacePageModule) },
                     { path: 'otherappointment', loadChildren: () => import('../otherappointment/otherappointment.module').then(m => m.OtherAppointmentPageModule) },
                     { path: 'placedetails', loadChildren: () => import('../placedetails/placedetails.module').then(m => m.PlacedetailsPageModule) },
                     { path: 'places', loadChildren: () => import('../places/places.module').then(m => m.PlacesPageModule) },

@@ -173,7 +173,7 @@ export class AppComponent {
     }
     // active but not yet email confirmed - hint page to confirm email
     if (!this.dataProvider.Profile.EmailConfirmed) {
-      this.dataProvider.navigate('confirmemail', 'tab1');
+      this.dataProvider.navigate('confirm-email', 'tab1');
     }
 
   }

@@ -83,18 +83,15 @@
     <div [ngSwitch]="area">
       <div *ngSwitchCase="'advanced'">
         <ion-item>
-          <ion-label name="lblJobType" position="floating">{{ 'LBL_JOBTYPE' | translate }}</ion-label>
-          <ion-select aria-label="lblJobType" [(ngModel)]="appointmentService.appointment.JobType" name="jobType" ngDefaultControl interface="popover" multiple="false" (ionChange)="onChangeJobType()">
+          <ion-select label="{{ 'LBL_JOBTYPE' | translate }}" labelPlacement="floating" [(ngModel)]="appointmentService.appointment.JobType" name="jobType" ngDefaultControl interface="popover" multiple="false" (ionChange)="onChangeJobType()">
             <ion-select-option  *ngFor="let jobtype of appointmentService.StandardJobTypes" [value]="jobtype.id">{{jobtype.text}}</ion-select-option>
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label name="lblJobName" position="floating">{{ 'LBL_TEXT' | translate }}</ion-label>
-          <ion-input aria-label="lblJobName" type="text" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname" (ionChange)="onNameChanged()"></ion-input>
+          <ion-input label="{{ 'LBL_TEXT' | translate }}" type="text" labelPlacement="floating" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname" (ionChange)="onNameChanged()"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label name="lblComment" position="floating">{{ 'LBL_NOTES' | translate }}</ion-label>
-          <ion-textarea aria-label="lblComment" #comment id="comment" rows="6" maxLength="500" (keyup)="resize()" [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
+          <ion-textarea label="{{ 'LBL_NOTES' | translate }}" #comment id="comment" rows="6" maxLength="500" (keyup)="resize()" labelPlacement="floating" [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
         </ion-item>
       </div>
       <div *ngSwitchCase="'horses'">
@@ -117,18 +114,15 @@
 </div>
 <div *ngIf="dataProvider.Profile.Horses.length === 1">
   <ion-item>
-    <ion-label name="lblJobType" position="floating">{{ 'LBL_JOBTYPE' | translate }}</ion-label>
-    <ion-select aria-label="lblJobType" [(ngModel)]="appointmentService.appointment.JobType" interface="popover" multiple="false" (ionChange)="onChangeJobType()">
+    <ion-select label="{{ 'LBL_JOBTYPE' | translate }}" labelPlacement="floating" [(ngModel)]="appointmentService.appointment.JobType" interface="popover" multiple="false" (ionChange)="onChangeJobType()">
       <ion-select-option *ngFor="let jobtype of appointmentService.StandardJobTypes" [value]="jobtype.id">{{jobtype.text}}</ion-select-option>
     </ion-select>
   </ion-item>
   <ion-item>
-    <ion-label name="lblJobName" position="floating">{{ 'LBL_TEXT' | translate }}</ion-label>
-    <ion-input aria-label="lblJobName" type="text" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname" (ionChange)="onNameChanged()"></ion-input>
+    <ion-input label="{{ 'LBL_TEXT' | translate }}" type="text" labelPlacement="floating" [(ngModel)]="appointmentService.appointment.AppointmentName" name="jobname" (ionChange)="onNameChanged()"></ion-input>
   </ion-item>
   <ion-item>
-    <ion-label name="lblComment" position="floating">{{ 'LBL_NOTES' | translate }}</ion-label>
-    <ion-textarea aria-label="lblComment" #comment id="comment" rows="6" maxLength="500" (keyup)="resize()" [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
+    <ion-textarea label="{{ 'LBL_NOTES' | translate }}" #comment id="comment" rows="6" maxLength="500" (keyup)="resize()" labelPlacement="floating" [(ngModel)]="appointmentService.appointment.Comment"></ion-textarea>
   </ion-item>
 </div>
 </ion-content>

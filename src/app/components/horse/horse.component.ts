@@ -32,7 +32,7 @@ export class HorseComponent {
   ngOnInit() {
     this.gethorseImage();
   }
-  
+
   onClick(horse: HorseViewmodel) {
     if (this.showAppointments) {
       if (this.horseKey === horse.HorseKey) {
@@ -76,7 +76,7 @@ export class HorseComponent {
       horse.UserKey = this.dataProvider.Profile.UserKey;
       this.dataProvider.deleteHorse(horse).then(result => {
         if (result) {
-          this.dataProvider.loadProfile();
+          this.dataProvider.load();
         }
       });
     },

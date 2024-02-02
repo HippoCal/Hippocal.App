@@ -18,7 +18,7 @@ export class ToastService {
 
   ) { }
 
-  public confirm (action: any, header: any, msg: any) {
+  public confirm (action: any, header: any, msg: any, cancel?: any) {
     var headerText = this.translate.instant(header);
     var msgText = this.translate.instant(msg);
     this.translate.get([
@@ -30,7 +30,7 @@ export class ToastService {
           header: headerText,
           message: msgText,
           buttons: [
-            { text: values.BTN_CANCEL, role: 'cancel', handler: () => {} },
+            { text: values.BTN_CANCEL, role: 'cancel', handler: () => {  cancel(); } },
             { text: values.BTN_OK, handler: () => { action(); } }
           ]
         }).then( (alert: any) => {

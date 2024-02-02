@@ -53,4 +53,21 @@ export class ProfileViewmodel {
     this.LastNotificationId = 0;
   }
 
+  public static PartialClone(data: ProfileViewmodel, existing?: ProfileViewmodel): ProfileViewmodel {
+
+    const profile = existing !== undefined ? existing :new ProfileViewmodel(
+      data.UserKey,
+      data.PlaceKey,
+      data.Email
+    ) 
+    profile.Name = data.Name;
+    profile.FirstName = data.FirstName;
+    profile.DisplayName = data.DisplayName;
+    profile.ShowEvents = data.ShowEvents;
+    profile.NotificationDelay = data.NotificationDelay;
+    profile.NotificationsAllowed = data.NotificationsAllowed;
+    profile.ImageUrl = data.ImageUrl;
+    profile.IsPublicProfile = data.IsPublicProfile;
+    return profile;
+  }
 }

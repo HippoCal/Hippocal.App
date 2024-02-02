@@ -249,5 +249,6 @@
   "MSG_UPLOAD_IN_PROGRESS": "Image-Upload",
   "HEADER_CONFIRM_DELETE_NEWS": "Delete message",
   "MSG_CONFIRM_DELETE_NEWS": "Do you really want to delete this message?",
-  "LBL_APPOINTMENTTYPE": "Type"
+  "LBL_APPOINTMENTTYPE": "Type",
+  "BTN_SAVE": "Save"
 }
