@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { AppointmentViewmodel, HorseAppointmentsViewmodel, OwnAppointmentViewmodel, TypeAppointmentsViewmodel, IOwnAppointmentViewmodel, OwnAppointmentsViewmodel, TypeStatusViewmodel } from "../../viewmodels/viewmodels";
+import { AppointmentViewmodel, HorseAppointmentsViewmodel, OwnAppointmentViewmodel, TypeAppointmentsViewmodel, IOwnAppointmentViewmodel, OwnAppointmentsViewmodel, TypeStatusViewmodel, ResultIdViewmodel } from "../../viewmodels/viewmodels";
 import { JobTypeEnum, AppointmentTypeEnum } from '../../enums/enums';
 
 import { DataService, StorageService } from '../services';
@@ -341,6 +341,52 @@ export class AppointmentService {
       
     } else {
       this.setHorseName(this.appointment.HorseKey);
+    }
+  }
+
+  create() {
+    this.SetData();
+    this.createAppointment().then((result: ResultIdViewmodel) => {
+      if (result.Result) {
+        this.appointment.Id = result.Id;
+        this.RefreshData(false);
+        this.LoadOwnData();
+      } else {
+        this.handleError(result.ErrorId);
+      }
+    });
+  }
+  
+  delete() {
+    this.appointment.UserKey = this.dataProvider.Profile.UserKey;
+        this.deleteAppointment().then((result) => {
+          if (result) {
+            this.RefreshData(true);
+          } else {
+            this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
+          }
+        });
+  }
+
+  save() {
+    this.SetData();
+    this.modifyAppointment().then((result: ResultIdViewmodel) => {
+      if (result.Result) {
+        this.SetOriginalAppointment();
+        this.RefreshData(false);
+        this.LoadOwnData();
+      } else {
+        this.handleError(result.ErrorId);
+      }
+    });
+  }
+
+  handleError(error: number) {
+    if (error != undefined && error != null) {
+      var errId = this.getAppointmentErrors(error);
+      this.dataProvider.showMessage(errId, true);
+    } else {
+      this.dataProvider.showMessage("ERR_NO_SAVE_APPOINTMENT", true);
     }
   }
 

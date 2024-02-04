@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, Input } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppointmentViewmodel, ResultIdViewmodel } from "src/app/viewmodels/viewmodels";
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LocationStrategy } from '@angular/common';
 import * as moment from 'moment';
 import { AppointmentService, DataService, ToastService } from 'src/app/services/services';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'page-privateappointment',
@@ -20,52 +21,47 @@ export class PrivateAppointmentPage {
   public isNew: boolean;
   public hasName: boolean;
   public area: string = 'horses';
-  private app: AppointmentViewmodel;
-  private dt: Date;
-
   public duration: number;
+
+  @Input("dt") dt: Date;
+  @Input("hasEvent") hasEvent: boolean;
+  @Input("appointment") appointment: AppointmentViewmodel;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private modalCtrl: ModalController,
     public dataProvider: DataService,
     public appointmentService: AppointmentService,
     public translate: TranslateService,
     private toastSvc: ToastService,
     private locationStrategy: LocationStrategy) {
-    this.resolveParams();
   }
 
-  resolveParams() {
-    this.route.queryParams.subscribe(params => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        this.app = this.router.getCurrentNavigation().extras.state['appointment'];
-        this.dt = this.router.getCurrentNavigation().extras.state['dt'];
-        this.appointmentService.dt = moment(new Date(this.dt));
-        this.isNew = false;
-        this.hasName = false;
-        this.area = "horses";
-        if (this.app === null || this.app === undefined) {
-          this.isNew = true;
-          this.app = new AppointmentViewmodel(this.dataProvider.Profile.UserKey, '', '', this.appointmentService.dt, this.appointmentService.dt.hour(), this.appointmentService.dt.minute(), '', 60, JobTypeEnum.Other, AppointmentTypeEnum.Custom);
-          this.app.HorseKey = this.dataProvider.Profile.Horses.length > 0 ? this.dataProvider.Profile.Horses[0].HorseKey : '';
-        }
-        this.appointmentService.SetAppointment(this.app);
-        this.duration = this.app.Duration;
-        this.appointmentService.setHorseName(this.appointmentService.appointment.HorseKey);
-        this.onChangeAppointmentType();
-        this.onNameChanged();
-      }
-    });
+  ngOnInit() {
+    this.appointmentService.dt = moment(new Date(this.dt));
+    this.isNew = false;
+    this.hasName = false;
+    this.area = "horses";
+    if (this.appointment === null || this.appointment === undefined) {
+      this.isNew = true;
+      this.appointment = new AppointmentViewmodel(this.dataProvider.Profile.UserKey, '', '', this.appointmentService.dt, this.appointmentService.dt.hour(), this.appointmentService.dt.minute(), '', 60, JobTypeEnum.Other, AppointmentTypeEnum.Custom);
+      this.appointment.HorseKey = this.dataProvider.Profile.Horses.length > 0 ? this.dataProvider.Profile.Horses[0].HorseKey : '';
+    }
+    this.appointmentService.SetAppointment(this.appointment);
+    this.duration = this.appointment.Duration;
+    this.appointmentService.setHorseName(this.appointmentService.appointment.HorseKey);
+    this.onChangeAppointmentType();
+    this.onNameChanged();
   }
 
-  change(event){
+  change(event) {
     event.stopPropagation();
     var duration: number = event.target.value;
     this.appointmentService.appointment.Duration = duration;
   }
 
-  changeTab(event){
+  changeTab(event) {
     event.stopPropagation();
     this.area = event.target.value;
   }
@@ -113,69 +109,26 @@ export class PrivateAppointmentPage {
     return this.dataProvider.formatDate(new Date(dt), "HH:mm");
   }
 
-  onCreateOrModify() {
-    if (this.isNew) {
-      this.onCreateAppointment();
-    } else {
-      this.onModifyAppointment();
-    }
-  }
-
   onChangeHorse() {
     this.appointmentService.setHorseName(this.appointmentService.appointment.HorseKey);
   }
 
+  cancel() {
+    return this.modalCtrl.dismiss(this.appointment, 'cancel');
+  }
+
   onDelete() {
     this.toastSvc.confirm(() => {
-      this.appointmentService.appointment.UserKey = this.dataProvider.Profile.UserKey;
-      this.appointmentService.deleteAppointment().then((result) => {
-        if (result) {
-          this.appointmentService.RefreshData(true);
-          this.locationStrategy.historyGo(-1);
-        } else {
-          this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
-        }
-      });
+      return this.modalCtrl.dismiss(this.appointment, 'delete');
     }, "HEADER_CONFIRM_DELETE_PRIVATE_APPOINTMENT", "MSG_CONFIRM_DELETE_PRIVATE_APPOINTMENT");
   }
 
-  onCreateAppointment() {
+  onCreateOrUpdate() {
     this.toastSvc.confirm(() => {
-      this.appointmentService.SetData();
-      this.appointmentService.createAppointment().then((result: ResultIdViewmodel) => {
-        if (result.Result) {
-          this.appointmentService.appointment.Id = result.Id;
-          this.appointmentService.RefreshData(false);
-          this.locationStrategy.historyGo(-1);
-        } else {
-          this.handleError(result.ErrorId);
-        }
-      });
-    }, "HEADER_CONFIRM_CREATE_PRIVATE_APPOINTMENT", "MSG_CONFIRM_CREATE_PRIVATE_APPOINTMENT");
-  }
-
-  onModifyAppointment() {
-    this.toastSvc.confirm(() => {
-      this.appointmentService.SetData();
-      this.appointmentService.modifyAppointment().then((result: ResultIdViewmodel) => {
-        if (result.Result) {
-          this.appointmentService.SetOriginalAppointment();
-          this.appointmentService.RefreshData(false);
-          this.locationStrategy.historyGo(-1);
-        } else {
-          this.handleError(result.ErrorId);
-        }
-      });
-    }, "HEADER_CONFIRM_MODIFY_APPOINTMENT", "MSG_CONFIRM_MODIFY_APPOINTMENT");
-  }
-
-  handleError(error: number) {
-    if (error != undefined && error != null) {
-      var errId = this.appointmentService.getAppointmentErrors(error);
-      this.dataProvider.showMessage(errId, true);
-    } else {
-      this.dataProvider.showMessage("ERR_NO_SAVE_APPOINTMENT", true);
-    }
+      return this.modalCtrl.dismiss(this.appointment, this.isNew ? 'create' : 'save');
+    }, 
+    this.isNew ? "HEADER_CONFIRM_CREATE_PRIVATE_APPOINTMENT" : "HEADER_CONFIRM_MODIFY_APPOINTMENT", 
+    this.isNew ? "MSG_CONFIRM_CREATE_PRIVATE_APPOINTMENT": "MSG_CONFIRM_MODIFY_APPOINTMENT");
   }
 
 }

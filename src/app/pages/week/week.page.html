@@ -1,18 +1,16 @@
 <ion-header class="opaque">
   <ion-toolbar color="primary" align-title="middle">
     <ion-buttons slot="start">
-      <ion-buttons slot="start">
-        <ion-back-button icon="close-outline"></ion-back-button>
-      </ion-buttons>
+      <ion-button icon="close-outline" (click)="cancel()">{{ 'BTN_BACK' | translate }}</ion-button>
     </ion-buttons>
     <ion-title>{{ getPlaceName() }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button icon-only (click)="onRefresh()">
-        <ion-icon name="refresh-circle"></ion-icon>
+      <ion-button icon-only (click)="onRefresh()"><ion-icon name="refresh-circle"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 <ion-content class="ion-padding">
 
   <ion-list (swipe)="swipe($event)">

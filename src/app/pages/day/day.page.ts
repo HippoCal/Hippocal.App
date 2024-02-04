@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
-import { Router, NavigationExtras, ActivatedRoute } from '@angular/router';
+import { Component, Input } from '@angular/core';
 import { AppointmentViewmodel, HalfHourViewmodel } from "src/app/viewmodels/viewmodels";
-import { DataService } from "src/app/services/services";
+import { AppointmentService, DataService } from "src/app/services/services";
+import { ModalController } from '@ionic/angular';
+import { CreatePage } from '../create/create.page';
+import { PrivateAppointmentPage } from '../privateappointment/privateappointment.page';
+import { AdminappointmentPage } from '../adminappointment/adminappointment.page';
 
 @Component({
   selector: 'page-day',
@@ -10,74 +13,113 @@ import { DataService } from "src/app/services/services";
 })
 export class DayPage {
 
-  private dt: Date;
-  private newDay: any;
   dayString: string;
 
+  @Input("dt") dt: Date;
+
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
+    private modalCtrl: ModalController,
+    public appointmentService: AppointmentService,
     public dataProvider: DataService) {
 
-    this.resolveParams();
   }
 
-  resolveParams() {
-    this.route.queryParams.subscribe(params => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        this.newDay = new Date(this.router.getCurrentNavigation().extras.state['day']);
-        this.dt = new Date();
-        if (this.newDay !== undefined) {
-          this.dt = this.newDay;
-        }
-        this.dataProvider.getAppointments(this.dt);
-        this.dayString = this.formatDate(this.dt);
-        var dayData = this.dataProvider.DayData;
-      }
-    });
+  ngOnInit() {
+    this.dataProvider.getAppointments(this.dt);
+    this.dayString = this.formatDate(this.dt);
   }
 
-  navigate(route: string, appointment?: AppointmentViewmodel, dt?: Date, hasEvent?: boolean) {
-    let navigationExtras: NavigationExtras = {
-      state: {
-        dt: dt,
-        hasEvent: hasEvent,
-        appointment: appointment
-      }
-    };
-    this.dataProvider.navigate(route, '', navigationExtras);
-  };
+  cancel() {
+    return this.modalCtrl.dismiss(null, 'cancel');
+  }
 
   formatDate(dt: Date): string {
     return this.dataProvider.formatDate(dt, "dddd, LL");
   }
 
-  public onSelectHalfHour(halfhour: HalfHourViewmodel) {
-    // Todo: Fix it
-    //if (halfhour.CanCreate && halfhour.DataLoaded) {
+  async createAdmin(dt: Date) {
+    const modal = await this.modalCtrl.create({
+      component: AdminappointmentPage,
+      componentProps: { appointment: null, dt: dt, place: this.dataProvider.Profile.CurrentPlace }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    await this.postEventProcessing(data, null, role, dt);
+  }
+
+  async create(appointment: AppointmentViewmodel, dt: Date, halfhour: HalfHourViewmodel, hasEvent?: boolean) {
+    const modal = await this.modalCtrl.create({
+      component: CreatePage,
+      componentProps: { appointment: appointment, dt: dt, hasEvent: hasEvent }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    await this.postEventProcessing(data, halfhour, role, dt);
+  }
+
+  async postEventProcessing(data: AppointmentViewmodel, halfhour: HalfHourViewmodel, role: string, dt: Date) {
+    switch (role) {
+      case 'create':
+        if (halfhour) {
+          halfhour.Appointments.push(data);
+        }
+        this.appointmentService.create();
+        break;
+      case 'save':
+        this.appointmentService.save();
+        break;
+      case 'delete':
+        this.appointmentService.delete();
+        break;
+      case 'admin':
+        await this.createAdmin(dt);
+        break;
+    }
+  }
+
+  handleError(error: number) {
+    if (error != undefined && error != null) {
+      var errId = this.appointmentService.getAppointmentErrors(error);
+      this.dataProvider.showMessage(errId, true);
+    } else {
+      this.dataProvider.showMessage("ERR_NO_SAVE_APPOINTMENT", true);
+    }
+  }
+
+  async createPrivate(appointment: AppointmentViewmodel, dt: Date) {
+    const modal = await this.modalCtrl.create({
+      component: PrivateAppointmentPage,
+      componentProps: { appointment: appointment, dt: dt }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    await this.postEventProcessing(data, null, role, dt);
+  }
+
+  public async onSelectHalfHour(halfhour: HalfHourViewmodel) {
     if (halfhour.CanCreate) {
       if (this.dataProvider.IsOnline) {
         if (!this.dataProvider.IsPrivate) {
-          this.navigate('create', null, halfhour.Date, halfhour.HasEvent);
+          await this.create(null, halfhour.Date, halfhour, halfhour.HasEvent);
+          //this.navigate('create', null, halfhour.Date, halfhour.HasEvent);
         } else {
-          this.navigate('privateappointment', null, halfhour.Date);
+          await this.createPrivate(null, halfhour.Date);
         }
-
       } else {
         this.dataProvider.showMessage("MSG_NO_APPOINTMENTS_IN_OFFLINE_MODE", true);
       }
     }
   }
 
-  public onShowAppointment(appointment: AppointmentViewmodel) {
-    if(appointment.OwnAppointment) {
-      if(!appointment.IsPrivate) {
-        this.navigate('create', appointment, appointment.StartDate);
+  public async onShowAppointment(appointment: AppointmentViewmodel) {
+    if (appointment.OwnAppointment) {
+      if (!appointment.IsPrivate) {
+        await this.create(appointment, appointment.StartDate, null);
       } else {
-        this.navigate('privateappointment', appointment, appointment.StartDate);
+        await this.createPrivate(appointment, appointment.StartDate);
       }
-    } 
-    
+    }
+
   }
 
 }

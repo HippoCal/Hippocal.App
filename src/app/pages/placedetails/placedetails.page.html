@@ -1,7 +1,7 @@
 <ion-header class="opaque">
   <ion-toolbar color="primary" align-title="middle">
     <ion-buttons slot="start">
-      <ion-back-button icon="close-outline"></ion-back-button>
+      <ion-button icon="close-outline" (click)="cancel()">{{ 'BTN_BACK' | translate }}</ion-button>
     </ion-buttons>
     <ion-title>{{ dataProvider.Profile.CurrentPlace.Name }}</ion-title>
   </ion-toolbar>

@@ -1,48 +1,95 @@
+
 .range-md .range-tick {
-    top: 16px;
-    width: 2px;
-    height: 12px;
-  }
+  top: 16px;
+  width: 2px;
+  height: 12px;
+}
 
-  .range-md .range-bar {
-    top: 19px;
-    height: 7px;
-  }
+.buttonMiddle {
+  margin-top: 2px;
+  text-align: center;
+}
 
-  .selector {
-    font-size: 18px;
-    line-height: 0.8;
-    letter-spacing: 0.1px;
-    color: #29235e;
-    width: 100% !important;
-    max-width: 100% !important;
-    justify-content: center;
-    background-color: #ffffff;
-    text-align: left;
-  }
+.btnSmall {
+  height: 1rem !important
+}
 
-  .option {
-    font-size: 8px;
-    line-height: 0.8;
-    letter-spacing: 0.1px;
-    color: #29235e;
-    width: 100% !important;
-    max-width: 100% !important;
-    justify-content: center;
-    height: 10px;
-  }
+ion-range {
+  --bar-background: #a2d2ff;
+  --bar-background-active: #bde0fe;
+  --bar-height: 8px;
+  --bar-border-radius: 8px;
+  --knob-size: 28px;
+}
 
-  ion-option .list {
-    font-size: 8px !important;
-    max-width: 100% !important;
-  }
+h6 {
+  font-size: 0.9em;
+  font-weight: 600;
+}
+.radioCol {
+  padding-top: 20px;
+}
 
-  .ion-option-items .item {
-    font-size: 8px !important;
-    max-width: 100% !important;
-  }
+ion-col {
+  padding: 0px;
+}
 
-  .select-popover {
-    font-size: 8px !important;
-    max-width: 100% !important;
-  }
+.selector {
+  font-size: 18px;
+  line-height: 0.8;
+  letter-spacing: 0.1px;
+  color: #29235e;
+  width: 100% !important;
+  max-width: 100% !important;
+  justify-content: center;
+  background-color: #ffffff;
+  text-align: left;
+}
+
+.option {
+  font-size: 8px;
+  line-height: 0.8;
+  letter-spacing: 0.1px;
+  color: #29235e;
+  width: 100% !important;
+  max-width: 100% !important;
+  justify-content: center;
+  height: 10px;
+}
+
+ion-option .list {
+  font-size: 8px !important;
+  max-width: 100% !important;
+}
+
+.ion-option-items .item {
+  font-size: 8px !important;
+  max-width: 100% !important;
+}
+
+.select-popover {
+  font-size: 8px !important;
+  max-width: 100% !important;
+}
+
+ion-toolbar.changer {
+  --padding-bottom: 1px;
+  --padding-top: 1px;
+  --padding-right: 1px;
+  --padding-left: 1px;
+  --min-height: 30px;
+}
+
+.textcenter {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+

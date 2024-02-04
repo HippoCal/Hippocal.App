@@ -1,10 +1,12 @@
 <ion-header class="opaque">
   <ion-toolbar color="primary" align-title="middle">
     <ion-buttons slot="start">
-      <ion-back-button icon="close-outline"></ion-back-button>
+      <ion-button icon="close-outline" (click)="cancel()">{{ 'BTN_CANCEL' | translate }}</ion-button>
     </ion-buttons>
-    <ion-title *ngIf="isNew">{{ dataProvider.getHeader('HEADER_CREATE') }}</ion-title>
-    <ion-title *ngIf="!isNew">{{ dataProvider.getHeader('HEADER_MODIFY') }}</ion-title>
+    <ion-title>{{ dataProvider.getHeader(isNew? 'HEADER_CREATE' : 'HEADER_MODIFY') }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button icon="close-outline" (click)="onCreateOrUpdate()">{{ 'BTN_SAVE' | translate }}</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
@@ -60,14 +62,12 @@
         <ion-col size="9"><h6>{{ appointmentService.appointment.HorseName }}</h6></ion-col>
     </ion-row>
     <ion-row *ngIf="!isNew">
-      <ion-col size="6"><ion-button color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrModify()" expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button></ion-col>
+      <ion-col size="6"><ion-button color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrUpdate()" expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button></ion-col>
       <ion-col size="6"><ion-button color="tertiary" [disabled]="!dataProvider.IsOnline || !appointmentService.appointment.IsInTheFuture" (click)="onDelete()" expand="block">{{ 'BTN_DELETEAPPOINTMENT' | translate }}</ion-button></ion-col>
     </ion-row>
   </ion-grid>
-  <ion-button *ngIf="isNew" color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrModify()"
-    expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button>
-  <ion-button *ngIf="this.dataProvider.Profile.CurrentPlace.IsAdmin && !hasEvent && isNew"
-    [disabled]="!dataProvider.IsOnline" color="secondary" (click)="onCreateAdminAppointment()"
+  <ion-button *ngIf="isNew" color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrUpdate()" expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button>
+  <ion-button *ngIf="this.dataProvider.Profile.CurrentPlace.IsAdmin && !hasEvent && isNew" [disabled]="!dataProvider.IsOnline" color="secondary" (click)="onCreateAdminAppointment()"
     expand="block">{{ 'BTN_ADMINAPPOINTMENT' | translate }}</ion-button>
 
   <ion-range *ngIf="dataProvider.Profile.CurrentPlace.MaxCapacity > 1" min="30" max="120" step="30" snaps="true" color="success" [(ngModel)]="duration" (ionChange)="changeDuration($event)">

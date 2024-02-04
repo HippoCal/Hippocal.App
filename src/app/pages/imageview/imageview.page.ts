@@ -1,5 +1,6 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, Input, NgZone } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { DataService, ImageService } from "src/app/services/services";
 
 @Component({
@@ -12,31 +13,35 @@ export class ImageviewPage {
   public image: string;
   public data: any;
 
+  @Input("imageUrl") imageUrl: string;
+  @Input("key") key: string;
+  @Input("type") type: string;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     public dataProvider: DataService,
+    private modalCtrl: ModalController,
     private zone: NgZone,
     public imageProvider: ImageService) {
-    this.resolveParams();
     this.image = dataProvider.getDefaultImage("loading");
   }
 
-  resolveParams() {
-    this.route.queryParams.subscribe(params => {
-      if (this.router.getCurrentNavigation().extras.state) {
-        this.data = this.router.getCurrentNavigation().extras.state['data'];
-        this.getImage();
-      }
-    });
+  ngOnInit() {
+    this.getImage();
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ImageviewPage');
   }
 
+  
+  cancel() {
+    return this.modalCtrl.dismiss(null, 'cancel');
+  }
+
   async getImage() {
-    var image = await this.imageProvider.get(this.data.imageUrl, this.data.key, this.data.type, false, this.dataProvider.Profile.UserKey);
+    var image = await this.imageProvider.get(this.imageUrl, this.key, this.type, false, this.dataProvider.Profile.UserKey);
     if(image) {
       this.zone.run(() => {
         this.image = image.data;

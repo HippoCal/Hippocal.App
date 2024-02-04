@@ -1,5 +1,7 @@
 import { Component, NgZone } from '@angular/core';
+import { ModalController } from '@ionic/angular';
 import { DataService, ImageService } from 'src/app/services/services';
+import { ImageviewPage } from '../imageview/imageview.page';
 
 @Component({
   selector: 'page-placedetails',
@@ -13,6 +15,7 @@ export class PlacedetailsPage {
   constructor(
     private zone: NgZone,
     public dataProvider: DataService, 
+    private modalCtrl: ModalController,
     public imageProvider: ImageService) {
   }
 
@@ -20,9 +23,18 @@ export class PlacedetailsPage {
     this.getPlaceImage();
   }
 
-  zoom() {
+  cancel() {
+    return this.modalCtrl.dismiss(null, 'cancel');
+  }
+
+  async zoom() {
     var url = this.dataProvider.Profile.CurrentPlace.ImageUrl.replace("thumb_", "");
-    this.dataProvider.navigate('imageview', '', { state: { data: { imageUrl: url, key: this.dataProvider.Profile.CurrentPlace.PlaceKey, type: "places" } } });
+    const modal = await this.modalCtrl.create({
+      component: ImageviewPage,
+      componentProps: { imageUrl: url, key: this.dataProvider.Profile.CurrentPlace.PlaceKey, type: "places" }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
   }
 
   get details(): string {

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { NewsViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService } from 'src/app/services/services';
+import { ModalController } from '@ionic/angular';
+import { NewsdetailsPage } from '../newsdetails/newsdetails.page';
 
 @Component({
   selector: 'page-news',
@@ -13,6 +15,7 @@ export class NewsPage {
 
   constructor(
     public dataProvider: DataService,
+    private modalCtrl: ModalController,
     public imageProvider: ImageService) {
   }
 
@@ -33,8 +36,13 @@ export class NewsPage {
     this.load();
   }
 
-  onDetails(news: NewsViewmodel) {
-    this.dataProvider.navigate('newsdetails', '', { state: { news: news }});
+  async onDetails(news: NewsViewmodel) {
+    const modal = await this.modalCtrl.create({
+      component: NewsdetailsPage,
+      componentProps: { news: news }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
   }
 
 }
