@@ -1,6 +1,12 @@
-import { Component, NgZone } from '@angular/core';
-import { AppointmentViewmodel } from "src/app/viewmodels/viewmodels";
-import { DataService, ImageService } from 'src/app/services/services';
+import { Component } from '@angular/core';
+import { AppointmentViewmodel, PlaceViewmodel } from "src/app/viewmodels/viewmodels";
+import { AppointmentService, DataService, ImageService } from 'src/app/services/services';
+import { ModalController } from '@ionic/angular';
+import { CreatePage } from '../create/create.page';
+import { EventdetailsPage } from '../eventdetails/eventdetails.page';
+import { AdminappointmentPage } from '../adminappointment/adminappointment.page';
+import { PrivateAppointmentPage } from '../privateappointment/privateappointment.page';
+import { PlacedetailsPage } from '../placedetails/placedetails.page';
 
 @Component({
   selector: 'page-nowinplace',
@@ -14,26 +20,100 @@ export class NowinplacePage {
   
   constructor(
     public dataProvider: DataService, 
+    private modalCtrl: ModalController,
+    public appointmentService: AppointmentService,
     public imageProvider: ImageService) {
     this.dt = new Date();
     this.dataProvider.getAppointments(this.dt);
   }
 
-  public onShowAppointment(event: Event, appointment: AppointmentViewmodel) {
-    event.stopPropagation();
-    this.dataProvider.navigate('create', '', { state: { dt: appointment.StartDate, appointment: appointment }});
+  cancel() {
+    return this.modalCtrl.dismiss(null, 'cancel');
   }
 
-  public onShowOtherAppointment(event: Event, appointment: AppointmentViewmodel) {
-    event.stopPropagation();
-    this.dataProvider.navigate('otherAppointment', '', { state: { appointment: appointment }});
+  async onShowAppointment(appointment: AppointmentViewmodel) {
+    if (appointment.AppointmentType === 0) {
+      const modal = await this.modalCtrl.create({
+        component: CreatePage,
+        componentProps: { appointment: appointment, dt: appointment.StartDate }
+      });
+      modal.present();
+      const { data, role } = await modal.onWillDismiss();
+      this.postEventProcessing(data, role);
+    } else {
+      this.onShowEvent(appointment);
+    }
+  }
+  
+  public onShowEvent(appointment: AppointmentViewmodel) {
+    // private appointment
+    if (appointment.IsPrivate) {
+      this.showPrivateAppointment(appointment)
+      // own admin event
+    } else if (appointment.OwnAppointment) {
+      var place: any;
+      this.dataProvider.Profile.Places.forEach((item) => {
+        if (item.PlaceKey === appointment.PlaceKey) {
+          place = item;
+          return;
+        }
+      });
+      this.showAdminAppointment(appointment, place)
+    } else {
+      // other admin event
+      this.showEvent(appointment)
+    }
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad NowinplacePage');
+  async showPrivateAppointment(appointment: AppointmentViewmodel) {
+
+    const modal = await this.modalCtrl.create({
+      component: PrivateAppointmentPage,
+      componentProps: { appointment: appointment, dt: appointment.StartDate }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    this.postEventProcessing(data, role);
   }
 
-  public onPlaceDetails() {
-    this.dataProvider.navigate('placedetails');
+  async showAdminAppointment(appointment: AppointmentViewmodel, place: PlaceViewmodel) {
+
+    const modal = await this.modalCtrl.create({
+      component: AdminappointmentPage,
+      componentProps: { appointment: appointment, dt: appointment.StartDate, place: place }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    this.postEventProcessing(data, role);
+  }
+
+  async showEvent(appointment: AppointmentViewmodel) {
+
+    const modal = await this.modalCtrl.create({
+      component: EventdetailsPage,
+      componentProps: { appointment: appointment, dt: appointment.StartDate }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    this.postEventProcessing(data, role);
+  }
+
+  postEventProcessing(data: AppointmentViewmodel, role: string) {
+    switch (role) {
+      case 'save':
+        this.appointmentService.save();
+        break;
+      case 'delete':
+        this.appointmentService.delete();
+        break;
+    }
+  }
+
+  async onPlaceDetails() {
+    const modal = await this.modalCtrl.create({
+      component: PlacedetailsPage,
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
   }
 }

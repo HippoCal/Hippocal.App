@@ -11,6 +11,7 @@ import { AdminappointmentPage } from '../adminappointment/adminappointment.page'
 import { EventdetailsPage } from '../eventdetails/eventdetails.page';
 import { DayPage } from '../day/day.page';
 import { PlacedetailsPage } from '../placedetails/placedetails.page';
+import { NowinplacePage } from '../nowinplace/nowinplace.page';
 
 @Component({
   selector: 'app-week',
@@ -80,8 +81,12 @@ export class WeekPage {
     this.dataProvider.initWeek(this.firstDay);
   }
 
-  public onnowinplace() {
-    this.dataProvider.navigate('nowinplace');
+  async onnowinplace() {
+    const modal = await this.modalCtrl.create({
+      component: NowinplacePage,
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
   }
 
   async onSelectDay(day: any) {

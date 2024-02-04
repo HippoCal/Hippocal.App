@@ -1,5 +1,4 @@
 import { Component, Input, NgZone } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { DataService, ImageService } from "src/app/services/services";
 
@@ -18,8 +17,6 @@ export class ImageviewPage {
   @Input("type") type: string;
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
     public dataProvider: DataService,
     private modalCtrl: ModalController,
     private zone: NgZone,
