@@ -10,7 +10,7 @@
     </ion-item>
     <ion-item-options lines="none" *ngIf="canDelete">
       <ion-item-option color="danger" [disabled]="!dataProvider.IsOnline || isLastHorse"
-        (click)="onDeleteHorse($event, horse)">
+        (click)="$event.stopPropagation(); onDeleteHorse(horse)">
         <ion-icon name="trash"></ion-icon>
         {{ 'BTN_DELETE_NEWS' | translate }}
       </ion-item-option>

@@ -70,7 +70,7 @@
   <ion-button *ngIf="this.dataProvider.Profile.CurrentPlace.IsAdmin && !hasEvent && isNew" [disabled]="!dataProvider.IsOnline" color="secondary" (click)="onCreateAdminAppointment()"
     expand="block">{{ 'BTN_ADMINAPPOINTMENT' | translate }}</ion-button>
 
-  <ion-range *ngIf="dataProvider.Profile.CurrentPlace.MaxCapacity > 1" min="30" max="120" step="30" snaps="true" color="success" [(ngModel)]="duration" (ionChange)="changeDuration($event)">
+  <ion-range *ngIf="dataProvider.Profile.CurrentPlace.MaxCapacity > 1" min="30" max="120" step="30" snaps="true" color="success" [(ngModel)]="duration" (ionChange)="$event.stopPropagation(); changeDuration($event)">
       <ion-label slot="start">30min</ion-label>
       <ion-label slot="end">2h</ion-label>
     </ion-range>

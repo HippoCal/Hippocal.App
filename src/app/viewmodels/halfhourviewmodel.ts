@@ -1,3 +1,4 @@
+import { ColorConst } from '../constants';
 import { AppointmentViewmodel } from './viewmodels';
 
 export class HalfHourViewmodel {
@@ -20,8 +21,8 @@ export class HalfHourViewmodel {
     this.HasEvent = false;
     this.DataLoaded = dataLoaded != undefined ? dataLoaded : true;
     this.CanCreate = canCreate;
-    this.Color = '';
-    this.BackgroundColor = canCreate ? '#5ee795' : '#ffffff';
+    this.Color = ColorConst.COL_FONT_DAY;
+    this.BackgroundColor = canCreate ? ColorConst.COL_BACK_DAY : ColorConst.COL_BACK_DAY_CLOSED;
     this.Caption = '';
   }
 

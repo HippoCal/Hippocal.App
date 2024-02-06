@@ -214,12 +214,12 @@ export class RegisterPage implements OnInit {
         // Staging Longierhalle
         //this.dataService.Profile.PlaceKey = "b66db54b-9493-4cca-a239-8225cd1f5fd9";
         // localhost Longierhalle
-        //this.dataService.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
+        this.dataProvider.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
         // localhost Reithalle
         
         //this.dataService.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
         // localhost New Reithalle
-        this.dataProvider.Profile.PlaceKey = "e94e31f6-92e9-47bf-880d-9ab7ab7af8fb";
+        //this.dataProvider.Profile.PlaceKey = "e94e31f6-92e9-47bf-880d-9ab7ab7af8fb";
         this.placeName = 'Dummyplace';
         this.ownerName = 'Dummyowner';
       }

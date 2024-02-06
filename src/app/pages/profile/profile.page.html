@@ -74,7 +74,7 @@
           <ion-item-sliding *ngFor="let place of dataProvider.Profile.Places" (click)="onPlaceDetails()">
             <app-place [place]="place" [color]="color" (click)="onPlaceDetails(place)" [canDelete]="true"></app-place>
             <ion-item-options slot="start">
-              <ion-button color="danger" [disabled]="!dataProvider.IsOnline" (click)="onDeletePlace($event, place)">
+              <ion-button color="danger" [disabled]="!dataProvider.IsOnline" (click)="$event.stopPropagation(); onDeletePlace(place)">
                 <ion-icon name="trash"></ion-icon>
                 {{ 'BTN_DELETE_NEWS' | translate }}
               </ion-button>

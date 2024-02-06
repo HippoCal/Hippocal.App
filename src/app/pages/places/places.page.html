@@ -17,7 +17,7 @@
   </ion-list>
   <ion-list>
     <ion-item-divider *ngIf="!dataProvider.IsPrivate" color="secondary">{{ 'LIST_HEADER_PLACES' | translate }}</ion-item-divider>
-      <app-place [place]="place" [color]="color" (click)="selectPlace($event, place)" *ngFor="let place of dataProvider.Profile.Places"></app-place>
+      <app-place [place]="place" [color]="color" (click)="$event.stopPropagation(); selectPlace(place)" *ngFor="let place of dataProvider.Profile.Places"></app-place>
   </ion-list>
 
 </ion-content>

@@ -361,7 +361,7 @@ export class AppointmentService {
     this.appointment.UserKey = this.dataProvider.Profile.UserKey;
         this.deleteAppointment().then((result) => {
           if (result) {
-            this.RefreshData(true);
+            this.RefreshData(false);
           } else {
             this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
           }

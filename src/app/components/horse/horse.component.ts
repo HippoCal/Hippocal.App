@@ -70,8 +70,7 @@ export class HorseComponent {
     return this.appointmentProvider.getCaption(jobType, appointmentType);
   }
 
-  onDeleteHorse(event: Event, horse: HorseViewmodel) {
-    event.stopPropagation();
+  onDeleteHorse(horse: HorseViewmodel) {
     this.toastsvc.confirm(() => {
       horse.UserKey = this.dataProvider.Profile.UserKey;
       this.dataProvider.deleteHorse(horse).then(result => {

@@ -184,8 +184,7 @@ export class ProfilePage {
     this.dataProvider.navigate('placedetails', 'tab1');
   }
 
-  onDeletePlace(event: Event, place: PlaceViewmodel) {
-    event.stopPropagation();
+  onDeletePlace(place: PlaceViewmodel) {
     this.toastSvc.confirm(() => {
       this.dataProvider.deletePlace(place.PlaceKey, this.dataProvider.Profile.UserKey).then(result => {
         if (result) {

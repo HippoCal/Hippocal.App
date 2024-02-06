@@ -69,6 +69,10 @@ export class DayPage {
         this.appointmentService.save();
         break;
       case 'delete':
+        if(halfhour) {
+          const index = halfhour.Appointments.findIndex( e => e.Id === data.Id);
+          halfhour.Appointments = halfhour.Appointments.slice(index, index + 1);
+        }
         this.appointmentService.delete();
         break;
       case 'admin':

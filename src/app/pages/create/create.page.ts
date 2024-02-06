@@ -73,7 +73,6 @@ export class CreatePage {
   }
 
   changeDuration(event) {
-    event.stopPropagation();
     var duration: number = event.target.value;
     this.appointmentService.appointment.Duration = duration;
   }

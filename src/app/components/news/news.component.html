@@ -8,7 +8,7 @@
     </div>
   </ion-item>
   <ion-item-options lines="none">
-    <ion-item-option color="danger" [disabled]="!dataProvider.IsOnline" (click)="onDeleteNews($event, news)">
+    <ion-item-option color="danger" [disabled]="!dataProvider.IsOnline" (click)="$event.stopPropagation(); onDeleteNews(news)">
       <ion-icon name="trash"></ion-icon>
       {{ 'BTN_DELETE_NEWS' | translate }}
     </ion-item-option>

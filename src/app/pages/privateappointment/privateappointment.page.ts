@@ -56,13 +56,11 @@ export class PrivateAppointmentPage {
   }
 
   change(event) {
-    event.stopPropagation();
     var duration: number = event.target.value;
     this.appointmentService.appointment.Duration = duration;
   }
 
   changeTab(event) {
-    event.stopPropagation();
     this.area = event.target.value;
   }
 

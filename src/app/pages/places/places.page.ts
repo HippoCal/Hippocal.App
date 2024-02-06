@@ -27,8 +27,7 @@ export class PlacesPage {
     this.dataProvider.setCurrentTab('tab3');
   };
 
-  async selectPlace(event: Event, place: PlaceViewmodel) {
-    event.stopPropagation();
+  async selectPlace(place: PlaceViewmodel) {
     this.dataProvider.setIsPrivate(false);
     this.dataProvider.Profile.CurrentPlace = PlaceViewmodel.Clone(place);
     const modal = await this.modalCtrl.create({

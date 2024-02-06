@@ -13,8 +13,8 @@
 
 <ion-content class="ion-padding">
 
-  <ion-list (swipe)="swipe($event)">
-    <app-place [place]="privatePlace" [color]="color" (click)="onPlaceDetails()" *ngIf="hasPlace()"></app-place>
+  <ion-list>
+    <app-place [place]="privatePlace" [color]="color" (click)="$event.stopPropagation(); onPlaceDetails()" *ngIf="hasPlace()"></app-place>
     <ion-toolbar color="primary" align-title="middle">
       <ion-buttons slot="start">
         <ion-button icon-only (click)="previousWeek()">
@@ -30,5 +30,5 @@
     </ion-toolbar>
     <app-day *ngFor="let day of dataProvider.WeekData" [day]="day" (selectDay)="onSelectDay($event)" (showAppointment)="onShowAppointment($event)"></app-day>
   </ion-list>
-  <ion-button color="primary" (click)="onnowinplace()" expand="block" *ngIf="hasPlace()">{{ 'BTN_NOWINPLACE' | translate }}</ion-button>
+  <ion-button color="primary" (click)="onnowinplace($event)" expand="block" *ngIf="hasPlace()">{{ 'BTN_NOWINPLACE' | translate }}</ion-button>
 </ion-content>

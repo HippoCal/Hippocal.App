@@ -92,7 +92,7 @@
   <ion-button *ngIf="isNew" color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrUpdate()"
     expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button>
   <ion-range min="30" max="360" step="30" [ticks]="true" [snaps]="true" color="primary" [(ngModel)]="duration"
-    (ionChange)="change($event)">
+    (ionChange)="$event.stopPropagation(); change($event)">
     <ion-label slot="start">30min</ion-label>
     <ion-label slot="end">6h</ion-label>
   </ion-range>

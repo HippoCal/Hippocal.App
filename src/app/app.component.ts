@@ -52,28 +52,28 @@ export class AppComponent {
       "MNU_REGISTER",
       "MNU_ABOUT",
       "MNU_PROFILE",
-      "MNU_HORSES",
+      //"MNU_HORSES",
       "MNU_IMPRINT",
       "MNU_PRIVACY",
-      "MNU_LOGOUT",
+      //"MNU_LOGOUT",
       "MNU_LOGIN"
     ]).subscribe(
       (values) => {
         this.pages = [
           { title: values.MNU_HOME, url: '', icon: "home" },
           { title: values.MNU_PROFILE, url: 'tabs/tab1/profile', icon: "people" },
-          { title: values.MNU_HORSES, url: 'tabs/tab1/horses', icon: "heart" },
+          //{ title: values.MNU_HORSES, url: 'tabs/tab1/horses', icon: "heart" },
           { title: values.MNU_REGISTER, url: 'tabs/tab1/register', icon: "finger-print" },
           { title: values.MNU_ABOUT, url: 'tabs/tab1/about', icon: "information-circle" },
           { title: values.MNU_IMPRINT, url: 'tabs/tab1/imprint', icon: "globe" },
-          { title: values.MNU_PRIVACY, url: 'tabs/tab1/privacy', icon: "hand" },
+          { title: values.MNU_PRIVACY, url: 'tabs/tab1/privacy', icon: "diamond" },
           
         ];
-        if(this.dataProvider.Profile.IsActive) {
-          this.pages.push({ title: values.MNU_LOGOUT, url: 'tabs/tab1/logout', icon: "close-circle" })
-        } else {
-          this.pages.push({ title: values.MNU_LOGIN, url: 'tabs/tab1/logout', icon: "close-circle" })
-        }
+        // if(this.dataProvider.Profile.IsActive) {
+        //   this.pages.push({ title: values.MNU_LOGOUT, url: 'tabs/tab1/logout', icon: "close-circle" })
+        // } else {
+        //   this.pages.push({ title: values.MNU_LOGIN, url: 'tabs/tab1/logout', icon: "close-circle" })
+        // }
         
       });
   }

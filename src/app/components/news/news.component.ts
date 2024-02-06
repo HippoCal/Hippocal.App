@@ -28,8 +28,7 @@ export class NewsComponent {
   }
   
 
-  onDeleteNews(event: Event, news: NewsViewmodel) {
-    event.stopPropagation();
+  onDeleteNews(news: NewsViewmodel) {
     this.toastsvc.confirm(() => {
       this.dataProvider.deleteNews(news);
     },

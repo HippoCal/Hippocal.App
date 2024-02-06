@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { UUID } from 'angular2-uuid';
 import { Router } from '@angular/router';
+import { ColorConst } from 'src/app/constants';
 
 
 @Injectable()
@@ -942,7 +943,9 @@ export class DataService {
       if (this.Profile.CurrentPlace.WeeksBookingInFuture !== -1 && !this.IsPrivate) {
         var lastDay: Date = new Date();
         lastDay.setDate(new Date().getDate() + this.Profile.CurrentPlace.WeeksBookingInFuture * 7);
-        canCreate = (dt >= new Date() && dt <= lastDay);
+        canCreate = (dt >= new Date(moment.now()) && dt <= lastDay);
+      } else {
+        canCreate = (dt >= new Date(moment.now()))
       }
     }
     this.halfHours.push(new HalfHourViewmodel(this.formatDate(dt, "HH:mm"), dt, canCreate, this.dayIsLoaded));
@@ -972,11 +975,11 @@ export class DataService {
         if (this.Profile.CurrentPlace.WeeksBookingInFuture !== -1) {
           var lastDay: Date = new Date();
           lastDay.setDate(new Date().getDate() + this.Profile.CurrentPlace.WeeksBookingInFuture * 7);
-          halfhour.CanCreate = halfhour.Date > new Date() &&
+          halfhour.CanCreate = halfhour.Date >= new Date(moment.now()) &&
             halfhour.Date < lastDay &&
             this.profile.CurrentPlace.MaxCapacity > count;
         } else {
-          halfhour.CanCreate = halfhour.Date > new Date() &&
+          halfhour.CanCreate = halfhour.Date >= new Date(moment.now()) &&
             this.profile.CurrentPlace.MaxCapacity > count;
         }
       }
@@ -996,9 +999,9 @@ export class DataService {
       }
     }
     if (halfhour.CanCreate) {
-      halfhour.BackgroundColor = item.Color;
+      halfhour.BackgroundColor = item.Color ? item.Color : ColorConst.COL_BACK_DAY;
     } else {
-      halfhour.BackgroundColor = "#ffffff";
+      halfhour.BackgroundColor = ColorConst.COL_BACK_DAY_CLOSED;
     }
 
   }
