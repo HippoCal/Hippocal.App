@@ -111,7 +111,7 @@ export class ImageService {
       imageType: imageType
     };
 
-    if (fileName !== '' && fileName !== undefined) {
+    if (fileName !== '' && fileName !== undefined && fileName !== null) {
       var file = this.images.find(e => e.fileName == fileName);
       // ist im Cache...
       if (file) {
@@ -278,21 +278,13 @@ export class ImageService {
   async saveImage(photo: Photo, imageType: string, key: string): Promise<ImageViewmodel> {
     const base64Data = await this.readAsBase64(photo);
     const fileName: string = this.createFileName(photo.format);
-    var options: WriteFileOptions = {
-      directory: Directory.Data,
-      path: this.getFilePath(fileName),
-      data: base64Data
-    };
-
-    const savedFile = await Filesystem.writeFile(options);
-    console.log('Saved: ', savedFile);
     var result: ImageViewmodel = {
       fileName: fileName,
       data: `${base64Data}`,
       key: key,
       imageType: imageType
     };
-    this.images.push(result);
+    await this.saveImageViewModel(result);
     return result;
   }
 
@@ -303,7 +295,8 @@ export class ImageService {
       path: this.getFilePath(image.fileName),
       data: image.data
     };
-    await Filesystem.writeFile(options);
+    const savedFile = await Filesystem.writeFile(options);
+    console.log('Saved: ', savedFile);
     this.images.push(image);
   }
 
