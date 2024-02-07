@@ -37,14 +37,14 @@ export class RestService {
 
   //private baseUrl = 'https://www.hippocal.de';
   //private baseUrl = window.location.origin;
-  private baseUrl = "http://localhost:31894";
+  //private baseUrl = "http://localhost:31894";
  
-  //private baseUrl = "https://hippocalweb-2017-hippocalweb-2018.azurewebsites.net";
+  private baseUrl = "https://hippocalweb-2017-hippocalweb-2018.azurewebsites.net";
   //private baseUrl = "https://hippocalweb-2017-hippocalwebapi.azurewebsites.net";
 
-  //private webUrl = "https://hippocalweb-2017-hippocalweb-2018.azurewebsites.net";
+  private webUrl = "https://hippocalweb-2017-hippocalweb-2018.azurewebsites.net";
   //private webUrl = "https://www.hippocal.de";
-  private webUrl = "http://localhost:31894";
+  //private webUrl = "http://localhost:31894";
   
   private apiUrl = this.baseUrl + '/api/mobileauth';
   private mediaUrl = this.baseUrl + '/api/media';
