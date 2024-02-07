@@ -83,23 +83,23 @@ export class AppComponent {
     this.translate.setDefaultLang('de');
     this.translate.addLangs(['en']);
     this.translate.use('de');
-    // const browserLang = this.translate.getBrowserLang();
+    const browserLang = this.translate.getBrowserLang();
 
-    // if (browserLang) {
-    //   if (browserLang === 'zh') {
-    //     const browserCultureLang = this.translate.getBrowserCultureLang();
+    if (browserLang) {
+      if (browserLang === 'zh') {
+        const browserCultureLang = this.translate.getBrowserCultureLang();
 
-    //     if (browserCultureLang.match(/-CN|CHS|Hans/i)) {
-    //       this.translate.use('zh-cmn-Hans');
-    //     } else if (browserCultureLang.match(/-TW|CHT|Hant/i)) {
-    //       this.translate.use('zh-cmn-Hant');
-    //     }
-    //   } else {
-    //     this.translate.use(this.translate.getBrowserLang());
-    //   }
-    // } else {
-    //   this.translate.use('de'); // Set your language here
-    // }
+        if (browserCultureLang.match(/-CN|CHS|Hans/i)) {
+          this.translate.use('zh-cmn-Hans');
+        } else if (browserCultureLang.match(/-TW|CHT|Hant/i)) {
+          this.translate.use('zh-cmn-Hant');
+        }
+      } else {
+        this.translate.use(this.translate.getBrowserLang());
+      }
+    } else {
+      this.translate.use('de'); // Set your language here
+    }
   }
 
   openProfile() {
