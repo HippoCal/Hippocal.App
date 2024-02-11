@@ -493,8 +493,12 @@ export class DataService {
       return this.restProvider.getNextAppointments(this.Profile.UserKey, this.Profile.ShowEvents)
         .then((data: any) => {
           if (data !== undefined) {
-            this.appointments = <AppointmentViewmodel[]>data;
-            this.saveAppointments();
+            var newAppointments =  <AppointmentViewmodel[]>data;
+            if(newAppointments && newAppointments.length > 0){
+              this.appointments = newAppointments;
+              this.saveAppointments();
+            }
+            
             if (this.currentDay !== undefined) {
               this.getAppointments(this.currentDay);
               return this.onlineReponse();
@@ -530,7 +534,7 @@ export class DataService {
     });
   }
 
-  private buildPlaceAppointments() {
+  buildPlaceAppointments() {
     this.placeAppointments = [];
     this.appointments.forEach(item => {
       var found: boolean = false;
@@ -576,22 +580,47 @@ export class DataService {
       var dt: Date = this.addDays(this.firstDay, i);
       this.week.push(new WeekViewmodel(this.formatDate(dt, "ddd DD.MM"), i));
     }
-    this.loadWeekData();
+    this.getWeekAppointments();
   }
 
-  loadWeekData() {
+  addAppointment(app: AppointmentViewmodel)
+  {
+    var existing = this.appointments.filter( e => e.Id === app.Id);
+    if(existing && existing.length === 0) {
+      this.appointments.push(app);
+      this.saveAppointments();
+    }
+  }
+
+  removeAppointment(app: AppointmentViewmodel)
+  {
+    var indexValue: number = -1;
+    this.appointments.forEach( (item, index) => {
+       if(item.Id === app.Id) {
+        indexValue = index;
+        return;
+       }
+      });
+    if(indexValue !== -1) {
+      this.appointments.splice(indexValue, 1)
+    }
+  }
+
+  getWeekAppointments() {
     var placeKey: string = '';
     if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
       placeKey = this.Profile.CurrentPlace.PlaceKey;
     }
-    this.getWeek(this.firstDay, placeKey, this.Profile.UserKey).then((result) => {
-      var hasResult = false;
-      if (result) {
-        this.weekAppointments = <AppointmentViewmodel[]>result;
-        hasResult = true;
-      }
+    if(placeKey === '') return;
+
+    var lastDay = moment(this.firstDay).endOf('week');
+    var apps = this.appointments.filter( (item) => {return item.PlaceKey === placeKey && moment(item.StartDate).isSameOrAfter(this.firstDay) && moment(item.StartDate).isSameOrBefore(lastDay);} );
+    this.setWeekAppointments(placeKey, apps);
+
+  }
+
+  setWeekAppointments(placeKey: string, apps: AppointmentViewmodel[]) {  
       this.week = [];
-      var apps = hasResult ? this.weekAppointments : this.appointments;
       for (var i = 0; i < 7; i++) {
         var dayAppointments = [];
         var dt: Date = this.addDays(this.firstDay, i);
@@ -605,6 +634,20 @@ export class DataService {
         let weekDay: WeekViewmodel = new WeekViewmodel(this.formatDate(dt, "ddd DD.MM"), i, dayAppointments, hasData);
         this.week.push(weekDay);
       }
+  }
+
+
+  loadWeekData(placeKey: string) {
+
+    this.getWeek(this.firstDay, placeKey, this.Profile.UserKey).then((result) => {
+      var hasResult = false;
+      if (result) {
+        this.weekAppointments = <AppointmentViewmodel[]>result;
+        hasResult = true;
+      }
+      this.week = [];
+      var apps = hasResult ? this.weekAppointments : this.appointments;
+      this.setWeekAppointments(placeKey, apps);
     }, (err) => { });
 
   }
@@ -805,11 +848,34 @@ export class DataService {
     });
   }
 
-  // loads day data
-  getAppointments(currentDate: Date) {
+  getMyAppointments(currentDate: Date) {
     this.currentDay = currentDate;
     this.dayIsLoaded = false;
     this.IsPrivate ? this.initPrivateDay() : this.initDay();
+    this.dayIsLoaded = true;
+    var placeKey: string = '';
+    if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
+      placeKey = this.Profile.CurrentPlace.PlaceKey;
+    }
+    if(placeKey === '') return;
+
+    var apps = this.appointments.filter( (item) => {return item.PlaceKey === placeKey && 
+      moment(item.StartDate).isSameOrAfter(currentDate) && 
+      moment(item.StartDate).isSameOrBefore(moment(currentDate).add(1, 'days'));} );
+    if(apps) {
+      this.pushAppointments(apps);
+      this.dayIsLoaded = true;
+    }
+
+  }
+
+  // loads day data
+  getAppointments(currentDate: Date) {
+    if(!this.dayIsLoaded) {
+      this.currentDay = currentDate;
+      this.dayIsLoaded = false;
+      this.IsPrivate ? this.initPrivateDay() : this.initDay();
+    }
     if (this.IsOnline) {
       var placeKey: string = ''
       if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {

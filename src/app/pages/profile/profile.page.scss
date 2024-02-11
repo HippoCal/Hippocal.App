@@ -9,14 +9,11 @@
     display: block;
   }
 
-  ion-avatar img {
+  ion-avatar {
     width: 60px !important;
+    height: 60px !important;
   }
-
-  ion-avatar img.smallImage {
-    width: 55px !important;
-  }
-
+  
   h6 {
     font-size: 14px;
     margin: 1px;

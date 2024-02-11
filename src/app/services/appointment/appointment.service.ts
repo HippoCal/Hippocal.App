@@ -236,6 +236,7 @@ export class AppointmentService {
       if (item.Id == data.Id) {
         this._ownAppointments.Appointments = this._ownAppointments.Appointments.splice(index, 1);
         this.SaveOwnAppointments();
+        this.dataProvider.removeAppointment(data);
       }
     });
   }
@@ -345,6 +346,7 @@ export class AppointmentService {
   }
 
   create() {
+    this.dataProvider.addAppointment(this.appointment);
     this.SetData();
     this.createAppointment().then((result: ResultIdViewmodel) => {
       if (result.Result) {
@@ -359,6 +361,7 @@ export class AppointmentService {
   
   delete() {
     this.appointment.UserKey = this.dataProvider.Profile.UserKey;
+      this.dataProvider.removeAppointment(this.appointment);
         this.deleteAppointment().then((result) => {
           if (result) {
             this.RefreshData(false);
@@ -438,6 +441,7 @@ export class AppointmentService {
 
   public createAppointment() {
     if (this.dataProvider.IsOnline) {
+      
       return this.restProvider.createAppointment(this.appointment);
 
     } else {

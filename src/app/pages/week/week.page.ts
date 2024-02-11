@@ -98,6 +98,7 @@ export class WeekPage {
     });
     modal.present();
     const { data, role } = await modal.onWillDismiss();
+    this.dataProvider.getWeekAppointments();
   }
 
   public onShowEvent(appointment: AppointmentViewmodel) {
@@ -188,10 +189,11 @@ export class WeekPage {
         this.appointmentService.delete();
         break;
     }
+    this.dataProvider.getWeekAppointments();
   }
 
   onRefresh() {
-    this.dataProvider.loadWeekData();
+    this.dataProvider.getWeekAppointments();
   }
 
   handleError(error: number) {

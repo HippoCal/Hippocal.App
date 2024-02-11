@@ -125,13 +125,14 @@ export class ImageService {
         });
         if (fileData) {
           result.data = `data:image/jpeg;base64,${fileData.data}`;
+          this.images.push(result);
           return result;
         }
       } catch { }
 
       result = await this.download(result);
       if (result.data !== '') {
-        result.data = `data:image/jpeg;base64,${result.data}`;
+        result.data = `${result.data}`;
         result.fileName = fileName;
         await this.saveImageViewModel(result)
         return result;
@@ -297,6 +298,7 @@ export class ImageService {
     };
     const savedFile = await Filesystem.writeFile(options);
     console.log('Saved: ', savedFile);
+    image.data = `data:image/jpeg;base64,${image.data}`;
     this.images.push(image);
   }
 
@@ -322,7 +324,7 @@ export class ImageService {
       width: 400,
       height: 400,
       quality: 70,
-      allowEditing: true,
+      allowEditing: false,
       source: sourceType,
       resultType: CameraResultType.Uri,
       correctOrientation: true

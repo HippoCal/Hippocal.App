@@ -225,7 +225,7 @@ export class RestService {
 
   createAppointment(appointment: AppointmentViewmodel) {
     var url = this.apiUrl + '/createappointment';
-    return this.post(url, appointment, true, true, true);
+    return this.post(url, appointment, false, true, true);
   }
 
   getPreviousAppointment(appointment: AppointmentViewmodel) {

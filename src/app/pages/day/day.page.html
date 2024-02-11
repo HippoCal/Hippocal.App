@@ -11,6 +11,6 @@
     <ion-item-divider color="secondary" *ngIf="!dataProvider.IsPrivate" >
       <h6>{{ 'MSG_NEW_APPOINTMENT' | translate }}</h6>
     </ion-item-divider>
-    <app-hour [halfHour]="halfHour" *ngFor="let halfHour of dataProvider.DayData" (selectHalfHour)="onSelectHalfHour($event)" (showAppointment)="onShowAppointment($event)"></app-hour>
+    <app-hour [halfHour]="halfHour" *ngFor="let halfHour of dataProvider.DayData" (index)="index" (selectHalfHour)="onSelectHalfHour($event)" (showAppointment)="onShowAppointment($event)"></app-hour>
   </ion-list>
 </ion-content>

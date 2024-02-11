@@ -35,6 +35,12 @@ export class HomePage {
 
   ngOnInit() { 
     this.color = 'divider';
+    this.loadAppointments();
+  }
+  
+  async loadAppointments() {
+    await this.dataProvider.loadAppointments();
+    this.dataProvider.buildPlaceAppointments();
   }
   
   navigate(route: string, tab: string, appointment?: AppointmentViewmodel, dt?: Date, news?: NewsViewmodel, place?: PlaceViewmodel, ) {

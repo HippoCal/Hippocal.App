@@ -8,8 +8,8 @@
 </ion-header>
 <ion-content class="ion-padding">
   <ion-list>
-    <app-place [place]="dataProvider.Profile.CurrentPlace" [color]="color" (click)="onPlaceDetails()"></app-place>
+    <app-place [place]="dataProvider.Profile.CurrentPlace" [color]="color" (click)="$event.stopPropagation(); onPlaceDetails()"></app-place>
     <ion-item-divider color="secondary">{{ 'BTN_NOWINPLACE' | translate }}</ion-item-divider>
-    <app-hour [halfHour]="halfHour" *ngFor="let halfHour of dataProvider.NowInPlaceData" (showAppointment)="onShowAppointment($event)"></app-hour>
+    <app-hour [halfHour]="halfHour" *ngFor="let halfHour of dataProvider.NowInPlaceData" (index)="index" (showAppointment)="onShowAppointment($event)"></app-hour>
   </ion-list>
 </ion-content>

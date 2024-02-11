@@ -9,10 +9,11 @@
     display: block;
   }
 
-  ion-avatar img {
+  ion-avatar {
     width: 60px !important;
+    height: 60px !important;
   }
-
+  
   .linebreak {
     white-space: pre-line;
   }
@@ -21,10 +22,6 @@
     font-size: 14px;
     margin: 1px;
     padding: 1px;
-  }
-
-  ion-avatar img.smallImage {
-    width: 55px !important;
   }
 
   .imgcenter {

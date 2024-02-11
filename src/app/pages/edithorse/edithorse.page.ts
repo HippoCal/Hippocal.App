@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HorseViewmodel } from "src/app//viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from "src/app/services/services";
 import { UUID } from 'angular2-uuid';
-import { LocationStrategy } from '@angular/common';
 import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
 import { ModalController } from '@ionic/angular';
 
@@ -59,6 +58,7 @@ export class EdithorsePage {
 
   saveImage(fileName: string) {
     this.zone.run(() => {
+      console.log("new fileName: " + fileName);
       this.horse.ImageUrl = fileName;
       this.gethorseImage();
     });
