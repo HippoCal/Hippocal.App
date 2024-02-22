@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
-import { AppointmentViewmodel, PlaceViewmodel } from "src/app/viewmodels/viewmodels";
-import { AppointmentService, DataService, ImageService, ToastService } from 'src/app/services/services';
+import { AppointmentViewmodel } from "src/app/viewmodels/viewmodels";
+import { DataService, ImageService} from 'src/app/services/services';
 import * as moment from 'moment';
 
 
@@ -14,14 +14,13 @@ export class AppointmentComponent {
   @Input('appointment') appointment: AppointmentViewmodel;
   @Input('canDelete') canDelete: boolean;
   @Output() showAppointment = new EventEmitter<AppointmentViewmodel>();
+  @Output() deleteAppointment = new EventEmitter<AppointmentViewmodel>();
   
   public horseImage: string;
 
   constructor(
     private dataProvider: DataService, 
-    private appointmentService: AppointmentService, 
     private imageProvider: ImageService,
-    private toastSvc: ToastService,
     private zone: NgZone, 
     ) { 
     
@@ -47,22 +46,26 @@ export class AppointmentComponent {
 
   }
 
-  onDelete(event: Event, appointment: AppointmentViewmodel) {
-    if (event.cancelable) {
-      event.preventDefault();
-    }
-    event.stopPropagation();
-    this.toastSvc.confirm(() => {
-      appointment.UserKey = this.dataProvider.Profile.UserKey;
-      this.appointmentService.appointment = appointment;
-      this.appointmentService.deleteAppointment().then((result) => {
-        if (result) {
-          this.appointmentService.RefreshData(true);
-        } else {
-          this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
-        }
-      });
-    }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
+  // onDelete(event: Event, appointment: AppointmentViewmodel) {
+  //   if (event.cancelable) {
+  //     event.preventDefault();
+  //   }
+  //   event.stopPropagation();
+  //   this.toastSvc.confirm(() => {
+  //     appointment.UserKey = this.dataProvider.Profile.UserKey;
+  //     this.appointmentService.appointment = appointment;
+  //     this.appointmentService.deleteAppointment(this.appointmentService.appointment).then((result) => {
+  //       if (result) {
+  //         this.appointmentService.refreshData(true);
+  //       } else {
+  //         this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
+  //       }
+  //     });
+  //   }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
+  // }
+
+  onDelete() {
+    this.deleteAppointment.emit(this.appointment);
   }
 
   getColor(appointment: AppointmentViewmodel): string {

@@ -45,7 +45,7 @@
         {{place.PlaceName}}
         <ion-button slot="end" color="orange">{{ 'BTN_NEW' | translate }}</ion-button>
       </ion-item-divider>
-      <app-appointment [appointment]="appointment" *ngFor="let appointment of place.Appointments.slice(0, 12)" [canDelete]="true" (showAppointment)="onShowAppointment(appointment)"></app-appointment>
+      <app-appointment [appointment]="appointment" *ngFor="let appointment of place.Appointments.slice(0, 12)" [canDelete]="true" (showAppointment)="onShowAppointment(appointment)" (deleteAppointment)="onDeleteAppointment(appointment)"></app-appointment>
     </ion-list>
   </div>
   <div *ngIf="dataProvider.PlaceAppointments.length === 0">

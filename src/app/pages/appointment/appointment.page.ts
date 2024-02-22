@@ -44,13 +44,7 @@ export class AppointmentPage implements OnInit {
   onDeleteAppointment() {
     this.toastervice.confirm(() => {
         this.appointmentService.appointment.UserKey = this.dataService.Profile.UserKey;
-        this.appointmentService.deleteAppointment().then(data => {
-          this.dataService.initWeek(this.dataService.CurrentDay);
-          this.dataService.refreshData(false).then(() => {
-            this.dataService.setNotification(this.appointmentService.appointment, true);
-            this.dataProvider.navigate('home','tab1');
-          });
-        });
+        this.appointmentService.delete();
     }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
   }
 

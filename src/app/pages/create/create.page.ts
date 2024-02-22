@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, NgZone, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { AppointmentViewmodel} from "src/app/viewmodels/viewmodels";
 import { AppointmentTypeEnum, JobTypeEnum } from 'src/app/enums/enums';
 import { DataService, AppointmentService, ToastService, ImageService } from 'src/app/services/services';
@@ -55,20 +55,20 @@ export class CreatePage {
       this.appointment.HorseKey = this.dataProvider.Profile.Horses[0].HorseKey;
     }
     this.duration = this.appointment.Duration;
-    this.appointmentService.SetAppointment(this.appointment);
-    this.appointmentService.SetData();
+    this.appointmentService.setAppointment(this.appointment);
+    this.appointmentService.setData();
     this.hasName = false;
     this.onNameChanged();
     this.onChangeJobType();
   }
 
   onCreateAdminAppointment() {
-    return this.modalCtrl.dismiss(this.appointment, 'admin');
+    return this.modalCtrl.dismiss(this.appointmentService.appointment, 'admin');
   }
 
   onDelete() {
     this.toastSvc.confirm(() => {
-      return this.modalCtrl.dismiss(this.appointment, 'delete');
+      return this.modalCtrl.dismiss(this.appointmentService.appointment, 'delete');
     }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
   }
 
@@ -106,14 +106,14 @@ export class CreatePage {
 
   onCreateOrUpdate() {
     this.toastSvc.confirm(() => {
-      return this.modalCtrl.dismiss(this.appointment, this.isNew ? 'create' : 'save');
+      return this.modalCtrl.dismiss(this.appointmentService.appointment, this.isNew ? 'create' : 'save');
     }, 
     this.isNew ? "HEADER_CONFIRM_CREATE" : "HEADER_CONFIRM_MODIFY_APPOINTMENT", 
     this.isNew ? "MSG_CONFIRM_CREATE": "MSG_CONFIRM_MODIFY_APPOINTMENT");
   }
 
   cancel() {
-    return this.modalCtrl.dismiss(this.appointment, 'cancel');
+    return this.modalCtrl.dismiss(this.appointmentService.appointment, 'cancel');
   }
 
   formatDate(dt: string): string {

@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@capacitor/splash-screen';
@@ -17,13 +17,9 @@ export class AppComponent {
 
   pages: any[];
 
-  public profileImage: string;
-
   constructor(
     public dataProvider: DataService,
-    private translate: TranslateService,
-
-    private zone: NgZone, 
+    private translate: TranslateService, 
     public imageProvider: ImageService,
     public storageProvider: StorageService,
     public platform: Platform) {
@@ -36,7 +32,6 @@ export class AppComponent {
     });
 
   }
-
 
   public getTitle() {
     if (this.dataProvider.Profile?.DisplayName !== "") {
@@ -52,7 +47,7 @@ export class AppComponent {
       "MNU_REGISTER",
       "MNU_ABOUT",
       "MNU_PROFILE",
-      //"MNU_HORSES",
+      "MNU_HORSES",
       "MNU_IMPRINT",
       "MNU_PRIVACY",
       //"MNU_LOGOUT",
@@ -62,7 +57,7 @@ export class AppComponent {
         this.pages = [
           { title: values.MNU_HOME, url: '', icon: "home" },
           { title: values.MNU_PROFILE, url: 'tabs/tab1/profile', icon: "people" },
-          //{ title: values.MNU_HORSES, url: 'tabs/tab1/horses', icon: "heart" },
+          // { title: values.MNU_HORSES, url: 'tabs/tab1/horses', icon: "heart" },
           { title: values.MNU_REGISTER, url: 'tabs/tab1/register', icon: "finger-print" },
           { title: values.MNU_ABOUT, url: 'tabs/tab1/about', icon: "information-circle" },
           { title: values.MNU_IMPRINT, url: 'tabs/tab1/imprint', icon: "globe" },
@@ -122,6 +117,7 @@ export class AppComponent {
         this.dataProvider.loadHomeData();
         this.initTranslate();
         this.buildMenu();
+        this.dataProvider.getProfileImage();
         if (this.dataProvider.Profile.UserKey !== '' &&
         (this.dataProvider.Profile.Email === '' ||
           this.dataProvider.Profile.Email === undefined ||
@@ -148,10 +144,7 @@ export class AppComponent {
     // registered, active and email confirmed - ok status
     if (this.dataProvider.Profile.EmailConfirmed && this.dataProvider.Profile.IsActive) {
       if (doRefresh) {
-        this.dataProvider.refreshData(false).then(() => {
-          this.getProfileImage();
-          return;
-        });
+        this.dataProvider.refreshData(false);
       }
     }
     // not registered yet
@@ -178,14 +171,7 @@ export class AppComponent {
 
   }
 
-  async getProfileImage() {
-    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true, this.dataProvider.Profile.UserKey);
-    if(image) {
-      this.zone.run(() => {
-        this.profileImage = image.data;
-      });    
-    }
-  }
+
 
   // callErrorStart() {
   //   if (!this.dataProvider.Profile.IsRegistered) {

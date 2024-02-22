@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavigationExtras } from '@angular/router';
 import { AppointmentViewmodel, NewsViewmodel } from "src/app/viewmodels/viewmodels";
-import { DataService, ImageService, AppointmentService } from "src/app/services/services";
+import { DataService, ImageService, AppointmentService, ToastService } from "src/app/services/services";
 import { PlaceViewmodel } from 'src/app/viewmodels/placeviewmodel';
 import * as moment from 'moment';
 import { ModalController } from '@ionic/angular';
@@ -23,6 +23,7 @@ export class HomePage {
 
   constructor(
     public dataProvider: DataService, 
+    private toastSvc: ToastService,
     private modalCtrl: ModalController,
     public appointmentService: AppointmentService, 
     public imageProvider: ImageService) {
@@ -31,11 +32,12 @@ export class HomePage {
 
   ionViewWillEnter() { 
     this.dataProvider.setCurrentTab('tab1');
+    this.color = 'divider';
+    this.loadAppointments();
   };
 
   ngOnInit() { 
-    this.color = 'divider';
-    this.loadAppointments();
+
   }
   
   async loadAppointments() {
@@ -90,6 +92,16 @@ export class HomePage {
     this.dataProvider.setIsPrivate(false);
     this.dataProvider.setToWeek(false);
     this.dataProvider.navigate('places', 'tab3');
+  }
+
+  onDeleteAppointment(appointment: AppointmentViewmodel) {
+    this.toastSvc.confirm(() => {
+      appointment.UserKey = this.dataProvider.Profile.UserKey;
+      this.appointmentService.appointment = appointment;
+      this.appointmentService.delete( () => {
+        this.loadAppointments();
+      })
+    }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
   }
 
   async onShowAppointment(appointment: AppointmentViewmodel) {
@@ -163,11 +175,14 @@ export class HomePage {
     switch (role) {
       case 'save':
         this.appointmentService.save();
+        this.loadAppointments();
         break;
       case 'delete':
         this.appointmentService.delete();
+        this.loadAppointments();
         break;
     }
+    
   }
 
   getColor(appointment: AppointmentViewmodel): string {

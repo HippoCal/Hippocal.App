@@ -39,7 +39,7 @@ export class HorseComponent {
         this.horseKey = '';
       } else {
         this.horseKey = horse.HorseKey;
-        this.appointmentProvider.GetHorseAppointments(horse.HorseKey, (data: HorseAppointmentsViewmodel) => {
+        this.appointmentProvider.getHorseAppointments(horse.HorseKey, (data: HorseAppointmentsViewmodel) => {
           this.horseAppointments = data
         });
       }
@@ -63,7 +63,7 @@ export class HorseComponent {
 
   onTypeClick(typeAppointment: TypeAppointmentsViewmodel) {
     typeAppointment.Visible = !typeAppointment.Visible;
-    this.appointmentProvider.SaveStatus(typeAppointment, this.horseKey);
+    this.appointmentProvider.saveStatus(typeAppointment, this.horseKey);
   }
 
   getCaption(jobType: JobTypeEnum, appointmentType: AppointmentTypeEnum) {

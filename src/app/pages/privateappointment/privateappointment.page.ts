@@ -48,7 +48,7 @@ export class PrivateAppointmentPage {
       this.appointment = new AppointmentViewmodel(this.dataProvider.Profile.UserKey, '', '', this.appointmentService.dt, this.appointmentService.dt.hour(), this.appointmentService.dt.minute(), '', 60, JobTypeEnum.Other, AppointmentTypeEnum.Custom);
       this.appointment.HorseKey = this.dataProvider.Profile.Horses.length > 0 ? this.dataProvider.Profile.Horses[0].HorseKey : '';
     }
-    this.appointmentService.SetAppointment(this.appointment);
+    this.appointmentService.setAppointment(this.appointment);
     this.duration = this.appointment.Duration;
     this.appointmentService.setHorseName(this.appointmentService.appointment.HorseKey);
     this.onChangeAppointmentType();

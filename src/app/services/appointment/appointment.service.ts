@@ -31,7 +31,7 @@ export class AppointmentService {
     public dataProvider: DataService,
     public restProvider: RestService) {
     this.initTypes();
-    this.LoadOwnData();
+    //this.loadOwnData();
   }
 
   initTypes() {
@@ -109,12 +109,12 @@ export class AppointmentService {
     this.dt = moment(this.dt).add(1, 'days');
   }
 
-  public SetAppointment(data: AppointmentViewmodel) {
-    this.appointment = this.Clone(data);
+  setAppointment(data: AppointmentViewmodel) {
+    this.appointment = this.clone(data);
     this.originalappointment = data;
   }
 
-  public LoadOwnData() {
+  loadOwnData() {
     this._ownAppointments = new OwnAppointmentsViewmodel();
 
     let result: OwnAppointmentsViewmodel = new OwnAppointmentsViewmodel();
@@ -124,7 +124,7 @@ export class AppointmentService {
         this.restProvider.loadOwnModifiedAppointments(new Date(result.LastUpdated), this.dataProvider.Profile.UserKey, this.dataProvider.Profile.ShowEvents).then((data: IOwnAppointmentViewmodel[]) => {
           if (data !== null && data !== undefined) {
             data.forEach((item: IOwnAppointmentViewmodel) => {
-              this.AddOwnAppointment(item, result);
+              this.addOwnAppointment(item, result);
             });
             result.LastUpdated = new Date();
             var res = result.Appointments.sort((a: any, b: any) => a.Sd - b.Sd);
@@ -132,7 +132,7 @@ export class AppointmentService {
             this._ownAppointments.Appointments = result.Appointments;
             this._ownAppointments.LastUpdated = result.LastUpdated;
             this._ownAppointments.HorseAppointments = result.HorseAppointments != undefined ? result.HorseAppointments : this._ownAppointments.HorseAppointments;
-            this.SaveOwnAppointments();
+            this.saveOwnAppointments();
           }
         });
       } else {
@@ -143,14 +143,14 @@ export class AppointmentService {
             this._ownAppointments.Appointments = result.Appointments;
             this._ownAppointments.LastUpdated = result.LastUpdated;
             this._ownAppointments.HorseAppointments = result.HorseAppointments != undefined ? result.HorseAppointments : this._ownAppointments.HorseAppointments;
-            this.SaveOwnAppointments();
+            this.saveOwnAppointments();
           }
         });
       }
     });
   }
 
-  public SaveStatus(typeAppointment: TypeAppointmentsViewmodel, horseKey: string) {
+  saveStatus(typeAppointment: TypeAppointmentsViewmodel, horseKey: string) {
     let found: boolean = false;
     if (this._ownAppointments.HorseAppointments !== undefined) {
       this._ownAppointments.HorseAppointments.forEach((item) => {
@@ -168,10 +168,10 @@ export class AppointmentService {
       vm.HorseKey = horseKey;
       this._ownAppointments.HorseAppointments.push(vm);
     }
-    this.SaveOwnAppointments();
+    this.saveOwnAppointments();
   }
 
-  private Clone(data: AppointmentViewmodel): AppointmentViewmodel {
+  private clone(data: AppointmentViewmodel): AppointmentViewmodel {
     var app = new AppointmentViewmodel(data.UserKey,
       data.PlaceKey,
       data.PlaceName,
@@ -204,7 +204,7 @@ export class AppointmentService {
     return app;
   }
 
-  private SetStatus(existing: TypeAppointmentsViewmodel, horseKey: string) {
+  private setStatus(existing: TypeAppointmentsViewmodel, horseKey: string) {
     if (this._ownAppointments.HorseAppointments !== undefined) {
       this._ownAppointments.HorseAppointments.forEach((item) => {
         if (item.AppointmentType == existing.AppointmentType && item.JobType == existing.JobType && item.HorseKey == horseKey) {
@@ -216,33 +216,33 @@ export class AppointmentService {
 
   }
 
-  private SaveOwnAppointments() {
+  private saveOwnAppointments() {
     this.storage.set(this.OWN_APPOINTMENTS_KEY, this._ownAppointments);
   }
 
-  public GetHorseAppointments(horseKey: string, callback) {
+  public getHorseAppointments(horseKey: string, callback) {
     let result: HorseAppointmentsViewmodel = new HorseAppointmentsViewmodel();
     result.HorseKey = horseKey;
     this._ownAppointments.Appointments.forEach((item: IOwnAppointmentViewmodel) => {
       if (item.Hk == horseKey) {
-        this.AddOwnHorseAppointment(item, result);
+        this.addOwnHorseAppointment(item, result);
       }   
     });
     callback(result);
   }
 
-  private RemoveAppointment(data: AppointmentViewmodel) {
+  private removeAppointment(data: AppointmentViewmodel) {
+    this.dataProvider.removeAppointment(data, true);
     this._ownAppointments.Appointments.forEach((item, index) => {
       if (item.Id == data.Id) {
         this._ownAppointments.Appointments = this._ownAppointments.Appointments.splice(index, 1);
-        this.SaveOwnAppointments();
-        this.dataProvider.removeAppointment(data);
+        this.saveOwnAppointments();
       }
     });
   }
 
-  private AddOwnAppointment(data: IOwnAppointmentViewmodel, result: OwnAppointmentsViewmodel) {
-    let ownAppointment: OwnAppointmentViewmodel = this.CreateOwnAppointment(data);
+  private addOwnAppointment(data: IOwnAppointmentViewmodel, result: OwnAppointmentsViewmodel) {
+    let ownAppointment: OwnAppointmentViewmodel = this.createOwnAppointment(data);
     let insert: boolean = true;
     result.Appointments.forEach((existingAppointment, index) => {
       if (existingAppointment.Id == ownAppointment.Id) {
@@ -256,9 +256,9 @@ export class AppointmentService {
     }
   }
 
-  private AddOwnHorseAppointment(data: IOwnAppointmentViewmodel, result: HorseAppointmentsViewmodel) {
+  private addOwnHorseAppointment(data: IOwnAppointmentViewmodel, result: HorseAppointmentsViewmodel) {
 
-    let ownAppointment: OwnAppointmentViewmodel = this.CreateOwnAppointment(data);
+    let ownAppointment: OwnAppointmentViewmodel = this.createOwnAppointment(data);
     let found: boolean = false;
     result.TypeAppointments.forEach((typeAppointment) => {
       if (typeAppointment.JobType === ownAppointment.JobType && typeAppointment.AppointmentType === ownAppointment.AppointmentType) {
@@ -280,12 +280,12 @@ export class AppointmentService {
     if (!found) {
       var newItem = new TypeAppointmentsViewmodel(ownAppointment.JobType, ownAppointment.AppointmentType);
       newItem.Appointments.push(ownAppointment);
-      this.SetStatus(newItem, data.Hk);
+      this.setStatus(newItem, data.Hk);
       result.TypeAppointments.push(newItem);
     }
   }
 
-  private CreateOwnAppointment(data: IOwnAppointmentViewmodel):OwnAppointmentViewmodel {
+  private createOwnAppointment(data: IOwnAppointmentViewmodel):OwnAppointmentViewmodel {
 
     let ownAppointment: OwnAppointmentViewmodel = new OwnAppointmentViewmodel(data);
     if (ownAppointment.PlaceKey !== "" && ownAppointment.PlaceKey !== null) {
@@ -298,7 +298,7 @@ export class AppointmentService {
     return ownAppointment;
   }
 
-  public ToOwnAppointment(horseAppointments: AppointmentViewmodel): IOwnAppointmentViewmodel {
+  public toOwnAppointment(horseAppointments: AppointmentViewmodel): IOwnAppointmentViewmodel {
     let vm: IOwnAppointmentViewmodel = new IOwnAppointmentViewmodel();
     vm.An = horseAppointments.AppointmentName;
     vm.At = horseAppointments.AppointmentType;
@@ -314,11 +314,8 @@ export class AppointmentService {
     return vm;
   }
 
-  public RefreshData(deleteNotification: boolean) {
+  refreshData(deleteNotification: boolean) {
     this.dataProvider.initWeek(this.dataProvider.CurrentDay);
-    this.dataProvider.refreshData(false).then(async () => {
-      this.dataProvider.setNotification(this.appointment, deleteNotification);
-    });
   }
 
   public setHorseName(horseKey: string) {
@@ -331,7 +328,7 @@ export class AppointmentService {
     });
   }
 
-  public SetData() {
+  setData() {
     this.appointment.StartDate = this.dt;
     this.appointment.StartHour = moment(this.dt).hours();
     this.appointment.StartMinute = moment(this.dt).minutes();
@@ -346,42 +343,95 @@ export class AppointmentService {
   }
 
   create() {
+    this.setData();
     this.dataProvider.addAppointment(this.appointment);
-    this.SetData();
-    this.createAppointment().then((result: ResultIdViewmodel) => {
+    this.createAppointment(this.appointment).then((result: ResultIdViewmodel) => {
       if (result.Result) {
         this.appointment.Id = result.Id;
-        this.RefreshData(false);
-        this.LoadOwnData();
+        this.dataProvider.refreshAppointmentId(this.appointment, true);
+        this.refreshData(false);
+        //this.loadOwnData();
       } else {
         this.handleError(result.ErrorId);
       }
     });
   }
   
-  delete() {
-    this.appointment.UserKey = this.dataProvider.Profile.UserKey;
-      this.dataProvider.removeAppointment(this.appointment);
-        this.deleteAppointment().then((result) => {
-          if (result) {
-            this.RefreshData(false);
-          } else {
-            this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
-          }
+  syncAppointments() {
+    var unsaved = this.dataProvider.getUnsavedAppointments();
+    var hasChanges: boolean = false;
+    if(unsaved && unsaved.length > 0) {
+      unsaved.forEach( (item) => {
+        this.createAppointment(item).then((result: ResultIdViewmodel) => {
+          if (result.Result) {
+            item.Id = result.Id;
+            this.dataProvider.refreshAppointmentId(item, true);
+            hasChanges = true;
+          } 
         });
+      });
+    }
+    var notDeleted = this.dataProvider.getDeletedAppointments();
+    if(notDeleted && notDeleted.length > 0) {
+      notDeleted.forEach( (item) => {
+        this.deleteAppointment(item).then(() => {
+            hasChanges = true;
+        });
+      });
+    }
+    if(hasChanges) {
+      this.dataProvider.saveAppointments();
+    }
+  }
+
+  delete(callback?: any) {
+    this.appointment.UserKey = this.dataProvider.Profile.UserKey;
+    this.dataProvider.removeAppointment(this.appointment, false);
+    this.dataProvider.saveAppointments();
+    this.deleteAppointment(this.appointment).then((result) => {
+      if (result) {
+        this.removeAppointment(this.appointment);
+        this.refreshData(false);
+        this.dataProvider.saveAppointments();
+        if(callback) {
+          callback();
+        }
+      } else {
+        this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
+      }
+    });
   }
 
   save() {
-    this.SetData();
-    this.modifyAppointment().then((result: ResultIdViewmodel) => {
-      if (result.Result) {
-        this.SetOriginalAppointment();
-        this.RefreshData(false);
-        this.LoadOwnData();
-      } else {
-        this.handleError(result.ErrorId);
-      }
-    });
+    this.setData();
+    if(this.checkModifications()) {
+      this.dataProvider.saveAppointments();
+      this.modifyAppointment().then((result: ResultIdViewmodel) => {
+        if (result.Result) {
+          this.SetOriginalAppointment();
+          this.refreshData(false);
+          //this.loadOwnData();
+        } else {
+          this.handleError(result.ErrorId);
+        }
+      });
+    }
+  }
+
+  checkModifications():boolean {
+    var isModified: boolean = false;
+    
+    if(this.originalappointment.HorseKey !== this.appointment.HorseKey) { isModified = true; this.originalappointment.HorseKey = this.appointment.HorseKey;}
+    if(this.originalappointment.HorseName !== this.appointment.HorseName) { isModified = true; this.originalappointment.HorseName = this.appointment.HorseName;}
+    if(this.originalappointment.HorseImageUrl !== this.appointment.HorseImageUrl) { isModified = true; this.originalappointment.HorseImageUrl = this.appointment.HorseImageUrl;}
+    if(moment(this.originalappointment.StartDate).diff(this.appointment.StartDate, 'minutes') > 0 ) { isModified = true; this.originalappointment.StartDate = this.appointment.StartDate;}
+    if(this.originalappointment.StartHour !== this.appointment.StartHour) { isModified = true; this.originalappointment.StartHour = this.appointment.StartHour;}
+    if(this.originalappointment.StartMinute !== this.appointment.StartMinute) { isModified = true; this.originalappointment.StartMinute = this.appointment.StartMinute;}
+    if(this.originalappointment.Comment !== this.appointment.Comment) { isModified = true; this.originalappointment.Comment = this.appointment.Comment;}
+    if(this.originalappointment.Duration !== this.appointment.Duration) { isModified = true; this.originalappointment.Duration = this.appointment.Duration;}
+    if(this.originalappointment.JobType !== this.appointment.JobType) { isModified = true; this.originalappointment.JobType = this.appointment.JobType;}
+    if(this.originalappointment.AppointmentName !== this.appointment.AppointmentName) { isModified = true; this.originalappointment.AppointmentName = this.appointment.AppointmentName;}
+    return isModified;
   }
 
   handleError(error: number) {
@@ -439,11 +489,9 @@ export class AppointmentService {
     }
   }
 
-  public createAppointment() {
+  public createAppointment(appointment: AppointmentViewmodel) {
     if (this.dataProvider.IsOnline) {
-      
-      return this.restProvider.createAppointment(this.appointment);
-
+      return this.restProvider.createAppointment(appointment);
     } else {
       return this.dataProvider.offlineResponse();
     }
@@ -461,10 +509,9 @@ export class AppointmentService {
     }
   }
 
-  public deleteAppointment() {
+  public deleteAppointment(appointment: AppointmentViewmodel) {
     if (this.dataProvider.IsOnline) {
-      this.RemoveAppointment(this.appointment);
-      return this.restProvider.deleteAppointment(this.appointment);
+      return this.restProvider.deleteAppointment(appointment);
     } else {
       return this.dataProvider.offlineResponse();
     }

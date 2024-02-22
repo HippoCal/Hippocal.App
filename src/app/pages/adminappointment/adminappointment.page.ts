@@ -102,14 +102,7 @@ export class AdminappointmentPage {
   onDelete() {
     this.toastSvc.confirm(() => {
       this.appointmentService.appointment.UserKey = this.dataProvider.Profile.UserKey;
-      this.appointmentService.deleteAppointment().then((result) => {
-        if (result) {
-          this.appointmentService.RefreshData(true);
-          this.dataProvider.navigate('home', 'tab3');
-        } else {
-          this.toastSvc.showMessage("ERR_NO_DELETE_APPOINTMENT", '', true);
-        }
-      });
+      this.appointmentService.delete();
     }, "HEADER_CONFIRM_DELETE_EVENT", "MSG_CONFIRM_DELETE_EVENT");
   }
 

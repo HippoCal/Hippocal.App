@@ -39,6 +39,7 @@ export class DataService {
   private toWeek: boolean = false;
   private isPrivate: boolean = false;
   private MaxFreeLogins: number = 5;
+  private profileImage: string = "";
 
 
   constructor(
@@ -477,7 +478,6 @@ export class DataService {
   loadHomeData() {
     this.loadAppointments().then(() => {
       this.initDay();
-      this.saveAppointments();
     });
   }
 
@@ -490,26 +490,20 @@ export class DataService {
       if (doAll) {
         this.getuserstatus(() => { });
       }
-      return this.restProvider.getNextAppointments(this.Profile.UserKey, this.Profile.ShowEvents)
-        .then((data: any) => {
-          if (data !== undefined) {
-            var newAppointments =  <AppointmentViewmodel[]>data;
-            if(newAppointments && newAppointments.length > 0){
-              this.appointments = newAppointments;
-              this.saveAppointments();
-            }
-            
-            if (this.currentDay !== undefined) {
-              this.getAppointments(this.currentDay);
-              return this.onlineReponse();
-            }
-          }
-          return this.offlineResponse(true);
-        }, (err) => {
-          return this.onlineReponse();
-        });
-    } else {
-      return this.onlineReponse();
+    //   return this.restProvider.getNextAppointments(this.Profile.UserKey, this.Profile.ShowEvents)
+    //     .then((data: any) => {
+    //       if (data !== undefined) {
+    //         if (this.currentDay !== undefined) {
+    //           this.getAppointments(this.currentDay);
+    //           return this.onlineReponse();
+    //         }
+    //       }
+    //       return this.offlineResponse(true);
+    //     }, (err) => {
+    //       return this.onlineReponse();
+    //     });
+    // } else {
+    //   return this.onlineReponse();
     }
   }
 
@@ -536,12 +530,15 @@ export class DataService {
 
   buildPlaceAppointments() {
     this.placeAppointments = [];
-    this.appointments.forEach(item => {
+    var now = moment(new Date()).add(-1, 'days');
+    var validAppointments = this.appointments.filter( e => moment(e.StartDate).isSameOrAfter(now));
+    validAppointments = validAppointments.sort((a: any, b: any) => moment(a.StartDate).diff(moment(b.StartDate)))
+    validAppointments.forEach((item : AppointmentViewmodel) => {
       var found: boolean = false;
-      if (!item.needsDelete) {
+      if (item.needsDelete === false || item.needsDelete === undefined) {
         this.placeAppointments.forEach(place => {
           if (place.PlaceKey === item.PlaceKey && item.AppointmentType < 5) {
-            place.Appointments.push(<AppointmentViewmodel>item);
+            place.Appointments.push(item);
             found = true;
             return;
           } else if (place.PlaceKey === '' && item.AppointmentType > 4) {
@@ -581,29 +578,57 @@ export class DataService {
       this.week.push(new WeekViewmodel(this.formatDate(dt, "ddd DD.MM"), i));
     }
     this.getWeekAppointments();
+    this.loadWeek();
   }
 
   addAppointment(app: AppointmentViewmodel)
   {
     var existing = this.appointments.filter( e => e.Id === app.Id);
-    if(existing && existing.length === 0) {
+    if(existing && existing.length === 0 || app.Id === 0) {
       this.appointments.push(app);
       this.saveAppointments();
     }
   }
 
-  removeAppointment(app: AppointmentViewmodel)
+  refreshAppointmentId(app: AppointmentViewmodel, save: boolean)
   {
-    var indexValue: number = -1;
-    this.appointments.forEach( (item, index) => {
-       if(item.Id === app.Id) {
-        indexValue = index;
-        return;
-       }
-      });
-    if(indexValue !== -1) {
-      this.appointments.splice(indexValue, 1)
+    var existing = this.appointments.filter( e => e.HorseKey === app.HorseKey && e.PlaceKey === app.PlaceKey && e.StartDate === app.StartDate && e.StartHour === app.StartHour && e.StartMinute === app.StartMinute);
+    if(existing && existing.length !== 0) {
+      existing[0].Id = app.Id;
+      if(save) {
+        this.saveAppointments();
+      }
+      
     }
+  }
+
+  removeAppointment(app: AppointmentViewmodel, deleteFinal: boolean)
+  {
+    if(deleteFinal) {
+      var indexValue: number = -1;
+      this.appointments.forEach( (item, index) => {
+         if(item.Id === app.Id) {
+          indexValue = index;
+          return;
+         }
+        });
+      if(indexValue !== -1) {
+        this.appointments.splice(indexValue, 1)
+      }
+    } else {
+      var existing = this.appointments.filter( e => e.Id === app.Id);
+      if(existing && existing.length > 0) {
+        existing[0].needsDelete = true;
+      }
+    }
+  }
+
+  getUnsavedAppointments() {
+    return this.appointments.filter( e => e.Id === 0);
+  }
+
+  getDeletedAppointments() {
+    return this.appointments.filter( e => e.needsDelete === true);
   }
 
   getWeekAppointments() {
@@ -614,7 +639,10 @@ export class DataService {
     if(placeKey === '') return;
 
     var lastDay = moment(this.firstDay).endOf('week');
-    var apps = this.appointments.filter( (item) => {return item.PlaceKey === placeKey && moment(item.StartDate).isSameOrAfter(this.firstDay) && moment(item.StartDate).isSameOrBefore(lastDay);} );
+    var apps = this.appointments.filter( (item) => {return (item.PlaceKey === placeKey || (item.PlaceKey === "" && item.IsPrivate)) && 
+    (item.needsDelete === false || item.needsDelete === undefined) &&
+    moment(item.StartDate).isSameOrAfter(this.firstDay) && 
+    moment(item.StartDate).isSameOrBefore(lastDay);} );
     this.setWeekAppointments(placeKey, apps);
 
   }
@@ -636,13 +664,22 @@ export class DataService {
       }
   }
 
-
+  loadWeek() {
+    var placeKey: string = '';
+    if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
+      placeKey = this.Profile.CurrentPlace.PlaceKey;
+    }
+    if(placeKey === '') return;
+    this.loadWeekData(placeKey);
+  }
+  
   loadWeekData(placeKey: string) {
 
     this.getWeek(this.firstDay, placeKey, this.Profile.UserKey).then((result) => {
       var hasResult = false;
       if (result) {
         this.weekAppointments = <AppointmentViewmodel[]>result;
+        this.addWeekAppointments()
         hasResult = true;
       }
       this.week = [];
@@ -652,6 +689,19 @@ export class DataService {
 
   }
 
+private addWeekAppointments() {
+  var hasChanges = false;
+  this.weekAppointments.forEach( (item) => {
+    var existing = this.appointments.filter( e => e.Id === item.Id );
+    if(existing && existing.length === 0) {
+      this.appointments.push(item);
+      hasChanges = true;
+    }
+  });
+  if(hasChanges) {
+    this.saveAppointments();
+  }
+}
   private addDays(date: Date, days: number): Date {
     var result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -705,6 +755,7 @@ export class DataService {
       }
     });
   }
+
 
   async load(callback?: any) {
     this.getProfileFromStorage().then(() => {
@@ -860,6 +911,7 @@ export class DataService {
     if(placeKey === '') return;
 
     var apps = this.appointments.filter( (item) => {return item.PlaceKey === placeKey && 
+      (item.needsDelete === false || item.needsDelete === undefined) &&
       moment(item.StartDate).isSameOrAfter(currentDate) && 
       moment(item.StartDate).isSameOrBefore(moment(currentDate).add(1, 'days'));} );
     if(apps) {
@@ -1019,6 +1071,13 @@ export class DataService {
 
   private getLocale() {
     this.locale = "de-DE";
+  }
+
+  async getProfileImage() {
+    var image = await this.imageProvider.get(this.Profile.ImageUrl, this.Profile.UserKey, "user", true, this.Profile.UserKey);
+    if(image) {
+        this.profileImage = image.data;   
+    }
   }
 
   setMomentLocale() {
@@ -1223,6 +1282,10 @@ export class DataService {
 
   get RemoteText(): string {
     return this.remoteText;
+  }
+
+  get ProfileImage(): string {
+    return this.profileImage;
   }
 
   setCurrentTab(tab: string) {

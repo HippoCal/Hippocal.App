@@ -49,6 +49,7 @@ export class AppointmentViewmodel {
     this.OwnAppointment = true;
     this.Id = 0;
     this.IsPrivate = false;
+    this.needsDelete = false;
   }
 
  

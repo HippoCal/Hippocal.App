@@ -15,7 +15,6 @@ export class ProfilePage {
   public area: string;
   public lockedOut: boolean;
   public lockOutReasonEMail: boolean;
-  public userImage: string;
   public color: string;
 
   constructor(
@@ -37,19 +36,7 @@ export class ProfilePage {
   }
 
   ngOnInit() {
-    this.getUserImage();
-  }
-
-  async getUserImage() {
-
-    var image = await this.imageProvider.get(this.dataProvider.Profile.ImageUrl, this.dataProvider.Profile.UserKey, "user", true, this.dataProvider.Profile.UserKey);
-    if (image) {
-      this.zone.run(() => {
-        this.userImage = image.data;
-      });
-    }
-
-
+    this.dataProvider.getProfileImage();
   }
 
   async onAddHorse() {
@@ -86,7 +73,7 @@ export class ProfilePage {
         }
         this.dataProvider.saveProfile(ProfileViewmodel.PartialClone(data, this.dataProvider.Profile));
         if (isChanged) {
-          this.getUserImage();
+          this.dataProvider.getProfileImage();
         }
         this.dataProvider.modifyProfile(this.dataProvider.Profile).then(data => {
           if (data) {

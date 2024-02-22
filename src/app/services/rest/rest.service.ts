@@ -235,12 +235,12 @@ export class RestService {
 
   modifyAppointment(appointment: AppointmentViewmodel) {
     var url = this.apiUrl + '/modifyappointment';
-    return this.post(url, appointment, true, true, true);
+    return this.post(url, appointment, false, true, true);
   }
 
   deleteAppointment(appointment: AppointmentViewmodel) {
     var url = this.apiUrl + '/delete';
-    return this.post(url, appointment, true, true, true);
+    return this.post(url, appointment, false, true, true);
   }
 
   getDay(dt: Date, placeKey: string, userKey: string) {

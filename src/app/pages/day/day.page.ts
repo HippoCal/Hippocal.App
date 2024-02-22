@@ -25,7 +25,7 @@ export class DayPage {
   }
 
   ngOnInit() {
-    
+    this.appointmentService.syncAppointments();
     this.dataProvider.getMyAppointments(this.dt);
     this.dataProvider.getAppointments(this.dt);
     this.dayString = this.formatDate(this.dt);
@@ -63,29 +63,20 @@ export class DayPage {
     switch (role) {
       case 'create':
         this.appointmentService.create();
-        this.dataProvider.getMyAppointments(this.dt)
         break;
       case 'save':
         this.appointmentService.save();
-        this.dataProvider.getMyAppointments(this.dt)
         break;
       case 'delete':
         this.appointmentService.delete();
-        this.dataProvider.getMyAppointments(this.dt)
         break;
       case 'admin':
         await this.createAdmin(dt);
         break;
     }
-    ;
+    this.dataProvider.getMyAppointments(this.dt)
   }
 
-  scrollToCurrent(id) {
-    let y = document.getElementById("row-" + id).offsetTop;
-    console.log(y);
-    let content = document.querySelector("ion-content");
-    content.scrollToPoint(0, y);
-  }
   handleError(error: number) {
     if (error != undefined && error != null) {
       var errId = this.appointmentService.getAppointmentErrors(error);

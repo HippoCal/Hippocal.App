@@ -37,7 +37,7 @@
       </div>
     </ion-item>
     <ion-item-options *ngIf="appointment.OwnAppointment && canDelete">
-      <ion-item-option color="danger" (click)="onDelete($event, appointment)"
+      <ion-item-option color="danger" (click)="$event.stopPropagation(); onDelete()"
         [disabled]="!dataProvider.IsOnline || !appointment.IsInTheFuture">
         <ion-icon name="trash"></ion-icon>
         {{ 'BTN_DELETE_NEWS' | translate }}
