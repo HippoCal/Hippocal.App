@@ -25,10 +25,11 @@ export class DayPage {
   }
 
   ngOnInit() {
+    this.dataProvider.DayIsLoaded = false;
     this.appointmentService.syncAppointments();
-    this.dataProvider.getMyAppointments(this.dt);
-    this.dataProvider.getAppointments(this.dt);
     this.dayString = this.formatDate(this.dt);
+    this.dataProvider.getAppointments(this.dt);
+    this.dataProvider.getMyAppointments(this.dt);
   }
 
   cancel() {
@@ -63,18 +64,21 @@ export class DayPage {
     switch (role) {
       case 'create':
         this.appointmentService.create();
+        this.dataProvider.getMyAppointments(this.dt)
         break;
       case 'save':
         this.appointmentService.save();
         break;
       case 'delete':
         this.appointmentService.delete();
+        
         break;
       case 'admin':
         await this.createAdmin(dt);
+        this.dataProvider.getMyAppointments(this.dt)
         break;
     }
-    this.dataProvider.getMyAppointments(this.dt)
+    
   }
 
   handleError(error: number) {

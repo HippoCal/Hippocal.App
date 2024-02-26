@@ -185,8 +185,7 @@ export class WeekPage {
   postEventProcessing(data: AppointmentViewmodel, role: string) {
     switch (role) {
       case 'save':
-        this.appointmentService.save();
-        this.dataProvider.initWeek(this.firstDay);
+        this.appointmentService.save(true, this.firstDay);
         break;
       case 'delete':
         this.appointmentService.delete();

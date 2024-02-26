@@ -613,14 +613,31 @@ export class DataService {
          }
         });
       if(indexValue !== -1) {
-        this.appointments.splice(indexValue, 1)
-      }
+          this.appointments.splice(indexValue, 1)
+        }
     } else {
       var existing = this.appointments.filter( e => e.Id === app.Id);
       if(existing && existing.length > 0) {
         existing[0].needsDelete = true;
       }
     }
+    this.removeFromHalfHours(app);
+  }
+
+  removeFromHalfHours(app: AppointmentViewmodel) {
+    this.halfHours.forEach( (halfhour) => {
+      var appIndex: number = -1;
+      halfhour.Appointments.forEach( (existing, index) => {
+        if(existing.Id === app.Id) {
+          appIndex = index;
+          return;
+        }
+      } );
+      if(appIndex !== -1) {
+        halfhour.Appointments.splice(appIndex, 1);
+        this.getHalfHourColor(app, halfhour);
+      }
+    });
   }
 
   getUnsavedAppointments() {
@@ -901,22 +918,21 @@ private addWeekAppointments() {
 
   getMyAppointments(currentDate: Date) {
     this.currentDay = currentDate;
-    this.dayIsLoaded = false;
-    this.IsPrivate ? this.initPrivateDay() : this.initDay();
-    this.dayIsLoaded = true;
+    if(!this.dayIsLoaded) {
+      this.IsPrivate ? this.initPrivateDay() : this.initDay();
+    }
+    
     var placeKey: string = '';
     if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
       placeKey = this.Profile.CurrentPlace.PlaceKey;
     }
     if(placeKey === '') return;
-
     var apps = this.appointments.filter( (item) => {return item.PlaceKey === placeKey && 
       (item.needsDelete === false || item.needsDelete === undefined) &&
       moment(item.StartDate).isSameOrAfter(currentDate) && 
       moment(item.StartDate).isSameOrBefore(moment(currentDate).add(1, 'days'));} );
     if(apps) {
       this.pushAppointments(apps);
-      this.dayIsLoaded = true;
     }
 
   }
@@ -925,7 +941,6 @@ private addWeekAppointments() {
   getAppointments(currentDate: Date) {
     if(!this.dayIsLoaded) {
       this.currentDay = currentDate;
-      this.dayIsLoaded = false;
       this.IsPrivate ? this.initPrivateDay() : this.initDay();
     }
     if (this.IsOnline) {
@@ -1087,27 +1102,14 @@ private addWeekAppointments() {
 
   private setItemInHalfHour(item: AppointmentViewmodel, halfhour: HalfHourViewmodel) {
 
+    if(halfhour.Appointments.some( e => e.Id === item.Id)) return;
     if (item.AppointmentType === 0) {
       if (item.IsAnonymous) {
         item.UserName = this.translate.instant("LBL_ANONYMOUS");
         item.HorseName = this.translate.instant("LBL_ANONYMOUS");
       }
       halfhour.Appointments.push(item);
-      var count = halfhour.Appointments.length > 0 ? halfhour.Appointments.filter(e => e.IsPrivate === false).length : 0;
-      halfhour.HasData = true;
-      halfhour.CanCreate = true;
-      if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
-        if (this.Profile.CurrentPlace.WeeksBookingInFuture !== -1) {
-          var lastDay: Date = new Date();
-          lastDay.setDate(new Date().getDate() + this.Profile.CurrentPlace.WeeksBookingInFuture * 7);
-          halfhour.CanCreate = halfhour.Date >= new Date(moment.now()) &&
-            halfhour.Date < lastDay &&
-            this.profile.CurrentPlace.MaxCapacity > count;
-        } else {
-          halfhour.CanCreate = halfhour.Date >= new Date(moment.now()) &&
-            this.profile.CurrentPlace.MaxCapacity > count;
-        }
-      }
+      this.getHalfHourColor(item, halfhour);
     } else if (item.AppointmentType > 4) {
       halfhour.Appointments.push(item);
       halfhour.HasData = true;
@@ -1128,9 +1130,30 @@ private addWeekAppointments() {
     } else {
       halfhour.BackgroundColor = ColorConst.COL_BACK_DAY_CLOSED;
     }
-
   }
 
+  private getHalfHourColor(item: AppointmentViewmodel, halfhour: HalfHourViewmodel) {
+    var count = halfhour.Appointments.length > 0 ? halfhour.Appointments.filter(e => e.IsPrivate === false).length : 0;
+    halfhour.HasData = true;
+    halfhour.CanCreate = true;
+    if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
+      if (this.Profile.CurrentPlace.WeeksBookingInFuture !== -1) {
+        var lastDay: Date = new Date();
+        lastDay.setDate(new Date().getDate() + this.Profile.CurrentPlace.WeeksBookingInFuture * 7);
+        halfhour.CanCreate = halfhour.Date >= new Date(moment.now()) &&
+          halfhour.Date < lastDay &&
+          this.profile.CurrentPlace.MaxCapacity > count;
+      } else {
+        halfhour.CanCreate = halfhour.Date >= new Date(moment.now()) &&
+          this.profile.CurrentPlace.MaxCapacity > count;
+      }
+    }
+    if (halfhour.CanCreate) {
+      halfhour.BackgroundColor = item.Color ? item.Color : ColorConst.COL_BACK_DAY;
+    } else {
+      halfhour.BackgroundColor = ColorConst.COL_BACK_DAY_CLOSED;
+    }
+  }
   private setHalfHourAppointments(dayAppointments: AppointmentViewmodel[], halfhour: HalfHourViewmodel) {
 
     dayAppointments.forEach(item => {
@@ -1156,7 +1179,7 @@ private addWeekAppointments() {
     });
   }
 
-  private pushAppointments(dayAppointments: AppointmentViewmodel[]) {
+  pushAppointments(dayAppointments: AppointmentViewmodel[]) {
     this.halfHours.forEach(halfhour => {
       halfhour.DataLoaded = true;
       this.setHalfHourAppointments(dayAppointments, halfhour);
@@ -1262,6 +1285,10 @@ private addWeekAppointments() {
 
   get IsPrivate(): boolean {
     return this.isPrivate;
+  }
+
+  set DayIsLoaded(value: boolean) {
+    this.dayIsLoaded = value;
   }
 
   get DayIsLoaded(): boolean {

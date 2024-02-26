@@ -388,6 +388,7 @@ export class AppointmentService {
     this.appointment.UserKey = this.dataProvider.Profile.UserKey;
     this.dataProvider.removeAppointment(this.appointment, false);
     this.dataProvider.saveAppointments();
+    this.dataProvider.getMyAppointments(this.dt)
     this.deleteAppointment(this.appointment).then((result) => {
       if (result) {
         this.removeAppointment(this.appointment);
@@ -402,36 +403,41 @@ export class AppointmentService {
     });
   }
 
-  save() {
+  save( initWeek?: boolean, firstDay?: Date) {
     this.setData();
-    if(this.checkModifications()) {
-      this.dataProvider.saveAppointments();
-      this.modifyAppointment().then((result: ResultIdViewmodel) => {
-        if (result.Result) {
-          this.SetOriginalAppointment();
-          this.refreshData(false);
-          //this.loadOwnData();
-        } else {
-          this.handleError(result.ErrorId);
-        }
-      });
-    }
+    this.dataProvider.removeAppointment(this.appointment, true);
+    this.modifyAppointment().then((result: ResultIdViewmodel) => {
+      if (result.Result) {
+        this.appointment.Id = this.originalappointment.Id;
+        this.dataProvider.refreshAppointmentId(this.appointment, true);
+        this.SetOriginalAppointment();
+        return;
+      } else {      
+        this.appointment.Id = this.originalappointment.Id;
+        this.dataProvider.removeAppointment(this.appointment, true);
+        this.dataProvider.addAppointment(this.originalappointment);
+        this.refreshLocal(this.originalappointment);
+        this.handleError(result.ErrorId);
+        return;
+      }
+    });      
+    this.appointment.Id = 0;
+    this.dataProvider.addAppointment(this.appointment);
+    this.refreshLocal(this.appointment, initWeek, firstDay);  
+    
   }
 
-  checkModifications():boolean {
-    var isModified: boolean = false;
-    
-    if(this.originalappointment.HorseKey !== this.appointment.HorseKey) { isModified = true; this.originalappointment.HorseKey = this.appointment.HorseKey;}
-    if(this.originalappointment.HorseName !== this.appointment.HorseName) { isModified = true; this.originalappointment.HorseName = this.appointment.HorseName;}
-    if(this.originalappointment.HorseImageUrl !== this.appointment.HorseImageUrl) { isModified = true; this.originalappointment.HorseImageUrl = this.appointment.HorseImageUrl;}
-    if(moment(this.originalappointment.StartDate).diff(this.appointment.StartDate, 'minutes') > 0 ) { isModified = true; this.originalappointment.StartDate = this.appointment.StartDate;}
-    if(this.originalappointment.StartHour !== this.appointment.StartHour) { isModified = true; this.originalappointment.StartHour = this.appointment.StartHour;}
-    if(this.originalappointment.StartMinute !== this.appointment.StartMinute) { isModified = true; this.originalappointment.StartMinute = this.appointment.StartMinute;}
-    if(this.originalappointment.Comment !== this.appointment.Comment) { isModified = true; this.originalappointment.Comment = this.appointment.Comment;}
-    if(this.originalappointment.Duration !== this.appointment.Duration) { isModified = true; this.originalappointment.Duration = this.appointment.Duration;}
-    if(this.originalappointment.JobType !== this.appointment.JobType) { isModified = true; this.originalappointment.JobType = this.appointment.JobType;}
-    if(this.originalappointment.AppointmentName !== this.appointment.AppointmentName) { isModified = true; this.originalappointment.AppointmentName = this.appointment.AppointmentName;}
-    return isModified;
+  private refreshLocal(app: AppointmentViewmodel, initWeek?: boolean, firstDay?: Date) {
+    setTimeout( () => {
+      if(new Date(this.dt).getDate() === new Date(this.dataProvider.CurrentDay).getDate()) {
+        const apps: AppointmentViewmodel[] = [];
+        apps.push(app);
+        this.dataProvider.pushAppointments(apps);     
+      }
+      if(initWeek) {
+        this.dataProvider.initWeek(firstDay);
+      } 
+  }, 200)
   }
 
   handleError(error: number) {
