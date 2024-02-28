@@ -1,33 +1,30 @@
-.hasData {
-    background-color: #32db64;
-    box-shadow: 2px 1px 1px #193d24;
-    border-color:#193d24;
+.standardData {
+    background-color: var(--ion-color-standardData);
+    color: #ffffff;
   }
   
   .privateData {
-    background-color: #00a1ff;
-    box-shadow: 2px 1px 1px #0e212c;
-    border-color:#0e212c;
+    background-color: var(--ion-color-privateData);
+    color: #ffffff;
+  }
+
+  .adminData {
+    background-color: var(--ion-color-adminData); 
+    color: #ffffff;
   }
 
   .otherData {
-    background-color: #ffd800;
-    box-shadow: 2px 1px 1px #322d11;
-    border-color:#322d11;
+    background-color: var(--ion-color-otherData);
+    color: #181817;
   }
   
-  .notReadyData {
-    background-color: #aeaca9;
-    box-shadow: 2px 1px 1px #322d11;
-    border-color:#322d11;
-  }
-
-  .whiteColor {
+  .dirtyData {
+    background-color: var(--ion-color-dirtyData);
     color: #ffffff;
   }
 
   .textcenter {
-    font-size: 0.9em;
+    font-size: 0.8em;
     margin-left: auto;
     margin-right: auto;
     display: block;
@@ -37,6 +34,8 @@
     text-align: center;
     border-width: 1px;
     width: 100px;
+    border-color:#000000;
+    box-shadow: 1px 1px 1px #193d24;
   }
 
   .threeDots {
@@ -50,13 +49,6 @@
     font-size: 0.9em;
     margin: 1px;
   }
-
-  // h6 {
-  //   font-size: 14px;
-  //   color: #0f130b;
-  //   margin: 1px;
-  //   padding: 1px;
-  // }
 
   ion-col {
     padding: 0px;

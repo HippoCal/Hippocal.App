@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { register } from 'swiper/element/bundle';
 import { DataService, ImageService, StorageService } from './services/services';
+import { ProfileViewmodel } from './viewmodels/profileviewmodel';
 
 //import { App, AppInfo } from '@capacitor/app';
 register();
@@ -34,11 +35,7 @@ export class AppComponent {
   }
 
   public getTitle() {
-    if (this.dataProvider.Profile?.DisplayName !== "") {
-      return this.dataProvider.Profile?.DisplayName;
-    } else {
-      return this.dataProvider.Profile?.FirstName + " " + this.dataProvider.Profile?.Name;
-    }
+    return ProfileViewmodel.GetTitle(this.dataProvider.Profile);
   }
 
   buildMenu() {
@@ -114,7 +111,7 @@ export class AppComponent {
   start() {
     try {
       this.dataProvider.load( () => {
-        this.dataProvider.loadHomeData();
+        //this.dataProvider.getLocalHomeData();
         this.initTranslate();
         this.buildMenu();
         this.dataProvider.getProfileImage();

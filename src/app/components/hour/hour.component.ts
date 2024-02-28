@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ColorConst } from 'src/app/constants';
 import { DataService } from 'src/app/services/services';
 import { AppointmentViewmodel } from 'src/app/viewmodels/appointmentviewmodel';
 import { DayViewmodel } from 'src/app/viewmodels/dayviewmodel';
@@ -16,7 +17,9 @@ export class HourComponent  implements OnInit {
 
   constructor(public dataProvider: DataService) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    
+  }
 
   public onSelectHalfHour() {
     this.selectHalfHour.emit(this.halfHour);
@@ -24,5 +27,9 @@ export class HourComponent  implements OnInit {
 
   public onShowAppointment(appointment: AppointmentViewmodel) {
     this.showAppointment.emit(appointment);
+  }
+
+  get backgroundColor(): string {
+    return this.halfHour.CanCreate ? ColorConst.COL_BACK_DAY : ColorConst.COL_BACK_DAY_CLOSED;
   }
 }

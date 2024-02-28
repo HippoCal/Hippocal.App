@@ -19,10 +19,8 @@ export class AppointmentViewmodel {
   BlockPlace: boolean = false;
   FreeSlots: boolean = false;
   JobType: JobTypeEnum;
-  IsPrivate: boolean;
   AppointmentType: AppointmentTypeEnum = AppointmentTypeEnum.Other;
   RecurrenceType: RecurrenceTypeEnum = RecurrenceTypeEnum.Daily;
-  RecordType: RecordTypeEnum = RecordTypeEnum.Standard;
   NumSlots: number;
   Duration: number;
   AppointmentName: string = '';
@@ -30,6 +28,7 @@ export class AppointmentViewmodel {
   StartDate: Date;
   StartHour: number;
   StartMinute: number;
+  IsDirty: boolean;
   IsAnonymous: boolean = false;
   needsDelete: boolean = false;
 
@@ -48,10 +47,30 @@ export class AppointmentViewmodel {
     this.NumSlots = 1;
     this.OwnAppointment = true;
     this.Id = 0;
-    this.IsPrivate = false;
     this.needsDelete = false;
+    this.IsDirty = true;
   }
 
- 
+  public static recordType(appointment: AppointmentViewmodel): RecordTypeEnum {
+    if(appointment.AppointmentType === AppointmentTypeEnum.Standard && appointment.OwnAppointment) return RecordTypeEnum.Standard;
+    if(appointment.AppointmentType === AppointmentTypeEnum.Standard && !appointment.OwnAppointment) return RecordTypeEnum.Other;
+    if(appointment.AppointmentType > 4) return RecordTypeEnum.Private;
+    return RecordTypeEnum.Admin;
+  }
 
+  public static Merge(existing: AppointmentViewmodel, newApp: AppointmentViewmodel): AppointmentViewmodel {
+    existing.AppointmentName = newApp.AppointmentName;
+    existing.AppointmentType = newApp.AppointmentType;
+    existing.StartDate = newApp.StartDate;
+    existing.StartHour = newApp.StartHour;
+    existing.StartMinute = newApp.StartMinute;
+    existing.Duration = newApp.Duration;
+    existing.JobType = newApp.JobType;
+    existing.Comment = newApp.Comment;
+    existing.HorseImageUrl = newApp.HorseImageUrl;
+    existing.HorseKey = newApp.HorseKey;
+    existing.HorseName = newApp.HorseName;
+    existing.IsDirty = newApp.IsDirty;
+    return existing;
+  }
 }

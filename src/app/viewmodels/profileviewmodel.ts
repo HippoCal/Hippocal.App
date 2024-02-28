@@ -1,3 +1,4 @@
+import { ImageViewmodel } from './imageviewmodel';
 import { PlaceViewmodel, HorseViewmodel } from './viewmodels';
 
 export class ProfileViewmodel {
@@ -23,6 +24,7 @@ export class ProfileViewmodel {
   public NumLogins: number = 0;
   public LastNewsRefresh: Date = new Date;
   public CurrentPlace: PlaceViewmodel;
+  public CurrentImage: ImageViewmodel;
   public Horses: HorseViewmodel[];
   public Places: PlaceViewmodel[];
 
@@ -53,6 +55,14 @@ export class ProfileViewmodel {
     this.LastNotificationId = 0;
   }
 
+  public static GetTitle(data: ProfileViewmodel): string {
+    var displayName: string = data?.FirstName + " " + data?.Name;
+    if (data?.DisplayName !== "") {
+      displayName = data?.DisplayName;
+    }
+    return displayName;  
+  }
+  
   public static PartialClone(data: ProfileViewmodel, existing?: ProfileViewmodel): ProfileViewmodel {
 
     const profile = existing !== undefined ? existing :new ProfileViewmodel(

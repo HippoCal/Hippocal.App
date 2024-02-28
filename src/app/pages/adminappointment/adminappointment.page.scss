@@ -15,11 +15,9 @@
 }
 
 ion-range {
-  --bar-background: #a2d2ff;
-  --bar-background-active: #bde0fe;
-  --bar-height: 8px;
+  --bar-height: 4px;
   --bar-border-radius: 8px;
-  --knob-size: 28px;
+  --knob-size: 22px;
 }
 
 h6 {
@@ -29,7 +27,6 @@ h6 {
 .radioCol {
   padding-top: 20px;
 }
-
 ion-col {
   padding: 0px;
 }
@@ -92,4 +89,5 @@ ion-toolbar.changer {
   overflow: hidden !important;
   text-overflow: ellipsis;
 }
+
 

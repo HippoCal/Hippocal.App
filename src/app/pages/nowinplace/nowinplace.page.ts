@@ -7,6 +7,7 @@ import { EventdetailsPage } from '../eventdetails/eventdetails.page';
 import { AdminappointmentPage } from '../adminappointment/adminappointment.page';
 import { PrivateAppointmentPage } from '../privateappointment/privateappointment.page';
 import { PlacedetailsPage } from '../placedetails/placedetails.page';
+import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
 
 @Component({
   selector: 'page-nowinplace',
@@ -32,7 +33,7 @@ export class NowinplacePage {
   }
 
   async onShowAppointment(appointment: AppointmentViewmodel) {
-    if (appointment.AppointmentType === 0) {
+    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Standard) {
       const modal = await this.modalCtrl.create({
         component: CreatePage,
         componentProps: { appointment: appointment, dt: appointment.StartDate }
@@ -47,7 +48,7 @@ export class NowinplacePage {
   
   public onShowEvent(appointment: AppointmentViewmodel) {
     // private appointment
-    if (appointment.IsPrivate) {
+    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Private) {
       this.showPrivateAppointment(appointment)
       // own admin event
     } else if (appointment.OwnAppointment) {
@@ -104,7 +105,7 @@ export class NowinplacePage {
         this.appointmentService.save();
         break;
       case 'delete':
-        this.appointmentService.delete();
+        this.appointmentService.delete(null, false);
         break;
     }
   }

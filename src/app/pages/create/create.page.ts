@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { AppointmentViewmodel} from "src/app/viewmodels/viewmodels";
+import { AppointmentViewmodel, ProfileViewmodel} from "src/app/viewmodels/viewmodels";
 import { AppointmentTypeEnum, JobTypeEnum } from 'src/app/enums/enums';
 import { DataService, AppointmentService, ToastService, ImageService } from 'src/app/services/services';
 import { TranslateService } from '@ngx-translate/core';
@@ -46,9 +46,7 @@ export class CreatePage {
         this.appointmentService.dt,
         this.appointmentService.dt.hour(),
         this.appointmentService.dt.minute(),
-        this.dataProvider.Profile.DisplayName !== '' && this.dataProvider.Profile.DisplayName !== undefined
-          ? this.dataProvider.Profile.DisplayName
-          : this.dataProvider.Profile.FirstName + ' ' + this.dataProvider.Profile.Name,
+        ProfileViewmodel.GetTitle(this.dataProvider.Profile),
         30,
         JobTypeEnum.Other,
         AppointmentTypeEnum.Standard);

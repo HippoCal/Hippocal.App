@@ -8,10 +8,11 @@ import { ModalController } from '@ionic/angular';
 import { CreatePage } from '../create/create.page';
 import { PrivateAppointmentPage } from '../privateappointment/privateappointment.page';
 import { AdminappointmentPage } from '../adminappointment/adminappointment.page';
-import { EventdetailsPage } from '../eventdetails/eventdetails.page';
 import { DayPage } from '../day/day.page';
 import { PlacedetailsPage } from '../placedetails/placedetails.page';
 import { NowinplacePage } from '../nowinplace/nowinplace.page';
+import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
+import { OtherAppointmentPage } from '../otherappointment/otherappointment.page';
 
 @Component({
   selector: 'app-week',
@@ -19,6 +20,7 @@ import { NowinplacePage } from '../nowinplace/nowinplace.page';
   styleUrls: ['./week.page.scss'],
 })
 export class WeekPage {
+
 
   private firstDay: Date;
   public privatePlace: PlaceViewmodel;
@@ -31,16 +33,15 @@ export class WeekPage {
     public appointmentService: AppointmentService,
     private zone: NgZone,
     private translate: TranslateService) {
-    
+
   }
 
   ngOnInit() {
     this.firstDay = moment(new Date()).toDate();
     this.appointmentService.syncAppointments();
-    this.createPrivatePlace();
     this.dataProvider.initWeek(this.firstDay);
   }
-  
+
   ionViewWillEnter() {
     this.dataProvider.setCurrentTab('tab3');
   };
@@ -51,18 +52,6 @@ export class WeekPage {
     } else if (event.direction === 2) {
       this.nextWeek();
     }
-  }
-
-  async createPrivatePlace() {
-    if (this.dataProvider.Profile.CurrentPlace.IsPrivate) {
-      this.privatePlace = new PlaceViewmodel(this.dataProvider.Profile.CurrentPlace.Name, '');
-      this.privatePlace.OwnerName = this.dataProvider.Profile.CurrentPlace.OwnerName;
-      this.privatePlace.LocalImage = await this.placeImage();
-      this.color = 'secondary-contrast';
-    } else {
-      this.privatePlace = this.dataProvider.Profile.CurrentPlace;
-    }
-
   }
 
   cancel() {
@@ -103,26 +92,6 @@ export class WeekPage {
     this.dataProvider.getWeekAppointments();
   }
 
-  public onShowEvent(appointment: AppointmentViewmodel) {
-    // private appointment
-    if (appointment.IsPrivate) {
-      this.showPrivateAppointment(appointment)
-      // own admin event
-    } else if (appointment.OwnAppointment) {
-      var place: any;
-      this.dataProvider.Profile.Places.forEach((item) => {
-        if (item.PlaceKey === appointment.PlaceKey) {
-          place = item;
-          return;
-        }
-      });
-      this.showAdminAppointment(appointment, place)
-    } else {
-      // other admin event
-      this.showEvent(appointment)
-    }
-  }
-
   formatTime(appointment): string {
 
     var d1: Date = new Date(appointment.StartDate);
@@ -136,45 +105,28 @@ export class WeekPage {
   }
 
   async onShowAppointment(appointment: AppointmentViewmodel) {
-    if (appointment.AppointmentType === 0) {
-      const modal = await this.modalCtrl.create({
-        component: CreatePage,
-        componentProps: { appointment: appointment, dt: appointment.StartDate }
-      });
-      modal.present();
-      const { data, role } = await modal.onWillDismiss();
-      this.postEventProcessing(data, role);
+    var recordType = AppointmentViewmodel.recordType(appointment);
+    let component: any;
+    if (!appointment.IsInTheFuture) {
+      component = OtherAppointmentPage;
     } else {
-      this.onShowEvent(appointment);
+      switch (recordType) {
+        case RecordTypeEnum.Standard:
+          component = CreatePage;
+          break
+        case RecordTypeEnum.Admin:
+          component = AdminappointmentPage;
+          break;
+        case RecordTypeEnum.Private:
+          component = PrivateAppointmentPage;
+          break;
+        case RecordTypeEnum.Other:
+          component = OtherAppointmentPage;
+          break;
+      }
     }
-  }
-
-  async showPrivateAppointment(appointment: AppointmentViewmodel) {
-
     const modal = await this.modalCtrl.create({
-      component: PrivateAppointmentPage,
-      componentProps: { appointment: appointment, dt: appointment.StartDate }
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-    this.postEventProcessing(data, role);
-  }
-
-  async showAdminAppointment(appointment: AppointmentViewmodel, place: PlaceViewmodel) {
-
-    const modal = await this.modalCtrl.create({
-      component: AdminappointmentPage,
-      componentProps: { appointment: appointment, dt: appointment.StartDate, place: place }
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-    this.postEventProcessing(data, role);
-  }
-
-  async showEvent(appointment: AppointmentViewmodel) {
-
-    const modal = await this.modalCtrl.create({
-      component: EventdetailsPage,
+      component: component,
       componentProps: { appointment: appointment, dt: appointment.StartDate }
     });
     modal.present();
@@ -188,11 +140,11 @@ export class WeekPage {
         this.appointmentService.save(true, this.firstDay);
         break;
       case 'delete':
-        this.appointmentService.delete();
+        this.appointmentService.delete(null, false);
         this.dataProvider.initWeek(this.firstDay);
         break;
     }
-    
+
   }
 
   onRefresh() {
@@ -216,6 +168,7 @@ export class WeekPage {
   }
 
   async onPlaceDetails() {
+    if (this.dataProvider.Profile.CurrentPlace.IsPrivate) return;
     const modal = await this.modalCtrl.create({
       component: PlacedetailsPage,
     });
@@ -225,7 +178,7 @@ export class WeekPage {
 
 
   public hasPlace(): boolean {
-    return this.dataProvider.Profile.CurrentPlace !== undefined && this.dataProvider.Profile.CurrentPlace.Name !== '';
+    return this.dataProvider.Profile.CurrentPlace !== undefined && !this.dataProvider.Profile.CurrentPlace.IsPrivate;
   }
 
   public getPlaceName() {

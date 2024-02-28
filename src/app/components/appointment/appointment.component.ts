@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
 import { AppointmentViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService} from 'src/app/services/services';
 import * as moment from 'moment';
+import { AppointmentTypeEnum } from 'src/app/enums/appointmenttypeenum';
 
 
 @Component({
@@ -26,6 +27,21 @@ export class AppointmentComponent {
     
   }
 
+  getAvatarLetter(): string {
+    switch (this.appointment.AppointmentType) {
+      case AppointmentTypeEnum.Course:
+        return 'L';
+      case AppointmentTypeEnum.Maintenance:
+        return 'H';
+      case AppointmentTypeEnum.Training:
+        return 'T';
+      case AppointmentTypeEnum.Other:
+        return 'V';
+      default:
+        return '?';
+    }
+  }
+
   ngOnInit() {
     this.gethorseImage();
   }
@@ -46,23 +62,6 @@ export class AppointmentComponent {
 
   }
 
-  // onDelete(event: Event, appointment: AppointmentViewmodel) {
-  //   if (event.cancelable) {
-  //     event.preventDefault();
-  //   }
-  //   event.stopPropagation();
-  //   this.toastSvc.confirm(() => {
-  //     appointment.UserKey = this.dataProvider.Profile.UserKey;
-  //     this.appointmentService.appointment = appointment;
-  //     this.appointmentService.deleteAppointment(this.appointmentService.appointment).then((result) => {
-  //       if (result) {
-  //         this.appointmentService.refreshData(true);
-  //       } else {
-  //         this.dataProvider.showMessage("ERR_NO_DELETE_APPOINTMENT", true);
-  //       }
-  //     });
-  //   }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
-  // }
 
   onDelete() {
     this.deleteAppointment.emit(this.appointment);
@@ -74,6 +73,9 @@ export class AppointmentComponent {
     var endDate = moment(appointment.StartDate).add(appointment.Duration, 'minutes');
     if (startDate < now && endDate > now) {
       return 'orange';
+    }
+    else if(appointment.AppointmentType !== 0) {
+      return 'adminapp';
     }
     else if (now < startDate) {
       return 'divider';

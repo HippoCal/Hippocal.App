@@ -12,12 +12,8 @@
 <ion-content class="ion-padding">
   <ion-grid>
     <ion-row *ngIf="isNew">
-      <ion-col size="3">
-        <h6>{{ 'LBL_DATE' | translate }}</h6>
-      </ion-col>
-      <ion-col size="9">
-        <h6>{{ appointmentService.getDateText() }}</h6>
-      </ion-col>
+      <ion-col size="3"><h6>{{ 'LBL_DATE' | translate }}</h6></ion-col>
+      <ion-col size="9"><h6>{{ appointmentService.getDateText() }}</h6></ion-col>
     </ion-row>
     <ion-row *ngIf="isNew">
       <ion-col size="3">
@@ -62,7 +58,7 @@
         <h6>{{ 'LBL_PLACE' | translate }}</h6>
       </ion-col>
       <ion-col size="9">
-        <h6>{{place.Name}}</h6>
+        <h6>{{dataProvider.Profile.CurrentPlace.Name}}</h6>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -92,15 +88,11 @@
         (click)="onDelete()" expand="block">{{ 'BTN_DELETEADMINAPPOINTMENT' | translate }}</ion-button>
     </ion-col>
   </ion-row>
-  <ion-button *ngIf="isNew" color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrUpdate()"
-    expand="block">{{ buttonText }}</ion-button>
-  <ion-item>
-    <ion-range min="30" max="240" step="30" snaps="true" color="success"
-      [(ngModel)]="appointmentService.appointment.Duration">
-      <ion-label range-left>30min</ion-label>
-      <ion-label range-right>4h</ion-label>
-    </ion-range>
-  </ion-item>
+  <ion-button *ngIf="isNew" color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrUpdate()" expand="block">{{ buttonText }}</ion-button>
+  <ion-range min="30" max="240" step="30" snaps="true" color="success" [(ngModel)]="appointmentService.appointment.Duration">
+    <ion-label slot="start">30min</ion-label>
+    <ion-label slot="end">4h</ion-label>
+  </ion-range>
   <ion-item>
     <ion-select label="{{ 'LBL_JOBTYPE' | translate }}" labelPlacement="floating"
       [(ngModel)]="appointmentService.appointment.JobType" interface="popover" multiple="false" (ionChange)="onChangeJobType()">

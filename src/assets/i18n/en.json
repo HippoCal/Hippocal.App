@@ -53,6 +53,7 @@
   "BTN_DELETE_IMAGE": "Delete image",
   "BTN_MODIFY_IMAGE": "Modify image",
   "BTN_BACK": "Back",
+  "BTN_SAVE_CHANGES": "Save changes",
   "BTN_SENDMESSAGE": "Send message",
   "MSG_CONFIRM_DELETE": "Do you really want to cancel the appointment?",
   "HEADER_CONFIRM_DELETE": "Cancel appointment",
@@ -62,6 +63,7 @@
   "HEADER_ADDHORSE": "New horse",
   "HEADER_MODIFYHORSE": "Modify horse",
   "HEADER_CONFIRM_MODIFYHORSE": "Modify horse data",
+  "HEADER_APPOINTMENTDETAILS": "Details",
   "MSG_CONFIRM_RESETPROFILE": "Do you really want to disable your access to HippoCal?",
   "HEADER_CONFIRM_RESETPROFILE": "Disable access",
   "LIST_HEADER_NEWS": "Your News",
@@ -158,6 +160,7 @@
   "JOBTYPE_WESTERN": "Western",
   "JOBTYPE_HORSEMANSHIP": "Horsemanship",
   "JOBTYPE_VAULTING": "Vaulting",
+  "JOBTYPE_MAINTENANCE": "Maintenance",
   "APPOINTMENTTYPE_OTHER": "Event",
   "APPOINTMENTTYPE_TRAINING": "Training",
   "APPOINTMENTTYPE_COURSE": "Course",
@@ -250,5 +253,6 @@
   "HEADER_CONFIRM_DELETE_NEWS": "Delete message",
   "MSG_CONFIRM_DELETE_NEWS": "Do you really want to delete this message?",
   "LBL_APPOINTMENTTYPE": "Type",
-  "BTN_SAVE": "Save"
+  "BTN_SAVE": "Save",
+  "LBL_USERNAME": "Owner"
 }

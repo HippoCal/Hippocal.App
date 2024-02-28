@@ -1,9 +1,7 @@
 import { Component, ViewChild, ElementRef, Input } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { AppointmentViewmodel, ResultIdViewmodel } from "src/app/viewmodels/viewmodels";
+import { AppointmentViewmodel } from "src/app/viewmodels/viewmodels";
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
 import { TranslateService } from '@ngx-translate/core';
-import { LocationStrategy } from '@angular/common';
 import * as moment from 'moment';
 import { AppointmentService, DataService, ToastService } from 'src/app/services/services';
 import { ModalController } from '@ionic/angular';
@@ -28,14 +26,11 @@ export class PrivateAppointmentPage {
   @Input("appointment") appointment: AppointmentViewmodel;
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
     private modalCtrl: ModalController,
     public dataProvider: DataService,
     public appointmentService: AppointmentService,
     public translate: TranslateService,
-    private toastSvc: ToastService,
-    private locationStrategy: LocationStrategy) {
+    private toastSvc: ToastService,) {
   }
 
   ngOnInit() {
@@ -47,6 +42,7 @@ export class PrivateAppointmentPage {
       this.isNew = true;
       this.appointment = new AppointmentViewmodel(this.dataProvider.Profile.UserKey, '', '', this.appointmentService.dt, this.appointmentService.dt.hour(), this.appointmentService.dt.minute(), '', 60, JobTypeEnum.Other, AppointmentTypeEnum.Custom);
       this.appointment.HorseKey = this.dataProvider.Profile.Horses.length > 0 ? this.dataProvider.Profile.Horses[0].HorseKey : '';
+      this.appointment.AppointmentType = AppointmentTypeEnum.Custom;
     }
     this.appointmentService.setAppointment(this.appointment);
     this.duration = this.appointment.Duration;

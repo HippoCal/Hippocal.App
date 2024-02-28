@@ -1,14 +1,57 @@
-page-otherappointment .center {
+
+.range-md .range-tick {
+  top: 16px;
+  width: 2px;
+  height: 12px;
+}
+
+.buttonMiddle {
+  margin-top: 2px;
+  text-align: center;
+}
+
+.btnSmall {
+  height: 1rem !important
+}
+
+h6 {
+  font-size: 0.9em;
+  font-weight: 300;
+}
+
+ion-col {
+  padding: 0px;
+}
+
+.center {
   margin-left: auto;
   margin-right: auto;
   display: block;
 }
 
-page-otherappointment ion-avatar img {
+
+.imgcenter {
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+ion-avatar img {
   width: 70px !important;
-
+  width: 70px !important;
 }
 
-page-otherappointment ion-avatar img.smallImage {
-  width: 55px !important;
+.textcenter {
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
 }
+
+

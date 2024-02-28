@@ -11,6 +11,7 @@ import { EventdetailsPage } from '../eventdetails/eventdetails.page';
 import { PrivateAppointmentPage } from '../privateappointment/privateappointment.page';
 import { WeekPage } from '../week/week.page';
 import { NewsdetailsPage } from '../newsdetails/newsdetails.page';
+import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
 
 @Component({
   selector: 'page-home',
@@ -27,7 +28,7 @@ export class HomePage {
     private modalCtrl: ModalController,
     public appointmentService: AppointmentService, 
     public imageProvider: ImageService) {
-      
+      this.dataProvider.refresh();  
   }
 
   ionViewWillEnter() { 
@@ -37,11 +38,11 @@ export class HomePage {
   };
 
   ngOnInit() { 
-
+    
   }
   
   async loadAppointments() {
-    await this.dataProvider.loadAppointments();
+    await this.dataProvider.getLocalAppointments();
     this.dataProvider.buildPlaceAppointments();
   }
   
@@ -89,7 +90,6 @@ export class HomePage {
   }
 
   onNewAppointment() {
-    this.dataProvider.setIsPrivate(false);
     this.dataProvider.setToWeek(false);
     this.dataProvider.navigate('places', 'tab3');
   }
@@ -100,12 +100,12 @@ export class HomePage {
       this.appointmentService.appointment = appointment;
       this.appointmentService.delete( () => {
         this.loadAppointments();
-      })
+      }, false)
     }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
   }
 
   async onShowAppointment(appointment: AppointmentViewmodel) {
-    if (appointment.AppointmentType === 0) {
+    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Standard) {
       const modal = await this.modalCtrl.create({
         component: CreatePage,
         componentProps: { appointment: appointment, dt: appointment.StartDate }
@@ -120,7 +120,7 @@ export class HomePage {
   
   public onShowEvent(appointment: AppointmentViewmodel) {
     // private appointment
-    if (appointment.IsPrivate) {
+    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Private) {
       this.showPrivateAppointment(appointment)
       // own admin event
     } else if (appointment.OwnAppointment) {
@@ -178,7 +178,7 @@ export class HomePage {
         this.loadAppointments();
         break;
       case 'delete':
-        this.appointmentService.delete();
+        this.appointmentService.delete(null, false);
         this.loadAppointments();
         break;
     }
@@ -222,7 +222,6 @@ export class HomePage {
   }
 
   async selectPlace(placeKey: string) {
-    this.dataProvider.setIsPrivate(false);
     this.dataProvider.setCurrentPlace(placeKey);
     const modal = await this.modalCtrl.create({
       component: WeekPage,
@@ -232,9 +231,7 @@ export class HomePage {
   }
 
   async onPrivateAppointment() {
-    this.dataProvider.setIsPrivate(true);
-    this.dataProvider.Profile.CurrentPlace.Name = '';
-    this.dataProvider.Profile.CurrentPlace.PlaceKey = '';
+    this.dataProvider.createPrivatePlace(true);
     const modal = await this.modalCtrl.create({
       component: WeekPage,
     });

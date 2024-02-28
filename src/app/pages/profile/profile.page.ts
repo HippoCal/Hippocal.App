@@ -4,6 +4,8 @@ import { DataService, ImageService, ToastService } from 'src/app/services/servic
 import { ModalController } from '@ionic/angular';
 import { EditprofilePage } from '../editprofile/editprofile.page';
 import { EdithorsePage } from '../edithorse/edithorse.page';
+import { PlacedetailsPage } from '../placedetails/placedetails.page';
+import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
 
 @Component({
   selector: 'page-profile',
@@ -60,35 +62,51 @@ export class ProfilePage {
       component: EditprofilePage,
     });
     modal.present();
-
     const { data, role } = await modal.onWillDismiss();
+    this.postEventProcessing(data, role);
 
+  }
+
+  async uploadImage(file: ImageViewmodel) {
+    await this.imageProvider.upload(file, this.dataProvider.Profile.UserKey);
+  }
+
+  private saveProfile(data: ProfileViewmodel) {
     let isChanged: boolean = false;
-    if (role === 'save') {
-      this.zone.run(() => {
-        if (data.ImageUrl !== this.dataProvider.Profile.ImageUrl && this.dataProvider.Profile.ImageUrl !== '') {
-          this.imageProvider.deleteImage(this.dataProvider.Profile.ImageUrl);
-          isChanged = true;
-
-        }
-        this.dataProvider.saveProfile(ProfileViewmodel.PartialClone(data, this.dataProvider.Profile));
-        if (isChanged) {
-          this.dataProvider.getProfileImage();
-        }
-        this.dataProvider.modifyProfile(this.dataProvider.Profile).then(data => {
-          if (data) {
-            this.dataProvider.loadProfile(() => {
-              if (!this.dataProvider.Profile.NotificationsAllowed) {
-                this.dataProvider.clearAllNotifications();
-              }
-            });
-          }
-        });
-      });
-    } else {
-      if (data.ImageUrl !== this.dataProvider.Profile.ImageUrl) {
-        this.imageProvider.deleteImage(data.ImageUrl)
+    this.zone.run(() => {
+      var file: ImageViewmodel = null;
+      if (data.CurrentImage) {
+        file = data.CurrentImage;
+        data.CurrentImage = null;
       }
+      if (data.ImageUrl !== this.dataProvider.Profile.ImageUrl && this.dataProvider.Profile.ImageUrl !== '') {
+        this.imageProvider.deleteImage(this.dataProvider.Profile.ImageUrl);
+        isChanged = true;
+      }
+      this.dataProvider.saveProfile(ProfileViewmodel.PartialClone(data, this.dataProvider.Profile));
+      if (isChanged) {
+        this.dataProvider.getProfileImage();
+      }
+      this.dataProvider.modifyProfile(this.dataProvider.Profile).then(data => {
+        if (data) {
+          if (file) {
+            this.uploadImage(file);
+          }
+          this.dataProvider.loadProfile(() => {
+            if (!this.dataProvider.Profile.NotificationsAllowed) {
+              this.dataProvider.clearAllNotifications();
+            }
+          });
+        }
+      });
+    });
+  }
+
+  postEventProcessing(data: ProfileViewmodel, role: string) {
+    switch (role) {
+      case 'save':
+        this.saveProfile(data);
+        break;
     }
 
   }
@@ -97,46 +115,35 @@ export class ProfilePage {
     await this.addModifyHorse(false, horse);
   }
 
+
   async addModifyHorse(isNew: boolean, existing?: HorseViewmodel) {
     var horse = existing ? existing : new HorseViewmodel('', '', '', '', this.dataProvider.Profile.UserKey);
-
     const modal = await this.modalCtrl.create({
       component: EdithorsePage,
       componentProps: { horse: HorseViewmodel.PartialClone(horse), isNew: isNew }
     });
     modal.present();
-
     const { data, role } = await modal.onWillDismiss();
-
     let isChanged: boolean = false;
-    if (role === 'save') {
-      this.zone.run(() => {
-        if (data.ImageUrl !== horse.ImageUrl && horse.ImageUrl !== '') {
-          this.imageProvider.deleteImage(horse.ImageUrl);
-          isChanged = true;
-        }
-        if (isNew) {   
-          this.dataProvider.addHorse(data);
-        } else {
-          existing = HorseViewmodel.PartialClone(data, horse);
-        }
-        this.dataProvider.saveProfile(this.dataProvider.Profile);
-        if(isChanged) 
-          this.dataProvider.load();
-      });
-    }
-    else if(role === 'delete') {
-      horse.UserKey = this.dataProvider.Profile.UserKey;
-      this.dataProvider.deleteHorse(horse).then(result => {
-        if (result) {
-          this.dataProvider.load();
-        }
-      });
-    }
-    else {
-      if (data.ImageUrl !== horse.ImageUrl) {
-        this.imageProvider.deleteImage(data.ImageUrl)
-      }
+    switch (role) {
+      case 'saveHorse':
+        this.zone.run(() => {
+          if (data.ImageUrl !== horse.ImageUrl && horse.ImageUrl !== '') {
+            this.imageProvider.deleteImage(horse.ImageUrl);
+            isChanged = true;
+          }
+          if (isNew) {
+            this.dataProvider.addHorse(data);
+          } else {
+            existing = HorseViewmodel.PartialClone(data, horse);
+          }
+          this.dataProvider.saveProfile(this.dataProvider.Profile);
+        });
+        break;
+      case 'deleteHorse':
+        horse.UserKey = this.dataProvider.Profile.UserKey;
+        this.dataProvider.deleteHorse(horse)
+        break;
     }
   }
 
@@ -167,8 +174,12 @@ export class ProfilePage {
       "MSG_CONFIRM_ACTIVATEPROFILE");
   }
 
-  public onPlaceDetails() {
-    this.dataProvider.navigate('placedetails', 'tab1');
+  async onPlaceDetails() {
+    const modal = await this.modalCtrl.create({
+      component: PlacedetailsPage,
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
   }
 
   onDeletePlace(place: PlaceViewmodel) {

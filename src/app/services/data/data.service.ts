@@ -1,7 +1,7 @@
 import { Platform } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { ProfileViewmodel, PlaceViewmodel, TokenViewmodel, HorseViewmodel, PlaceAppointmentsViewmodel, NewsViewmodel, HalfHourViewmodel, WeekViewmodel, AppointmentViewmodel, DayViewmodel } from "src/app/viewmodels/viewmodels";
-import { AppointmentTypeEnum } from 'src/app/enums/enums';
+import { RecordTypeEnum } from 'src/app/enums/enums';
 import { ImageService, RestService, StorageService, ToastService } from '../services';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
@@ -94,17 +94,16 @@ export class DataService {
     if (this.platform.is('cordova')) {
       var text: string;
       var startTime: Date = new Date(new Date(appointment.StartDate).getTime() - this.profile.NotificationDelay * 60000);
-      if (appointment.AppointmentType === AppointmentTypeEnum.Standard) {
+      if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Standard) {
         text = this.translate.instant("MSG_NOTIFICATION");
-
         text = text.replace("${placeName}", appointment.PlaceName);
         text = text.replace("${horse}", appointment.HorseName);
-      } else if (appointment.AppointmentType > 0 && appointment.AppointmentType < 5) {
+      } else if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Admin) {
         text = this.translate.instant("MSG_NOTIFICATION_EVENT");
         text = text.replace("${placeName}", appointment.PlaceName);
-        text = text.replace("${text}", appointment.HorseName);
+        text = text.replace("${text}", appointment.AppointmentName);
       }
-      else if (appointment.AppointmentType > 5) {
+      else if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Private) {
         text = this.translate.instant("MSG_NOTIFICATION_PRIVATE");
         text = text.replace("${text}", appointment.AppointmentName);
       }
@@ -128,7 +127,7 @@ export class DataService {
   }
 
   getuserstatus(callback: any) {
-    if (this.IsOnline) {
+    if (this.IsOnline && this.Profile !== undefined) {
       this.restProvider.getuserstatus(this.Profile.UserKey).then((result: any) => {
         if (result) {
           console.log('-getuserstatus: IsActive: ' + result.IsActive + ' EMailConfirmed: ' + result.EmailConfirmed + ' NumLogins: ' + result.NumLogins);
@@ -210,29 +209,28 @@ export class DataService {
   }
 
 
-  async setHorses(horses: HorseViewmodel[]) {
-    if (horses !== null) {
-      var tmphorses: HorseViewmodel[] = [];
-      var localImage: string = this.getDefaultImage("horse");
-      horses.forEach((item: HorseViewmodel) => {
-        this.Profile.Horses.forEach((horse: HorseViewmodel) => {
-          if (horse.HorseKey == item.HorseKey) {
-            item.Appointments = horse.Appointments;
-          }
-        });
-        var newHorse = new HorseViewmodel(
-          item.Name,
-          item.HorseKey,
-          item.ImageUrl,
-          localImage,
-        );
-        newHorse.Appointments = item.Appointments;
-        tmphorses.push(newHorse);
-      });
-      this.Profile.Horses = tmphorses;
-      this.saveProfile(this.Profile);
-    }
-  }
+  // async setHorses(horses: HorseViewmodel[]) {
+  //   if (horses !== null) {
+  //     var tmphorses: HorseViewmodel[] = [];
+  //     var localImage: string = this.getDefaultImage("horse");
+  //     horses.forEach((item: HorseViewmodel) => {
+  //       this.Profile.Horses.forEach((horse: HorseViewmodel) => {
+  //         if (horse.HorseKey == item.HorseKey) {
+  //           item.Appointments = horse.Appointments;
+  //         }
+  //       });
+  //       var newHorse = new HorseViewmodel(
+  //         item.Name,
+  //         item.HorseKey,
+  //         item.ImageUrl,
+  //         localImage,
+  //       );
+  //       newHorse.Appointments = item.Appointments;
+  //       tmphorses.push(newHorse);
+  //     });
+  //     this.Profile.Horses = tmphorses;
+  //   }
+  // }
 
 
   private getBusinessHours(businessHours, start, end): any[] {
@@ -322,7 +320,6 @@ export class DataService {
             this.Profile.ImageUrl = data.Data.Image;
             this.Profile.DisplayName = data.Data.DisplayName;
             this.Profile.UserKey = data.Data.UserKey;
-            this.setHorses(data.Horses);
             this.setPLaces(data.Places);
             if (this.Profile.Places.length === 0) {
               this.isPrivate = true;
@@ -379,11 +376,21 @@ export class DataService {
 
 
   deleteHorse(horse: HorseViewmodel) {
-    if (this.IsOnline) {
-      return this.restProvider.deleteHorse(horse);
-    } else {
-      return this.offlineResponse();
-    }
+    return this.restProvider.deleteHorse(horse).then( (result) => {
+      if(result) {
+        var indexValue: number = -1;
+        this.profile.Horses.forEach((horse, index) => {
+          if (horse.HorseKey === horse.HorseKey) {
+            indexValue = index;
+            return;
+          }
+        });
+        if (indexValue !== -1) {
+          this.profile.Horses.splice(indexValue, 1)
+        }
+        this.saveProfile(this.profile);
+      }
+    })
 
   }
 
@@ -475,40 +482,44 @@ export class DataService {
     this.saveNews();
   }
 
-  loadHomeData() {
-    this.loadAppointments().then(() => {
-      this.initDay();
-    });
-  }
-
   refreshData(doAll: boolean) {
     if (doAll) {
-      this.loadHomeData();
+      this.getLocalAppointments();
     }
-    this.loadNews();
     if (this.IsOnline) {
-      if (doAll) {
-        this.getuserstatus(() => { });
-      }
-    //   return this.restProvider.getNextAppointments(this.Profile.UserKey, this.Profile.ShowEvents)
-    //     .then((data: any) => {
-    //       if (data !== undefined) {
-    //         if (this.currentDay !== undefined) {
-    //           this.getAppointments(this.currentDay);
-    //           return this.onlineReponse();
-    //         }
-    //       }
-    //       return this.offlineResponse(true);
-    //     }, (err) => {
-    //       return this.onlineReponse();
-    //     });
-    // } else {
-    //   return this.onlineReponse();
+      if (this.Profile === undefined)
+        setTimeout(() => {
+          this.refreshOnline(doAll)
+        }, 1000);
+    } else {
+      this.refreshOnline(doAll);
     }
+  }
+
+  private refreshOnline(doAll: boolean) {
+    if (doAll) {
+      this.getuserstatus(() => { });
+    }
+    this.loadHomeAppointments();
+    this.loadNews();
+  }
+  loadHomeAppointments() {
+    this.restProvider.getNextAppointments(this.Profile.UserKey, this.Profile.ShowEvents)
+      .then((data: any) => {
+        var apps = data as AppointmentViewmodel[];
+        if (apps) {
+          this.mergeAppintments(apps);
+        }
+      });
+  }
+
+  mergeAppintments(apps: AppointmentViewmodel[]) {
+    this.appointments = apps;
+    this.saveAppointments();
   }
 
   refresh() {
-    return this.refreshData(true);
+    this.refreshData(true);
   }
 
   private onlineReponse() {
@@ -531,24 +542,20 @@ export class DataService {
   buildPlaceAppointments() {
     this.placeAppointments = [];
     var now = moment(new Date()).add(-1, 'days');
-    var validAppointments = this.appointments.filter( e => moment(e.StartDate).isSameOrAfter(now));
+    var validAppointments = this.appointments.filter(e => moment(e.StartDate).isSameOrAfter(now));
     validAppointments = validAppointments.sort((a: any, b: any) => moment(a.StartDate).diff(moment(b.StartDate)))
-    validAppointments.forEach((item : AppointmentViewmodel) => {
+    validAppointments.forEach((item: AppointmentViewmodel) => {
       var found: boolean = false;
       if (item.needsDelete === false || item.needsDelete === undefined) {
         this.placeAppointments.forEach(place => {
-          if (place.PlaceKey === item.PlaceKey && item.AppointmentType < 5) {
-            place.Appointments.push(item);
-            found = true;
-            return;
-          } else if (place.PlaceKey === '' && item.AppointmentType > 4) {
+          if ((place.PlaceKey === item.PlaceKey && item.AppointmentType < 5) || (place.PlaceKey === '' && item.AppointmentType > 4)) {
             place.Appointments.push(item);
             found = true;
             return;
           }
         });
         if (!found) {
-          if (item.AppointmentType < 5) {
+          if (AppointmentViewmodel.recordType(item) !== RecordTypeEnum.Private) {
             let newPlace: PlaceAppointmentsViewmodel = { PlaceKey: item.PlaceKey, PlaceName: item.PlaceName, Appointments: [] };
             newPlace.Appointments.push(item);
             this.placeAppointments.push(newPlace);
@@ -581,43 +588,51 @@ export class DataService {
     this.loadWeek();
   }
 
-  addAppointment(app: AppointmentViewmodel)
-  {
-    var existing = this.appointments.filter( e => e.Id === app.Id);
-    if(existing && existing.length === 0 || app.Id === 0) {
+  addAppointment(app: AppointmentViewmodel) {
+    var existing = this.appointments.filter(e => e.Id === app.Id);
+    if (existing && existing.length === 0 || app.Id === 0) {
       this.appointments.push(app);
       this.saveAppointments();
     }
   }
 
-  refreshAppointmentId(app: AppointmentViewmodel, save: boolean)
-  {
-    var existing = this.appointments.filter( e => e.HorseKey === app.HorseKey && e.PlaceKey === app.PlaceKey && e.StartDate === app.StartDate && e.StartHour === app.StartHour && e.StartMinute === app.StartMinute);
-    if(existing && existing.length !== 0) {
-      existing[0].Id = app.Id;
-      if(save) {
+  updateAppointment(app: AppointmentViewmodel) {
+    var existing = this.appointments.filter(e => e.Id === app.Id);
+    if (existing && existing.length !== 0) {
+      var existingApp = existing[0];
+      if (existingApp) {
+        existingApp = AppointmentViewmodel.Merge(existingApp, app);
         this.saveAppointments();
       }
-      
     }
   }
 
-  removeAppointment(app: AppointmentViewmodel, deleteFinal: boolean)
-  {
-    if(deleteFinal) {
+  refreshAppointmentId(app: AppointmentViewmodel, save: boolean) {
+    var existing = this.appointments.filter(e => e.AppointmentType === app.AppointmentType && e.PlaceKey === app.PlaceKey && e.StartDate === app.StartDate && e.StartHour === app.StartHour && e.StartMinute === app.StartMinute);
+    if (existing && existing.length !== 0) {
+      existing[0].Id = app.Id;
+      existing[0].IsDirty = app.IsDirty;
+      if (save) {
+        this.saveAppointments();
+      }
+    }
+  }
+
+  removeAppointment(app: AppointmentViewmodel, deleteFinal: boolean) {
+    if (deleteFinal) {
       var indexValue: number = -1;
-      this.appointments.forEach( (item, index) => {
-         if(item.Id === app.Id) {
+      this.appointments.forEach((item, index) => {
+        if (item.Id === app.Id) {
           indexValue = index;
           return;
-         }
-        });
-      if(indexValue !== -1) {
-          this.appointments.splice(indexValue, 1)
         }
+      });
+      if (indexValue !== -1) {
+        this.appointments.splice(indexValue, 1)
+      }
     } else {
-      var existing = this.appointments.filter( e => e.Id === app.Id);
-      if(existing && existing.length > 0) {
+      var existing = this.appointments.filter(e => e.Id === app.Id);
+      if (existing && existing.length > 0) {
         existing[0].needsDelete = true;
       }
     }
@@ -625,15 +640,15 @@ export class DataService {
   }
 
   removeFromHalfHours(app: AppointmentViewmodel) {
-    this.halfHours.forEach( (halfhour) => {
+    this.halfHours.forEach((halfhour) => {
       var appIndex: number = -1;
-      halfhour.Appointments.forEach( (existing, index) => {
-        if(existing.Id === app.Id) {
+      halfhour.Appointments.forEach((existing, index) => {
+        if (existing.Id === app.Id) {
           appIndex = index;
           return;
         }
-      } );
-      if(appIndex !== -1) {
+      });
+      if (appIndex !== -1) {
         halfhour.Appointments.splice(appIndex, 1);
         this.getHalfHourColor(app, halfhour);
       }
@@ -641,11 +656,11 @@ export class DataService {
   }
 
   getUnsavedAppointments() {
-    return this.appointments.filter( e => e.Id === 0);
+    return this.appointments.filter(e => e.Id === 0);
   }
 
   getDeletedAppointments() {
-    return this.appointments.filter( e => e.needsDelete === true);
+    return this.appointments.filter(e => e.needsDelete === true);
   }
 
   getWeekAppointments() {
@@ -653,32 +668,33 @@ export class DataService {
     if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
       placeKey = this.Profile.CurrentPlace.PlaceKey;
     }
-    if(placeKey === '') return;
 
     var lastDay = moment(this.firstDay).endOf('week');
-    var apps = this.appointments.filter( (item) => {return (item.PlaceKey === placeKey || (item.PlaceKey === "" && item.IsPrivate)) && 
-    (item.needsDelete === false || item.needsDelete === undefined) &&
-    moment(item.StartDate).isSameOrAfter(this.firstDay) && 
-    moment(item.StartDate).isSameOrBefore(lastDay);} );
+    var apps = this.appointments.filter((item) => {
+      return (item.PlaceKey === placeKey || (item.PlaceKey === "" && AppointmentViewmodel.recordType(item) === RecordTypeEnum.Private)) &&
+        (item.needsDelete === false || item.needsDelete === undefined) &&
+        moment(item.StartDate).isSameOrAfter(this.firstDay) &&
+        moment(item.StartDate).isSameOrBefore(lastDay);
+    });
     this.setWeekAppointments(placeKey, apps);
 
   }
 
-  setWeekAppointments(placeKey: string, apps: AppointmentViewmodel[]) {  
-      this.week = [];
-      for (var i = 0; i < 7; i++) {
-        var dayAppointments = [];
-        var dt: Date = this.addDays(this.firstDay, i);
-        var hasData: boolean = false;
-        apps.forEach(item => {
-          if (this.isTheSameDate(new Date(item.StartDate), dt) && (item.PlaceKey === placeKey || item.PlaceKey === '')) {
-            dayAppointments.push(item);
-            hasData = true;
-          }
-        });
-        let weekDay: WeekViewmodel = new WeekViewmodel(this.formatDate(dt, "ddd DD.MM"), i, dayAppointments, hasData);
-        this.week.push(weekDay);
-      }
+  setWeekAppointments(placeKey: string, apps: AppointmentViewmodel[]) {
+    this.week = [];
+    for (var i = 0; i < 7; i++) {
+      var dayAppointments = [];
+      var dt: Date = this.addDays(this.firstDay, i);
+      var hasData: boolean = false;
+      apps.forEach(item => {
+        if (this.isTheSameDate(new Date(item.StartDate), dt) && (item.PlaceKey === placeKey || item.PlaceKey === '')) {
+          dayAppointments.push(item);
+          hasData = true;
+        }
+      });
+      let weekDay: WeekViewmodel = new WeekViewmodel(this.formatDate(dt, "ddd DD.MM"), i, dayAppointments, hasData);
+      this.week.push(weekDay);
+    }
   }
 
   loadWeek() {
@@ -686,10 +702,10 @@ export class DataService {
     if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
       placeKey = this.Profile.CurrentPlace.PlaceKey;
     }
-    if(placeKey === '') return;
+    if (placeKey === '') return;
     this.loadWeekData(placeKey);
   }
-  
+
   loadWeekData(placeKey: string) {
 
     this.getWeek(this.firstDay, placeKey, this.Profile.UserKey).then((result) => {
@@ -706,19 +722,19 @@ export class DataService {
 
   }
 
-private addWeekAppointments() {
-  var hasChanges = false;
-  this.weekAppointments.forEach( (item) => {
-    var existing = this.appointments.filter( e => e.Id === item.Id );
-    if(existing && existing.length === 0) {
-      this.appointments.push(item);
-      hasChanges = true;
+  private addWeekAppointments() {
+    var hasChanges = false;
+    this.weekAppointments.forEach((item) => {
+      var existing = this.appointments.filter(e => e.Id === item.Id);
+      if (existing && existing.length === 0) {
+        this.appointments.push(item);
+        hasChanges = true;
+      }
+    });
+    if (hasChanges) {
+      this.saveAppointments();
     }
-  });
-  if(hasChanges) {
-    this.saveAppointments();
   }
-}
   private addDays(date: Date, days: number): Date {
     var result = new Date(date);
     result.setDate(result.getDate() + days);
@@ -731,7 +747,7 @@ private addWeekAppointments() {
   }
 
   async getProfileFromStorage() {
-    await this.storage?.get(this.PROFILE_KEY).then((value) => {
+    await this.storage?.get(this.PROFILE_KEY).then(async (value) => {
       try {
         if (value !== null && value !== undefined) {
           this.profile = value;
@@ -758,9 +774,21 @@ private addWeekAppointments() {
         } else {
           this.profile = new ProfileViewmodel('', '');
         }
+        await this.getHorseImages();
         this.IsLoaded = true;
       } catch (err) {
         this.profile = new ProfileViewmodel('', '');
+      }
+    });
+  }
+
+  private async getHorseImages() {
+    this.profile.Horses.forEach(async (horse: HorseViewmodel) => {
+      if (horse.LocalImage === '' || horse.LocalImage === null || horse.LocalImage === undefined) {
+        var image = await this.imageProvider.get(horse.ImageUrl, horse.HorseKey, "horse", true, this.Profile.UserKey);
+        if (image) {
+          horse.LocalImage = image.data;
+        }
       }
     });
   }
@@ -780,7 +808,7 @@ private addWeekAppointments() {
     });
   }
 
-  async loadAppointments() {
+  async getLocalAppointments() {
     if (!this.storage.isReady) {
       setTimeout(() => {
         this.getAppointmentsFromStorage();
@@ -890,7 +918,7 @@ private addWeekAppointments() {
     this.saveProfile(this.profile);
   }
 
-  saveProfile(value: ProfileViewmodel): void {
+  async saveProfile(value: ProfileViewmodel) {
     if (value.UserKey !== '' && value.UserKey !== undefined) {
       if (value.Email === '' || value.Email === undefined) {
         var token = this.restProvider.Token;
@@ -899,7 +927,11 @@ private addWeekAppointments() {
         }
       }
       this.profile = value;
-      this.storage?.set(this.PROFILE_KEY, this.profile);
+      this.profile.Horses.forEach((horse) => {
+        horse.LocalImage = '';
+      })
+      await this.storage?.set(this.PROFILE_KEY, this.profile);
+      await this.getHorseImages();
     }
   }
 
@@ -916,22 +948,34 @@ private addWeekAppointments() {
     });
   }
 
+  createPrivatePlace(setCurrentPlace: boolean): PlaceViewmodel {
+    var privatePlace = new PlaceViewmodel(this.translate.instant('BTN_NEW_PRIVATEAPPOINTMENT'), '');
+    privatePlace.OwnerName = this.translate.instant('BTN_NEW_PRIVATEAPPOINTMENT_DESCRIPTION');
+    privatePlace.IsPrivate = true;
+    if (setCurrentPlace) {
+      this.Profile.CurrentPlace = privatePlace;
+    }
+    return privatePlace;
+  }
+
   getMyAppointments(currentDate: Date) {
     this.currentDay = currentDate;
-    if(!this.dayIsLoaded) {
+    if (!this.dayIsLoaded) {
       this.IsPrivate ? this.initPrivateDay() : this.initDay();
     }
-    
+
     var placeKey: string = '';
     if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
       placeKey = this.Profile.CurrentPlace.PlaceKey;
     }
-    if(placeKey === '') return;
-    var apps = this.appointments.filter( (item) => {return item.PlaceKey === placeKey && 
-      (item.needsDelete === false || item.needsDelete === undefined) &&
-      moment(item.StartDate).isSameOrAfter(currentDate) && 
-      moment(item.StartDate).isSameOrBefore(moment(currentDate).add(1, 'days'));} );
-    if(apps) {
+
+    var apps = this.appointments.filter((item) => {
+      return item.PlaceKey === placeKey &&
+        (item.needsDelete === false || item.needsDelete === undefined) &&
+        moment(item.StartDate).isSameOrAfter(currentDate) &&
+        moment(item.StartDate).isSameOrBefore(moment(currentDate).add(1, 'days'));
+    });
+    if (apps) {
       this.pushAppointments(apps);
     }
 
@@ -939,7 +983,7 @@ private addWeekAppointments() {
 
   // loads day data
   getAppointments(currentDate: Date) {
-    if(!this.dayIsLoaded) {
+    if (!this.dayIsLoaded) {
       this.currentDay = currentDate;
       this.IsPrivate ? this.initPrivateDay() : this.initDay();
     }
@@ -1004,10 +1048,6 @@ private addWeekAppointments() {
 
   setToWeek(value: boolean) {
     this.toWeek = value;
-  }
-
-  setIsPrivate(value: boolean) {
-    this.isPrivate = value;
   }
 
   getHeader(header: string) {
@@ -1090,8 +1130,8 @@ private addWeekAppointments() {
 
   async getProfileImage() {
     var image = await this.imageProvider.get(this.Profile.ImageUrl, this.Profile.UserKey, "user", true, this.Profile.UserKey);
-    if(image) {
-        this.profileImage = image.data;   
+    if (image) {
+      this.profileImage = image.data;
     }
   }
 
@@ -1102,18 +1142,21 @@ private addWeekAppointments() {
 
   private setItemInHalfHour(item: AppointmentViewmodel, halfhour: HalfHourViewmodel) {
 
-    if(halfhour.Appointments.some( e => e.Id === item.Id)) return;
-    if (item.AppointmentType === 0) {
+    if (halfhour.Appointments.some(e => e.Id === item.Id)) return;
+    // standard
+    if (AppointmentViewmodel.recordType(item) === RecordTypeEnum.Standard) {
       if (item.IsAnonymous) {
         item.UserName = this.translate.instant("LBL_ANONYMOUS");
         item.HorseName = this.translate.instant("LBL_ANONYMOUS");
       }
       halfhour.Appointments.push(item);
       this.getHalfHourColor(item, halfhour);
-    } else if (item.AppointmentType > 4) {
+      // private
+    } else if (AppointmentViewmodel.recordType(item) === RecordTypeEnum.Private || AppointmentViewmodel.recordType(item) === RecordTypeEnum.Other) {
       halfhour.Appointments.push(item);
       halfhour.HasData = true;
     }
+    // admin
     else {
       halfhour.Caption = item.AppointmentName;
       halfhour.HasEvent = true;
@@ -1133,7 +1176,7 @@ private addWeekAppointments() {
   }
 
   private getHalfHourColor(item: AppointmentViewmodel, halfhour: HalfHourViewmodel) {
-    var count = halfhour.Appointments.length > 0 ? halfhour.Appointments.filter(e => e.IsPrivate === false).length : 0;
+    var count = halfhour.Appointments.length > 0 ? halfhour.Appointments.filter(e => AppointmentViewmodel.recordType(e) !== RecordTypeEnum.Private).length : 0;
     halfhour.HasData = true;
     halfhour.CanCreate = true;
     if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
@@ -1159,20 +1202,20 @@ private addWeekAppointments() {
     dayAppointments.forEach(item => {
       if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
         if (this.isTheSameTime(new Date(item.StartDate), new Date(halfhour.Date)) &&
-          (item.PlaceKey === this.Profile.CurrentPlace.PlaceKey || item.AppointmentType > 4)) {
+          (item.PlaceKey === this.Profile.CurrentPlace.PlaceKey || AppointmentViewmodel.recordType(item) === RecordTypeEnum.Private)) {
           this.setItemInHalfHour(item, halfhour);
         }
         if (this.isInRange(new Date(item.StartDate), new Date(halfhour.Date), item.Duration) &&
-          (item.PlaceKey === this.Profile.CurrentPlace.PlaceKey || item.AppointmentType > 4)) {
+          (item.PlaceKey === this.Profile.CurrentPlace.PlaceKey || AppointmentViewmodel.recordType(item) === RecordTypeEnum.Private)) {
           this.setItemInHalfHour(item, halfhour);
         }
       } else {
         if (this.isTheSameTime(new Date(item.StartDate), new Date(halfhour.Date)) &&
-          (item.AppointmentType > 4)) {
+          (AppointmentViewmodel.recordType(item) === RecordTypeEnum.Private)) {
           this.setItemInHalfHour(item, halfhour);
         }
         if (this.isInRange(new Date(item.StartDate), new Date(halfhour.Date), item.Duration) &&
-          (item.AppointmentType > 4)) {
+          (AppointmentViewmodel.recordType(item) === RecordTypeEnum.Private)) {
           this.setItemInHalfHour(item, halfhour);
         }
       }
@@ -1184,6 +1227,19 @@ private addWeekAppointments() {
       halfhour.DataLoaded = true;
       this.setHalfHourAppointments(dayAppointments, halfhour);
     });
+  }
+
+  refreshHalfHourAppointments(appointment: AppointmentViewmodel) {
+    this.halfHours.forEach(halfhour => {
+      halfhour.Appointments.forEach((existing, index) => {
+        if (existing.Id === appointment.Id) {
+          halfhour.Appointments.splice(index, 1);
+        }
+      });
+    });
+    var apps: AppointmentViewmodel[] = [];
+    apps.push(appointment);
+    this.pushAppointments(apps);
   }
 
   private formatTime(hour: any, minute: any, format: any) {
@@ -1284,7 +1340,7 @@ private addWeekAppointments() {
   }
 
   get IsPrivate(): boolean {
-    return this.isPrivate;
+    return this.Profile?.CurrentPlace.IsPrivate;
   }
 
   set DayIsLoaded(value: boolean) {
@@ -1319,7 +1375,6 @@ private addWeekAppointments() {
     this.currentTab = tab;
   }
 
-
   get ErrorCodes(): any {
     return {
       Error_Message_No_EMail: "3003",
@@ -1329,6 +1384,7 @@ private addWeekAppointments() {
       Error_Message_Error: "3007"
     }
   }
+
   get UnreadMessages(): number {
     return this.unreadMessages;
   }

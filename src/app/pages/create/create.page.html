@@ -5,13 +5,13 @@
     </ion-buttons>
     <ion-title>{{ dataProvider.getHeader(isNew? 'HEADER_CREATE' : 'HEADER_MODIFY') }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button icon="close-outline" (click)="onCreateOrUpdate()">{{ 'BTN_SAVE' | translate }}</ion-button>
+      <ion-button icon="close-outline" [disabled]="!dataProvider.IsOnline || !appointmentService.appointment.IsInTheFuture" (click)="onCreateOrUpdate()">{{ 'BTN_SAVE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
   <ion-grid>
-  <ion-row *ngIf="isNew">
+  <ion-row *ngIf="isNew || !appointmentService.appointment.IsInTheFuture">
     <ion-col size="3"><h6>{{ 'LBL_DATE' | translate }}</h6></ion-col>
     <ion-col size="9"><h6>{{ appointmentService.getDateText() }}</h6></ion-col>
   </ion-row>
@@ -19,8 +19,8 @@
     <ion-col size="3"><h6>{{ 'LBL_TIME' | translate }}</h6></ion-col>
     <ion-col size="9"><h6>{{ appointmentService.getDurationText() }}</h6></ion-col>
   </ion-row>
-  <ion-row *ngIf="!isNew">
-    <ion-toolbar align-title="middle" class="changer">
+  <ion-row *ngIf="!isNew && appointmentService.appointment.IsInTheFuture">
+    <ion-toolbar align-title="middle">
       <ion-buttons slot="start">
         <ion-button icon-only (click)="appointmentService.decDate()">
           <ion-icon name="arrow-back-circle-outline"></ion-icon>
@@ -34,8 +34,8 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-row>
-  <ion-row *ngIf="!isNew">
-    <ion-toolbar align-title="middle" class="changer">
+  <ion-row *ngIf="!isNew && appointmentService.appointment.IsInTheFuture">
+    <ion-toolbar align-title="middle">
       <ion-buttons slot="start">
         <ion-button icon-only (click)="appointmentService.decTime()">
           <ion-icon name="arrow-back-circle-outline"></ion-icon>
@@ -61,9 +61,9 @@
         <ion-col size="3"><h6>{{ 'LBL_HORSE' | translate }}</h6></ion-col>
         <ion-col size="9"><h6>{{ appointmentService.appointment.HorseName }}</h6></ion-col>
     </ion-row>
-    <ion-row *ngIf="!isNew">
-      <ion-col size="6"><ion-button color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrUpdate()" expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button></ion-col>
-      <ion-col size="6"><ion-button color="tertiary" [disabled]="!dataProvider.IsOnline || !appointmentService.appointment.IsInTheFuture" (click)="onDelete()" expand="block">{{ 'BTN_DELETEAPPOINTMENT' | translate }}</ion-button></ion-col>
+    <ion-row *ngIf="!isNew && appointmentService.appointment.IsInTheFuture">
+      <ion-col size="6"><ion-button color="primary" (click)="onCreateOrUpdate()" expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button></ion-col>
+      <ion-col size="6"><ion-button color="tertiary" (click)="onDelete()" expand="block">{{ 'BTN_DELETEAPPOINTMENT' | translate }}</ion-button></ion-col>
     </ion-row>
   </ion-grid>
   <ion-button *ngIf="isNew" color="primary" [disabled]="!dataProvider.IsOnline" (click)="onCreateOrUpdate()" expand="block">{{ 'BTN_SAVEAPPOINTMENT' | translate }}</ion-button>

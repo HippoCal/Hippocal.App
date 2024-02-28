@@ -8,5 +8,6 @@ export enum JobTypeEnum {
   Training = 6,
   Western = 7,
   Horsemanship = 8,
-  Vaulting = 9
+  Vaulting = 9,
+  Maintenance = 10
 }

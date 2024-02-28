@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { AppointmentViewmodel, HorseAppointmentsViewmodel, OwnAppointmentViewmodel, TypeAppointmentsViewmodel, IOwnAppointmentViewmodel, OwnAppointmentsViewmodel, TypeStatusViewmodel, ResultIdViewmodel } from "../../viewmodels/viewmodels";
+import { AppointmentViewmodel, HorseAppointmentsViewmodel, OwnAppointmentViewmodel, TypeAppointmentsViewmodel, IOwnAppointmentViewmodel, OwnAppointmentsViewmodel, TypeStatusViewmodel, ResultIdViewmodel, ProfileViewmodel } from "../../viewmodels/viewmodels";
 import { JobTypeEnum, AppointmentTypeEnum } from '../../enums/enums';
 
 import { DataService, StorageService } from '../services';
@@ -46,6 +46,7 @@ export class AppointmentService {
       "JOBTYPE_WESTERN",
       "JOBTYPE_HORSEMANSHIP",
       "JOBTYPE_VAULTING",
+      "JOBTYPE_MAINTENANCE",
       "APPOINTMENTTYPE_OTHER",
       "APPOINTMENTTYPE_TRAINING",
       "APPOINTMENTTYPE_COURSE",
@@ -62,7 +63,8 @@ export class AppointmentService {
           { id: JobTypeEnum.Other, text: values.JOBTYPE_OTHER },
           { id: JobTypeEnum.Dressage, text: values.JOBTYPE_DRESSAGE },
           { id: JobTypeEnum.Jumping, text: values.JOBTYPE_JUMPING },
-          { id: JobTypeEnum.Lunging, text: values.JOBTYPE_LUNGING }
+          { id: JobTypeEnum.Lunging, text: values.JOBTYPE_LUNGING },
+          { id: JobTypeEnum.Maintenance, text: values.JOBTYPE_MAINTENANCE }
         ];
         this.appointmenttypes = [
           { id: AppointmentTypeEnum.Other, text: values.APPOINTMENTTYPE_OTHER },
@@ -92,6 +94,18 @@ export class AppointmentService {
         ];
       });
     this.selectedAppointmenttypes = this.appointmenttypes;
+  }
+
+  getJobText(jobType: JobTypeEnum) {
+    var jobTypes = this.standardJobtypes.filter( e => e.id == jobType);
+    if(jobTypes && jobTypes.length > 0) {
+      return jobTypes[0].text;
+    }
+    jobTypes = this.jobtypes.filter( e => e.id == jobType);
+    if(jobTypes && jobTypes.length > 0) {
+      return jobTypes[0].text;
+    }
+    return '';
   }
 
   decTime() {
@@ -197,10 +211,8 @@ export class AppointmentService {
     app.needsDelete = data.needsDelete;
     app.NumSlots = data.NumSlots;
     app.OwnAppointment = data.OwnAppointment;
-    app.RecordType = data.RecordType;
     app.RecurrenceType = data.RecurrenceType;
     app.UserKey = data.UserKey;
-    app.IsPrivate = data.IsPrivate;
     return app;
   }
 
@@ -233,12 +245,7 @@ export class AppointmentService {
 
   private removeAppointment(data: AppointmentViewmodel) {
     this.dataProvider.removeAppointment(data, true);
-    this._ownAppointments.Appointments.forEach((item, index) => {
-      if (item.Id == data.Id) {
-        this._ownAppointments.Appointments = this._ownAppointments.Appointments.splice(index, 1);
-        this.saveOwnAppointments();
-      }
-    });
+    this.dataProvider.saveAppointments();
   }
 
   private addOwnAppointment(data: IOwnAppointmentViewmodel, result: OwnAppointmentsViewmodel) {
@@ -309,7 +316,6 @@ export class AppointmentService {
     vm.Id = horseAppointments.Id;
     vm.Pk = horseAppointments.PlaceKey;
     vm.Pn = horseAppointments.PlaceName;
-    vm.Rt = horseAppointments.RecordType;
     vm.Sd = new Date(horseAppointments.StartDate);
     return vm;
   }
@@ -342,15 +348,17 @@ export class AppointmentService {
     }
   }
 
-  create() {
+  create(refreshDay?: boolean, dt?: Date) {
     this.setData();
     this.dataProvider.addAppointment(this.appointment);
     this.createAppointment(this.appointment).then((result: ResultIdViewmodel) => {
       if (result.Result) {
         this.appointment.Id = result.Id;
+        this.appointment.IsDirty = false;
         this.dataProvider.refreshAppointmentId(this.appointment, true);
-        this.refreshData(false);
-        //this.loadOwnData();
+        if(refreshDay) {
+          this.dataProvider.getMyAppointments(dt);
+        }
       } else {
         this.handleError(result.ErrorId);
       }
@@ -384,11 +392,14 @@ export class AppointmentService {
     }
   }
 
-  delete(callback?: any) {
+  delete(callback?: any, refreshDay?: boolean) {
     this.appointment.UserKey = this.dataProvider.Profile.UserKey;
     this.dataProvider.removeAppointment(this.appointment, false);
     this.dataProvider.saveAppointments();
-    this.dataProvider.getMyAppointments(this.dt)
+    if(refreshDay) {
+      this.dataProvider.getMyAppointments(this.dt)
+    }
+    
     this.deleteAppointment(this.appointment).then((result) => {
       if (result) {
         this.removeAppointment(this.appointment);
@@ -405,34 +416,29 @@ export class AppointmentService {
 
   save( initWeek?: boolean, firstDay?: Date) {
     this.setData();
-    this.dataProvider.removeAppointment(this.appointment, true);
     this.modifyAppointment().then((result: ResultIdViewmodel) => {
       if (result.Result) {
-        this.appointment.Id = this.originalappointment.Id;
-        this.dataProvider.refreshAppointmentId(this.appointment, true);
+        this.appointment.IsDirty = false;
+        this.dataProvider.updateAppointment(this.appointment);
         this.SetOriginalAppointment();
         return;
       } else {      
-        this.appointment.Id = this.originalappointment.Id;
         this.dataProvider.removeAppointment(this.appointment, true);
         this.dataProvider.addAppointment(this.originalappointment);
-        this.refreshLocal(this.originalappointment);
+        this.refreshLocal(this.originalappointment, initWeek, firstDay);
         this.handleError(result.ErrorId);
         return;
       }
     });      
-    this.appointment.Id = 0;
-    this.dataProvider.addAppointment(this.appointment);
+    this.appointment.IsDirty = true;
+    this.dataProvider.updateAppointment(this.appointment);
     this.refreshLocal(this.appointment, initWeek, firstDay);  
-    
   }
 
   private refreshLocal(app: AppointmentViewmodel, initWeek?: boolean, firstDay?: Date) {
     setTimeout( () => {
       if(new Date(this.dt).getDate() === new Date(this.dataProvider.CurrentDay).getDate()) {
-        const apps: AppointmentViewmodel[] = [];
-        apps.push(app);
-        this.dataProvider.pushAppointments(apps);     
+        this.dataProvider.refreshHalfHourAppointments(app);     
       }
       if(initWeek) {
         this.dataProvider.initWeek(firstDay);
@@ -550,23 +556,21 @@ export class AppointmentService {
   }
 
   getEventName() {
-    var userName = this.dataProvider.Profile.DisplayName !== '' ? this.dataProvider.Profile.DisplayName
-      : this.dataProvider.Profile.FirstName + " " + this.dataProvider.Profile.Name;
-
+    var userName = ProfileViewmodel.GetTitle(this.dataProvider.Profile);
     var jobTypeName = this.getJobType(this.appointment.JobType);
     var appointmentTypeName = this.getAppointmentType(this.appointment.AppointmentType);
 
     switch (this.appointment.AppointmentType) {
-      case 1:
+      case AppointmentTypeEnum.Other:
         this.appointment.AppointmentName = appointmentTypeName;
         break;
-      case 2:
-      case 3:
+      case AppointmentTypeEnum.Training:
+      case AppointmentTypeEnum.Course:
         this.appointment.AppointmentName = jobTypeName + ": " + appointmentTypeName + " " + this.translate.instant("JOBNAME_FRAGMENT_WITH") + " " + userName;
         this.appointment.BlockPlace = false;
         this.appointment.FreeSlots = true;
         break;
-      case 4:
+      case AppointmentTypeEnum.Maintenance:
         this.appointment.AppointmentName = appointmentTypeName;
         this.appointment.BlockPlace = true;
         this.appointment.FreeSlots = false;

@@ -26,8 +26,10 @@ export class PlaceComponent  implements OnInit {
   }
 
   onClick(){
-    this.dataProvider.Profile.CurrentPlace = this.place;
-    this.click.emit(this.place);
+    if(!this.place.IsPrivate) {
+      this.dataProvider.Profile.CurrentPlace = this.place;
+      this.click.emit(this.place);
+    }
   }
 
   get isLastPlace(): boolean {

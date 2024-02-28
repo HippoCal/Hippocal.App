@@ -10,6 +10,33 @@ ion-avatar {
   height: 45px !important;
 }
 
+ion-item-sliding {
+  border-right-style: solid;
+  border-left-style: solid;
+  border-bottom-style: solid;
+  border-color: #d0dad5;
+  border-width: 1px;
+}
+
+.avatardiv {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  background-color: var(--ion-color-primary);
+  border-radius: 50%;
+  box-shadow: 1px 1px 1px #322d11;
+}
+
+.avatarletter {
+  color: var(--ion-color-primary-contrast);
+  font-size: 30px;
+  font-weight: 900;
+}
 img.smallImage {
   width: 45px !important;
   height: 45px !important;

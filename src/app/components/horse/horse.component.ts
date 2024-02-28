@@ -16,16 +16,13 @@ export class HorseComponent {
   @Input('showappointments') showAppointments: boolean;
   public horseKey: string;
   public horseAppointments: HorseAppointmentsViewmodel;
-  public horseImage: string;
 
   constructor(
-    public dataProvider: DataService, 
-    private zone: NgZone, 
-    public appointmentProvider: AppointmentService, 
+    public dataProvider: DataService,
+    private zone: NgZone,
+    public appointmentProvider: AppointmentService,
     public imageProvider: ImageService,
     private toastsvc: ToastService) {
-
-    
     this.horseAppointments = new HorseAppointmentsViewmodel();
   }
 
@@ -50,7 +47,7 @@ export class HorseComponent {
     let ownAppointment: OwnAppointmentViewmodel = new OwnAppointmentViewmodel(data);
 
     if (ownAppointment.AppointmentName !== undefined && ownAppointment.AppointmentName !== null && ownAppointment.PlaceName !== undefined && ownAppointment.PlaceName !== null) {
-        return ownAppointment.PlaceName + ": " + ownAppointment.AppointmentName;
+      return ownAppointment.PlaceName + ": " + ownAppointment.AppointmentName;
     }
     if (ownAppointment.AppointmentName !== undefined && ownAppointment.AppointmentName !== null) {
       return ownAppointment.AppointmentName;
@@ -73,11 +70,7 @@ export class HorseComponent {
   onDeleteHorse(horse: HorseViewmodel) {
     this.toastsvc.confirm(() => {
       horse.UserKey = this.dataProvider.Profile.UserKey;
-      this.dataProvider.deleteHorse(horse).then(result => {
-        if (result) {
-          this.dataProvider.load();
-        }
-      });
+      this.dataProvider.deleteHorse(horse);
     },
       "HEADER_CONFIRM_DELETE_HORSE",
       "MSG_CONFIRM_DELETE_HORSE");
@@ -106,11 +99,13 @@ export class HorseComponent {
   }
 
   async gethorseImage() {
-    var image = await this.imageProvider.get(this.horse && this.horse.ImageUrl ? this.horse.ImageUrl : '', this.horse.HorseKey, "horse", true, this.dataProvider.Profile.UserKey);
-    if(image) {
-      this.zone.run(() => {
-        this.horseImage = image.data;
-      });    
+    if (this.horse.LocalImage === '' || this.horse.LocalImage === null || this.horse.LocalImage === undefined || this.horse.LocalImage === this.imageProvider.defaultImageUrl("horse")) {
+      var image = await this.imageProvider.get(this.horse && this.horse.ImageUrl ? this.horse.ImageUrl : '', this.horse.HorseKey, "horse", true, this.dataProvider.Profile.UserKey);
+      if (image) {
+        this.zone.run(() => {
+          this.horse.LocalImage = image.data;
+        });
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, Input } from '@angular/core';
-import { PlaceViewmodel, AppointmentViewmodel } from "src/app/viewmodels/viewmodels";
+import { PlaceViewmodel, AppointmentViewmodel, ProfileViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, AppointmentService, ToastService } from 'src/app/services/services';
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
 import { TranslateService } from '@ngx-translate/core';
@@ -9,6 +9,7 @@ import { ModalController } from '@ionic/angular';
 @Component({
   selector: 'page-adminappointment',
   templateUrl: './adminappointment.page.html',
+  styleUrls: ['./adminappointment.page.scss']
 })
 export class AdminappointmentPage {
 
@@ -18,8 +19,8 @@ export class AdminappointmentPage {
   public buttonText: string;
   public hasName: boolean;
 
+
   @Input("dt") dt: Date;
-  @Input("place") place: PlaceViewmodel;
   @Input("appointment") appointment: AppointmentViewmodel;
 
   constructor(
@@ -40,17 +41,19 @@ export class AdminappointmentPage {
     if (this.appointmentService.appointment === null || this.appointmentService.appointment === undefined) {
       this.isNew = true;
       this.buttonText = this.translate.instant('BTN_CONFIRMADMINAPPOINTMENT');
-      this.appointmentService.appointment = new AppointmentViewmodel(
+      this.appointment = new AppointmentViewmodel(
         this.dataProvider.Profile.UserKey,
-        this.place.PlaceKey,
-        this.place.Name,
+        this.dataProvider.Profile.CurrentPlace.PlaceKey,
+        this.dataProvider.Profile.CurrentPlace.Name,
         this.appointmentService.dt,
         this.appointmentService.dt.hour(),
         this.appointmentService.dt.minute(),
-        '',
+        ProfileViewmodel.GetTitle(this.dataProvider.Profile),
         60,
-        JobTypeEnum.Dressage,
+        JobTypeEnum.Other,
         AppointmentTypeEnum.Other);
+      this.appointmentService.setAppointment(this.appointment);
+      this.appointmentService.setData();
       this.onChangeJobType();
 
     }
@@ -81,9 +84,7 @@ export class AdminappointmentPage {
   }
 
   onChangeJobType() {
-    this.appointmentService.changeJobType();
-    this.appointmentService.getEventName();
-    this.onNameChanged();
+
   }
 
   onChangeAppointmentType() {
@@ -101,8 +102,7 @@ export class AdminappointmentPage {
 
   onDelete() {
     this.toastSvc.confirm(() => {
-      this.appointmentService.appointment.UserKey = this.dataProvider.Profile.UserKey;
-      this.appointmentService.delete();
+      return this.modalCtrl.dismiss(this.appointmentService.appointment, 'delete');
     }, "HEADER_CONFIRM_DELETE_EVENT", "MSG_CONFIRM_DELETE_EVENT");
   }
 
@@ -112,7 +112,7 @@ export class AdminappointmentPage {
 
   onCreateOrUpdate() {
     this.toastSvc.confirm(() => {
-      return this.modalCtrl.dismiss(this.appointmentService.appointment, 'save');
+      return this.modalCtrl.dismiss(this.appointmentService.appointment, this.isNew ? 'create' : 'save');
     }, 
     this.isNew ? "HEADER_CONFIRM_CREATE_EVENT" : "HEADER_CONFIRM_MODIFY_EVENT",
     this.isNew ? "MSG_CONFIRM_CREATE_EVENT" : "MSG_CONFIRM_MODIFY_EVENT");

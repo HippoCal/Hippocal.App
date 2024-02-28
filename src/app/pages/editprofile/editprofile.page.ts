@@ -33,19 +33,19 @@ export class EditprofilePage {
     this.profile = ProfileViewmodel.PartialClone(this.dataProvider.Profile);
     this.showEventsOldValue = this.dataProvider.Profile.ShowEvents;
     this.oldImageName = this.dataProvider.Profile.ImageUrl;
-    this.getProfileImage();
+    this.dataProvider.getProfileImage();
+    this.profileImage = this.dataProvider.ProfileImage;
   }
 
-  saveImage(fileName: string) {
+  saveImage(fileName: string, fileData?: string) {
     this.zone.run(() => {
       this.profile.ImageUrl = fileName;
-      this.getProfileImage();
+      if(fileData) {
+        this.profileImage = fileData;
+      }        
     });
   }
-  async uploadImage() {
-    await this.imageProvider.upload(this.file, this.dataProvider.Profile.UserKey);
-  }
-
+  
   cancel() {
     return this.modalCtrl.dismiss(this.profile, 'cancel');
   }
@@ -53,7 +53,7 @@ export class EditprofilePage {
   onGetImage() {
     this.imageProvider.getImage('user', this.profile.UserKey, (file: ImageViewmodel) => {
       this.file = file;
-      this.saveImage(file.fileName);
+      this.saveImage(file.fileName, file.data);
     });
   }
 
@@ -62,23 +62,16 @@ export class EditprofilePage {
   }
 
   onSaveProfile() {
-    this.toastSvc.confirm(async () => {
-      await this.uploadImage();
+    this.toastSvc.confirm(async () => {    
+      if(this.file) {
+        this.profile.CurrentImage = this.file;
+      }
       return this.modalCtrl.dismiss(this.profile, 'save');    
       },
       "HEADER_CONFIRM_EDITPROFILE",
       "MSG_CONFIRM_EDITPROFILE", () => {
         this.cancel();
       });
-  }
-
-  async getProfileImage() {
-    var image = await this.imageProvider.get(this.profile.ImageUrl, this.profile.UserKey, "user", true, this.profile.UserKey);
-    if(image) {
-      this.zone.run(() => {
-        this.profileImage = image.data;
-      });    
-    }
   }
 
 }

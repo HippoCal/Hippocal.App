@@ -56,10 +56,11 @@ export class EdithorsePage {
     return this.modalCtrl.dismiss(this.horse, 'cancel');
   }
 
-  saveImage(fileName: string) {
+  saveImage(fileName: string, fileData: string) {
     this.zone.run(() => {
-      console.log("new fileName: " + fileName);
       this.horse.ImageUrl = fileName;
+      this.horse.LocalImage = fileData;
+      this.horseImage = fileData;
       this.gethorseImage();
     });
 
@@ -70,19 +71,19 @@ export class EdithorsePage {
   }
 
   onDeleteImage() {
-    this.saveImage("");
+    this.saveImage('', this.imageProvider.defaultImageUrl("horse"));
   }
 
   onGetImage() {
     this.imageProvider.getImage('horse', this.horse.HorseKey, (file: ImageViewmodel) => {
       this.file = file;
-      this.saveImage(file.fileName);
+      this.saveImage(file.fileName, file.data);
     });
   }
 
-  async refreshImage() {
-    if (this.oldImageName != this.horse.ImageUrl) {
-      await this.uploadImage();
+  refreshImage() {
+    if (this.oldImageName != this.horse.ImageUrl && this.horse.LocalImage !== this.imageProvider.defaultImageUrl("horse")) {
+      this.uploadImage();
     }
   }
 
@@ -90,15 +91,12 @@ export class EdithorsePage {
     this.toastSvc.confirm(
       () => {
         this.horse.UserKey = this.dataProvider.Profile.UserKey;
-        return this.modalCtrl.dismiss(this.horse, 'delete'); 
-        
+        return this.modalCtrl.dismiss(this.horse, 'deleteHorse');      
       }, "HEADER_CONFIRM_DELETE_HORSE", "MSG_CONFIRM_DELETE_HORSE");
   }
 
   onAddmodify() {
-
     var header, msg;
-
     if (this.isNew) {
       header = "HEADER_CONFIRM_ADDHORSE";
       msg = "MSG_CONFIRM_ADDHORSE";
@@ -108,32 +106,8 @@ export class EdithorsePage {
     }
     this.toastSvc.confirm(async () => {
       await this.refreshImage();
-      return this.modalCtrl.dismiss(this.horse, 'save');    
+      return this.modalCtrl.dismiss(this.horse, 'saveHorse');    
       }, header, msg);
-
-    // this.toastSvc.confirm(() => {
-    //   if (this.isNew) {
-    //     this.dataProvider.addHorse(this.horse).then(data => {
-    //       if (data) {
-    //         this.refreshImage();
-    //         this.dataProvider.loadProfile(() => {
-    //           this.locationStrategy.back();
-    //         });
-    //       }
-    //     });
-    //   } else {
-    //     this.horse.UserKey = this.dataProvider.Profile.UserKey;
-    //     this.dataProvider.addHorse(this.horse).then(data => {
-    //       if (data) {
-    //         this.refreshImage();
-    //         this.dataProvider.loadProfile(() => {
-    //           this.locationStrategy.back();
-    //         });
-    //       }
-    //     });
-    //   }
-
-    // }, header, msg);
   }
 
   get isLastHorse(): boolean {

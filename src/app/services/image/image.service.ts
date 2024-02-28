@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Platform, ActionSheetController } from '@ionic/angular';
-import { Filesystem, Directory, WriteFileOptions, FileInfo } from '@capacitor/filesystem';
+import { Filesystem, Directory, WriteFileOptions, FileInfo, ReadFileResult } from '@capacitor/filesystem';
 import { Camera, CameraResultType, CameraSource, ImageOptions, Photo } from '@capacitor/camera';
 import { HttpClient } from '@angular/common/http';
 import { RestService, TokenService } from "../services";
@@ -31,13 +31,16 @@ export class ImageService {
   }
 
   public pathForImage(fileName: string, imageType: string, key: string): string {
-    var defaultImage: string = this.getDefaultImage(imageType);
     if (fileName === null || fileName === '') {
-      return 'assets/imgs/' + defaultImage;
-    } else {
-      return this.getFilePath(fileName);
+      return this.defaultImageUrl(imageType);
     }
+    return this.getFilePath(fileName);
   };
+
+  public defaultImageUrl(imageType: string): string {
+    return `assets/imgs/${this.getDefaultImage(imageType)}`
+  }
+
 
   public getDefaultImage(type: string): string {
     switch (type) {
@@ -119,12 +122,14 @@ export class ImageService {
       }
       // suche im FileSystem
       try {
-        var fileData = await Filesystem.readFile({
+        var fileData: ReadFileResult = await Filesystem.readFile({
           directory: Directory.Data,
           path: this.getFilePath(fileName)
         });
         if (fileData) {
-          result.data = `data:image/jpeg;base64,${fileData.data}`;
+          var imageVm: ImageViewmodel = { fileName: fileName }
+          imageVm = this.getExtension(imageVm);
+          result.data = this.addPraefix(fileData.data, imageVm.ext);
           this.images.push(result);
           return result;
         }
@@ -139,7 +144,7 @@ export class ImageService {
       }
     }
     // nicht gefunden
-    result.data = `assets/imgs/${this.getDefaultImage(imageType)}`;
+    result.data = this.defaultImageUrl(imageType);
     return result;
 
   }
@@ -164,7 +169,7 @@ export class ImageService {
       }).then(result => {
         this.images.push({
           fileName: file.name,
-          data: `data:image/jpeg;base64,${result.data}`
+          data: this.addPraefix(result.data, file.type)
         })
       }, async err => { })
 
@@ -289,6 +294,14 @@ export class ImageService {
     return result;
   }
 
+  private addPraefix(data: any, extension: string): string {
+    const prae = 'data:image/';
+    const praefix = `${prae}${extension};base64,`;
+    if(data.startsWith(prae)) {
+      return data;
+    }
+    return `${praefix}${data}`
+  }
   async saveImageViewModel(image: ImageViewmodel) {
 
     var options: WriteFileOptions = {
@@ -298,7 +311,7 @@ export class ImageService {
     };
     const savedFile = await Filesystem.writeFile(options);
     console.log('Saved: ', savedFile);
-    image.data = `data:image/jpeg;base64,${image.data}`;
+    image.data = this.addPraefix(image.data, image.ext);
     this.images.push(image);
   }
 

@@ -21,19 +21,22 @@
         </ion-avatar>
         <div>
           <h6 class="component">{{formatDate(appointment.StartDate)}}</h6>
-          <h6 class="component">
-            <span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.HorseName}}</span></h6>
+          <h6 class="component"><span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.HorseName}}</span></h6>
           <h6 class="component"><span>{{appointment.AppointmentName}}</span></h6>
         </div>
       </div>
-
     </ion-item>
-    <ion-item *ngIf="appointment.AppointmentType!==0 && appointment.AppointmentType<5"
-      [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
-      <div>
-        <h6 class="component">{{formatDate(appointment.StartDate)}}</h6>
-        <h6 class="component">
-          <span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.AppointmentName}}</span></h6>
+    <ion-item *ngIf="appointment.AppointmentType!==0 && appointment.AppointmentType<5" [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
+      <div class="contentRow">
+        <ion-avatar item-start>
+          <div class="avatardiv">
+            <span class="avatarletter">{{getAvatarLetter()}}</span>
+          </div>
+        </ion-avatar>
+        <div>
+          <h6 class="component">{{formatDate(appointment.StartDate)}}</h6>
+          <h6 class="component"><span>{{formatTime(appointment)}}</span>&nbsp;-&nbsp;<span>{{appointment.AppointmentName}}</span></h6>
+        </div>
       </div>
     </ion-item>
     <ion-item-options *ngIf="appointment.OwnAppointment && canDelete">

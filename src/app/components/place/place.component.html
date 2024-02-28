@@ -11,7 +11,7 @@
     </div>
   </ion-item>
   <ion-item-options lines="none" *ngIf="canDelete">
-    <ion-item-option color="danger" [disabled]="!dataProvider.IsOnline || isLastPlace" (click)="onDeletePlace()">
+    <ion-item-option color="danger" [disabled]="!dataProvider.IsOnline || isLastPlace" (click)="$event.stopPropagation(); onDeletePlace()">
       <ion-icon name="trash"></ion-icon>
       {{ 'BTN_DELETE_NEWS' | translate }}
     </ion-item-option>
