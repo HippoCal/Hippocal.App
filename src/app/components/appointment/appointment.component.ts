@@ -1,8 +1,9 @@
-import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { Component, EventEmitter, Input, NgZone, OnInit, Output } from '@angular/core';
 import { AppointmentViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService} from 'src/app/services/services';
 import * as moment from 'moment';
 import { AppointmentTypeEnum } from 'src/app/enums/appointmenttypeenum';
+import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
 
 
 @Component({
@@ -10,7 +11,7 @@ import { AppointmentTypeEnum } from 'src/app/enums/appointmenttypeenum';
   templateUrl: './appointment.component.html',
   styleUrls: ['./appointment.component.scss'],
 })
-export class AppointmentComponent {
+export class AppointmentComponent implements OnInit {
 
   @Input('appointment') appointment: AppointmentViewmodel;
   @Input('canDelete') canDelete: boolean;
@@ -19,11 +20,17 @@ export class AppointmentComponent {
   
   public horseImage: string;
 
+  recordType: RecordTypeEnum;
+
   constructor(
     private dataProvider: DataService, 
     private imageProvider: ImageService,
     private zone: NgZone, 
     ) { 
+    
+  }
+
+  ionViewWillEnter() {
     
   }
 
@@ -43,7 +50,9 @@ export class AppointmentComponent {
   }
 
   ngOnInit() {
+    this.recordType = AppointmentViewmodel.recordType(this.appointment);
     this.gethorseImage();
+    
   }
   
   formatDate(dt: string): string {
@@ -62,7 +71,6 @@ export class AppointmentComponent {
 
   }
 
-
   onDelete() {
     this.deleteAppointment.emit(this.appointment);
   }
@@ -71,17 +79,21 @@ export class AppointmentComponent {
     var now = moment();
     var startDate = moment(appointment.StartDate);
     var endDate = moment(appointment.StartDate).add(appointment.Duration, 'minutes');
+   
     if (startDate < now && endDate > now) {
       return 'orange';
     }
-    else if(appointment.AppointmentType !== 0) {
-      return 'adminapp';
-    }
-    else if (now < startDate) {
-      return 'divider';
-    }
     else if (now > endDate) {
       return 'grey';
+    }
+    else if(this.recordType === RecordTypeEnum.Admin) {
+      return 'admin';
+    }
+    else if(this.recordType === RecordTypeEnum.Private) {
+      return 'medium';
+    }
+    else if(this.recordType === RecordTypeEnum.Standard) {
+      return 'primary';
     }
     return 'divider';
   }

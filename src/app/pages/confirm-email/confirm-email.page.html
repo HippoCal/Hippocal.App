@@ -1,20 +1,19 @@
 <ion-header class="opaque">
   <ion-toolbar color="primary" align-title="middle">
-<ion-menu-toggle>
-        <ion-button>
-          <ion-icon name="menu"></ion-icon>
-        </ion-button>
-      </ion-menu-toggle>
     <ion-title>{{ dataProvider.getHeader('HEADER_CONFIRMEMAIL') }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
   <div>{{ 'TEXT_CONFIRMEMAIL' | translate }}</div>
   <ion-row wrap justify-content-start align-items-center>
-    <ion-col text-center><span>{{ 'TEXT_NUMFREELOGINS_PRE' | translate }}</span></ion-col>
-    <ion-col text-center><span class="otp">{{dataProvider.FreeLogins}}</span></ion-col>
-    <ion-col text-center><span>{{ 'TEXT_NUMFREELOGINS_POST' | translate }}</span></ion-col>
+    <div class="container">
+      <ion-col text-center><span>{{ 'TEXT_NUMFREELOGINS_PRE' | translate }}</span></ion-col>
+      <ion-col text-center><div class="otp">{{freeLogins}}</div></ion-col>
+      <ion-col text-center><span>{{ 'TEXT_NUMFREELOGINS_POST' | translate }}</span></ion-col>
+    </div>
   </ion-row>
-  <ion-button color="primary" [disabled]="!dataProvider.IsOnline" (click)="onSendMail()" expand="block">{{ 'BTN_RESENDMAIL' | translate }}</ion-button>
-  <ion-button color="orange" [disabled]="!dataProvider.IsOnline" (click)="onBack()" expand="block">{{ 'BTN_CONTINUE' | translate}}</ion-button>
+  <ion-button color="primary" [disabled]="!dataProvider.IsOnline" (click)="onSendMail()" expand="block">{{
+    'BTN_RESENDMAIL' | translate }}</ion-button>
+  <ion-button *ngIf="freeLogins>0" color="orange" [disabled]="!dataProvider.IsOnline" (click)="onBack()"
+    expand="block">{{ 'BTN_CONTINUE' | translate}}</ion-button>
 </ion-content>

@@ -6,7 +6,7 @@
             <ion-avatar item-start>
               <img [src]="dataProvider.ProfileImage" menuClose (click)="openProfile()" />
             </ion-avatar>
-            <ion-title>{{getTitle()}}</ion-title>
+            <ion-title class="threeDots">{{getTitle()}}</ion-title>
           </ion-item>
           <ion-menu-toggle auto-hide="false" *ngFor="let p of pages">
             <ion-item [routerLink]="p.url" routerDirection="root" [class.active-item]="selectedPath === p.url">

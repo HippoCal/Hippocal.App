@@ -377,8 +377,8 @@ export class DataService {
 
 
   deleteHorse(horse: HorseViewmodel) {
-    return this.restProvider.deleteHorse(horse).then( (result) => {
-      if(result) {
+    return this.restProvider.deleteHorse(horse).then((result) => {
+      if (result) {
         var indexValue: number = -1;
         this.profile.Horses.forEach((horse, index) => {
           if (horse.HorseKey === horse.HorseKey) {
@@ -488,22 +488,25 @@ export class DataService {
       this.getLocalAppointments();
     }
     if (this.IsOnline) {
-      if (this.Profile === undefined)
+      if (this.Profile === undefined) {
         setTimeout(() => {
           this.refreshOnline(doAll)
         }, 1000);
-    } else {
-      this.refreshOnline(doAll);
+      }
+      else {
+        this.refreshOnline(doAll);
+      }
     }
   }
 
   private refreshOnline(doAll: boolean) {
     if (doAll) {
       this.getuserstatus(() => { });
-    }
+    } 
     this.loadHomeAppointments();
     this.loadNews();
   }
+  
   loadHomeAppointments() {
     this.restProvider.getNextAppointments(this.Profile.UserKey, this.Profile.ShowEvents)
       .then((data: any) => {

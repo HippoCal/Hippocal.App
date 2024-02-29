@@ -16,7 +16,6 @@ export class CreatePage {
   @ViewChild('comment') commentInput: ElementRef;
 
   public isNew: boolean;
-  public area: string;
   public hasName: boolean;
   public duration: number;
 
@@ -35,7 +34,6 @@ export class CreatePage {
 
   ngOnInit() {
     this.appointmentService.dt = moment(new Date(this.dt));
-    this.area = "horses";
 
     if (this.appointment === null || this.appointment === undefined) {
       this.isNew = true;
@@ -58,6 +56,7 @@ export class CreatePage {
     this.hasName = false;
     this.onNameChanged();
     this.onChangeJobType();
+    this.onChangeHorse() ;
   }
 
   onCreateAdminAppointment() {

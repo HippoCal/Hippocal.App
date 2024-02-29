@@ -9,16 +9,18 @@ import { DataService } from '../../services/data/data.service';
 })
 export class ConfirmEmailPage implements OnInit {
 
+  freeLogins: number = 0;
   constructor(
     public dataProvider: DataService) {
   }
+
   onSendMail() {
     let navigationExtras: NavigationExtras = {
       state: {
         email: this.dataProvider.Profile.Email
       }
     };
-    this.dataProvider.navigate('get-email', 'tab1', navigationExtras );
+    this.dataProvider.navigate('getEmail', 'tab1', navigationExtras );
   }
 
   onBack() {
@@ -27,6 +29,7 @@ export class ConfirmEmailPage implements OnInit {
 
   ngOnInit() {
     console.log('Load ConfirmEmailPage');
+    this.freeLogins = this.dataProvider.FreeLogins < 0 ? 0 : this.dataProvider.FreeLogins
   }
 
 }

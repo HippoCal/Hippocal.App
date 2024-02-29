@@ -1,5 +1,6 @@
   <ion-item-sliding #item (click)="onClick()">
-    <ion-item *ngIf="appointment.AppointmentType===0" [color]="getColor(appointment)">
+    <!-- Standard -->
+    <ion-item *ngIf="recordType === 0" [color]="getColor(appointment)">
       <div class="contentRow">
         <ion-avatar item-start>
           <img class="smallImage" [src]="horseImage" />
@@ -14,7 +15,8 @@
         </div>
       </div>
     </ion-item>
-    <ion-item *ngIf="appointment.AppointmentType>4" [color]="getColor(appointment)">
+    <!-- Private -->
+    <ion-item *ngIf="recordType === 1" [color]="getColor(appointment)">
       <div class="contentRow">
         <ion-avatar item-start>
           <img class="smallImage" [src]="horseImage" />
@@ -26,7 +28,8 @@
         </div>
       </div>
     </ion-item>
-    <ion-item *ngIf="appointment.AppointmentType!==0 && appointment.AppointmentType<5" [style.background-color]="appointment.Color" [style.color]="'#0f5524'">
+     <!-- Admin -->
+    <ion-item *ngIf="recordType === 2" [color]="getColor(appointment)">
       <div class="contentRow">
         <ion-avatar item-start>
           <div class="avatardiv">
