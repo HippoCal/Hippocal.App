@@ -45,9 +45,9 @@ export class PinInputPage {
 
   validatepin() {
     this.pin = this.pin1 + this.pin2 + this.pin3 + this.pin4 + this.pin5;
-    var dummyToken = new TokenViewmodel(this.dataProvider.Profile.UserKey, this.pin, "", this.dataProvider.Profile.Email, 0);
-    this.dataProvider.saveToken(dummyToken);
-    this.dataProvider.Profile.UserPin = this.pin;
+    // var dummyToken = new TokenViewmodel(this.dataProvider.Profile.UserKey, this.pin, "", this.dataProvider.Profile.Email, 0);
+    // this.dataProvider.saveToken(dummyToken);
+    // this.dataProvider.Profile.UserPin = this.pin;
     this.dataProvider.saveProfile(this.dataProvider.Profile);
     this.dataProvider.register(this.pin).then((result: any) => {
       if (result !== undefined && result.Result) {

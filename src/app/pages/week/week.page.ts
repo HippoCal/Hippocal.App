@@ -107,7 +107,7 @@ export class WeekPage {
   async onShowAppointment(appointment: AppointmentViewmodel) {
     var recordType = AppointmentViewmodel.recordType(appointment);
     let component: any;
-    if (!appointment.IsInTheFuture) {
+    if (!appointment.IsInTheFuture || !appointment.OwnAppointment) {
       component = OtherAppointmentPage;
     } else {
       switch (recordType) {

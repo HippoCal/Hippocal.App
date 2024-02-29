@@ -12,6 +12,7 @@ import { PrivateAppointmentPage } from '../privateappointment/privateappointment
 import { WeekPage } from '../week/week.page';
 import { NewsdetailsPage } from '../newsdetails/newsdetails.page';
 import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
+import { OtherAppointmentPage } from '../otherappointment/otherappointment.page';
 
 @Component({
   selector: 'page-home',
@@ -105,71 +106,115 @@ export class HomePage {
   }
 
   async onShowAppointment(appointment: AppointmentViewmodel) {
-    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Standard) {
-      const modal = await this.modalCtrl.create({
-        component: CreatePage,
-        componentProps: { appointment: appointment, dt: appointment.StartDate }
-      });
-      modal.present();
-      const { data, role } = await modal.onWillDismiss();
-      this.postEventProcessing(data, role);
+    var recordType = AppointmentViewmodel.recordType(appointment);
+    let component: any;
+    if (!appointment.IsInTheFuture || !appointment.OwnAppointment) {
+      component = OtherAppointmentPage;
     } else {
-      this.onShowEvent(appointment);
+      switch (recordType) {
+        case RecordTypeEnum.Standard:
+          component = CreatePage;
+          break
+        case RecordTypeEnum.Admin:
+          component = AdminappointmentPage;
+          break;
+        case RecordTypeEnum.Private:
+          component = PrivateAppointmentPage;
+          break;
+        case RecordTypeEnum.Other:
+          component = OtherAppointmentPage;
+          break;
+      }
     }
+    const modal = await this.modalCtrl.create({
+      component: component,
+      componentProps: { appointment: appointment, dt: appointment.StartDate }
+    });
+    modal.present();
+    const { data, role } = await modal.onWillDismiss();
+    this.postEventProcessing(data, role);
   }
+
+  // postEventProcessing(data: AppointmentViewmodel, role: string) {
+  //   switch (role) {
+  //     case 'save':
+  //       this.appointmentService.save(true, this.firstDay);
+  //       break;
+  //     case 'delete':
+  //       this.appointmentService.delete(null, false);
+  //       this.dataProvider.initWeek(this.firstDay);
+  //       break;
+  //   }
+
+  // }
+
+
+  // async onShowAppointment(appointment: AppointmentViewmodel) {
+  //   if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Standard) {
+  //     const modal = await this.modalCtrl.create({
+  //       component: CreatePage,
+  //       componentProps: { appointment: appointment, dt: appointment.StartDate }
+  //     });
+  //     modal.present();
+  //     const { data, role } = await modal.onWillDismiss();
+  //     this.postEventProcessing(data, role);
+  //   } else {
+  //     this.onShowEvent(appointment);
+  //   }
+  // }
   
-  public onShowEvent(appointment: AppointmentViewmodel) {
-    // private appointment
-    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Private) {
-      this.showPrivateAppointment(appointment)
-      // own admin event
-    } else if (appointment.OwnAppointment) {
-      var place: any;
-      this.dataProvider.Profile.Places.forEach((item) => {
-        if (item.PlaceKey === appointment.PlaceKey) {
-          place = item;
-          return;
-        }
-      });
-      this.showAdminAppointment(appointment, place)
-    } else {
-      // other admin event
-      this.showEvent(appointment)
-    }
-  }
+  // public onShowEvent(appointment: AppointmentViewmodel) {
+  //   // private appointment
+  //   if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Private) {
+  //     this.showPrivateAppointment(appointment)
+  //     // own admin event
+  //   } else if (appointment.OwnAppointment) {
+  //     var place: any;
+  //     this.dataProvider.Profile.Places.forEach((item) => {
+  //       if (item.PlaceKey === appointment.PlaceKey) {
+  //         place = item;
+  //         return;
+  //       }
+  //     });
+  //     this.showAdminAppointment(appointment, place)
+  //   } else {
+  //     // other admin event
+  //     this.showEvent(appointment)
+  //   }
+  // }
 
-  async showPrivateAppointment(appointment: AppointmentViewmodel) {
+  // async showPrivateAppointment(appointment: AppointmentViewmodel) {
 
-    const modal = await this.modalCtrl.create({
-      component: PrivateAppointmentPage,
-      componentProps: { appointment: appointment, dt: appointment.StartDate }
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-    this.postEventProcessing(data, role);
-  }
+  //   const modal = await this.modalCtrl.create({
+  //     component: PrivateAppointmentPage,
+  //     componentProps: { appointment: appointment, dt: appointment.StartDate }
+  //   });
+  //   modal.present();
+  //   const { data, role } = await modal.onWillDismiss();
+  //   this.postEventProcessing(data, role);
+  // }
 
-  async showAdminAppointment(appointment: AppointmentViewmodel, place: PlaceViewmodel) {
+  // async showAdminAppointment(appointment: AppointmentViewmodel, place: PlaceViewmodel) {
 
-    const modal = await this.modalCtrl.create({
-      component: AdminappointmentPage,
-      componentProps: { appointment: appointment, dt: appointment.StartDate, place: place }
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-    this.postEventProcessing(data, role);
-  }
+  //   const modal = await this.modalCtrl.create({
+  //     component: AdminappointmentPage,
+  //     componentProps: { appointment: appointment, dt: appointment.StartDate, place: place }
+  //   });
+  //   modal.present();
+  //   const { data, role } = await modal.onWillDismiss();
+  //   this.postEventProcessing(data, role);
+  // }
 
-  async showEvent(appointment: AppointmentViewmodel) {
+  // async showEvent(appointment: AppointmentViewmodel) {
 
-    const modal = await this.modalCtrl.create({
-      component: EventdetailsPage,
-      componentProps: { appointment: appointment, dt: appointment.StartDate }
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-    this.postEventProcessing(data, role);
-  }
+  //   const modal = await this.modalCtrl.create({
+  //     component: EventdetailsPage,
+  //     componentProps: { appointment: appointment, dt: appointment.StartDate }
+  //   });
+  //   modal.present();
+  //   const { data, role } = await modal.onWillDismiss();
+  //   this.postEventProcessing(data, role);
+  // }
 
   postEventProcessing(data: AppointmentViewmodel, role: string) {
     switch (role) {

@@ -134,7 +134,7 @@ export class DataService {
           this.Profile.NumLogins = result.NumLogins;
           this.Profile.EmailConfirmed = result.EmailConfirmed;
           this.Profile.IsActive = result.IsActive;
-          this.setPLaces(result.Places);
+          this.setPlaces(result.Places);
           if (this.Profile.Places.length === 0) {
             this.isPrivate = true;
           }
@@ -173,7 +173,7 @@ export class DataService {
     }
   }
 
-  async setPLaces(places: any) {
+  async setPlaces(places: any) {
     if (places !== null) {
       this.Profile.Places = [];
       var localImage: string = this.imageProvider.getDefaultImage("places");
@@ -209,28 +209,28 @@ export class DataService {
   }
 
 
-  // async setHorses(horses: HorseViewmodel[]) {
-  //   if (horses !== null) {
-  //     var tmphorses: HorseViewmodel[] = [];
-  //     var localImage: string = this.getDefaultImage("horse");
-  //     horses.forEach((item: HorseViewmodel) => {
-  //       this.Profile.Horses.forEach((horse: HorseViewmodel) => {
-  //         if (horse.HorseKey == item.HorseKey) {
-  //           item.Appointments = horse.Appointments;
-  //         }
-  //       });
-  //       var newHorse = new HorseViewmodel(
-  //         item.Name,
-  //         item.HorseKey,
-  //         item.ImageUrl,
-  //         localImage,
-  //       );
-  //       newHorse.Appointments = item.Appointments;
-  //       tmphorses.push(newHorse);
-  //     });
-  //     this.Profile.Horses = tmphorses;
-  //   }
-  // }
+  async setHorses(horses: HorseViewmodel[]) {
+    if (horses !== null) {
+      var tmphorses: HorseViewmodel[] = [];
+      var localImage: string = this.getDefaultImage("horse");
+      horses.forEach((item: HorseViewmodel) => {
+        this.Profile.Horses.forEach((horse: HorseViewmodel) => {
+          if (horse.HorseKey == item.HorseKey) {
+            item.Appointments = horse.Appointments;
+          }
+        });
+        var newHorse = new HorseViewmodel(
+          item.Name,
+          item.HorseKey,
+          item.ImageUrl,
+          localImage,
+        );
+        newHorse.Appointments = item.Appointments;
+        tmphorses.push(newHorse);
+      });
+      this.Profile.Horses = tmphorses;
+    }
+  }
 
 
   private getBusinessHours(businessHours, start, end): any[] {
@@ -320,7 +320,8 @@ export class DataService {
             this.Profile.ImageUrl = data.Data.Image;
             this.Profile.DisplayName = data.Data.DisplayName;
             this.Profile.UserKey = data.Data.UserKey;
-            this.setPLaces(data.Places);
+            this.setPlaces(data.Places);
+            this.setHorses(data.Horses);
             if (this.Profile.Places.length === 0) {
               this.isPrivate = true;
             }

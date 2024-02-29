@@ -207,7 +207,8 @@ export class RegisterPage implements OnInit {
         this.isEnabled = true;
         this.hide();
         if(this.dataProvider.Profile.UserKey === "") {
-          this.dataProvider.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
+          //this.dataProvider.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
+          this.dataProvider.Profile.UserKey = "99fe21e8-8d74-30df-1023-e4d546979352";
         } else {
           this.dataProvider.Profile.DummyUserKey = "09e30373-7be0-4ae8-a5a3-7d419b31a247";
         }
