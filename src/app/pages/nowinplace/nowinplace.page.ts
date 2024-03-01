@@ -8,6 +8,7 @@ import { AdminappointmentPage } from '../adminappointment/adminappointment.page'
 import { PrivateAppointmentPage } from '../privateappointment/privateappointment.page';
 import { PlacedetailsPage } from '../placedetails/placedetails.page';
 import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
+import { OtherAppointmentPage } from '../otherappointment/otherappointment.page';
 
 @Component({
   selector: 'page-nowinplace',
@@ -33,79 +34,53 @@ export class NowinplacePage {
   }
 
   async onShowAppointment(appointment: AppointmentViewmodel) {
-    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Standard) {
-      const modal = await this.modalCtrl.create({
-        component: CreatePage,
-        componentProps: { appointment: appointment, dt: appointment.StartDate }
-      });
-      modal.present();
-      const { data, role } = await modal.onWillDismiss();
-      this.postEventProcessing(data, role);
+    var recordType = AppointmentViewmodel.recordType(appointment);
+    await this.createModal(appointment, recordType, appointment.StartDate, appointment.IsInTheFuture);
+  }
+
+  async createModal(appointment: AppointmentViewmodel, recordType: RecordTypeEnum, dt: Date, isInTheFuture: boolean) {
+    let component: any;
+    if (!isInTheFuture) {
+      component = OtherAppointmentPage;
     } else {
-      this.onShowEvent(appointment);
+      switch (recordType) {
+        case RecordTypeEnum.Standard:
+          component = CreatePage;
+          break
+        case RecordTypeEnum.Admin:
+          component = AdminappointmentPage;
+          break;
+        case RecordTypeEnum.Private:
+          component = PrivateAppointmentPage;
+          break;
+        case RecordTypeEnum.Other:
+          component = OtherAppointmentPage;
+          break;
+      }
     }
-  }
-  
-  public onShowEvent(appointment: AppointmentViewmodel) {
-    // private appointment
-    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Private) {
-      this.showPrivateAppointment(appointment)
-      // own admin event
-    } else if (appointment.OwnAppointment) {
-      var place: any;
-      this.dataProvider.Profile.Places.forEach((item) => {
-        if (item.PlaceKey === appointment.PlaceKey) {
-          place = item;
-          return;
-        }
-      });
-      this.showAdminAppointment(appointment, place)
-    } else {
-      // other admin event
-      this.showEvent(appointment)
-    }
-  }
-
-  async showPrivateAppointment(appointment: AppointmentViewmodel) {
-
     const modal = await this.modalCtrl.create({
-      component: PrivateAppointmentPage,
-      componentProps: { appointment: appointment, dt: appointment.StartDate }
+      component: component,
+      componentProps: { appointment: appointment, dt: dt }
     });
     modal.present();
     const { data, role } = await modal.onWillDismiss();
     this.postEventProcessing(data, role);
   }
 
-  async showAdminAppointment(appointment: AppointmentViewmodel, place: PlaceViewmodel) {
-
-    const modal = await this.modalCtrl.create({
-      component: AdminappointmentPage,
-      componentProps: { appointment: appointment, dt: appointment.StartDate, place: place }
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-    this.postEventProcessing(data, role);
-  }
-
-  async showEvent(appointment: AppointmentViewmodel) {
-
-    const modal = await this.modalCtrl.create({
-      component: EventdetailsPage,
-      componentProps: { appointment: appointment, dt: appointment.StartDate }
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-    this.postEventProcessing(data, role);
-  }
-
-  postEventProcessing(data: AppointmentViewmodel, role: string) {
+  async postEventProcessing(data: AppointmentViewmodel, role: string) {
     switch (role) {
+      case 'create':
+        this.appointmentService.create(true, this.dt);
+        this.dataProvider.getMyAppointments(this.dt);
+        break;
       case 'save':
         this.appointmentService.save();
         break;
       case 'delete':
-        this.appointmentService.delete(null, false);
+        this.appointmentService.delete();      
+        break;
+      case 'admin':
+        await this.createModal(null, RecordTypeEnum.Admin, data.StartDate, true);
         break;
     }
   }

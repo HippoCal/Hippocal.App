@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import { UUID } from 'angular2-uuid';
 import { Router } from '@angular/router';
 import { ColorConst } from 'src/app/constants';
+import { LocalNotifications, ScheduleOptions } from '@capacitor/local-notifications';
 
 
 @Injectable()
@@ -83,47 +84,56 @@ export class DataService {
     }
   }
 
-  clearAllNotifications() {
-    // Todo: Fix it
-    // if (this.platform.is('cordova')) {
-    //   cordova.plugins.notification.local.clearAll();
-    // }
+  async clearAllNotifications() {
+    await LocalNotifications.removeAllDeliveredNotifications();
   }
 
-  setNotification(appointment: AppointmentViewmodel, onlyCancel: boolean) {
-    if (this.platform.is('cordova')) {
-      var text: string;
-      var startTime: Date = new Date(new Date(appointment.StartDate).getTime() - this.profile.NotificationDelay * 60000);
-      if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Standard) {
-        text = this.translate.instant("MSG_NOTIFICATION");
-        text = text.replace("${placeName}", appointment.PlaceName);
-        text = text.replace("${horse}", appointment.HorseName);
-      } else if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Admin) {
-        text = this.translate.instant("MSG_NOTIFICATION_EVENT");
-        text = text.replace("${placeName}", appointment.PlaceName);
-        text = text.replace("${text}", appointment.AppointmentName);
-      }
-      else if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Private) {
-        text = this.translate.instant("MSG_NOTIFICATION_PRIVATE");
-        text = text.replace("${text}", appointment.AppointmentName);
-      }
-      text = text.replace("${time}", this.formatDate(new Date(appointment.StartDate), "HH:mm"));
+  async clearNotification(appointment: AppointmentViewmodel) {
+    await LocalNotifications.cancel({ notifications: [{ id: appointment.Id }] });
+  }
 
-      let notification = {
-        id: appointment.Id,
-        title: this.translate.instant("HEADER_NOTIFICATION"),
-        text: text,
-        at: startTime,
-        icon: 'https://www.hippocal.de/content/images/hippocal.png'
-      };
-      // Todo: Fix it
-      // cordova.plugins.notification.local.clear(notification.id,
-      //   () => {
-      //     if (!onlyCancel) {
-      //       cordova.plugins.notification.local.schedule(notification);
-      //     }
-      //   });
+  async setNotification(appointment: AppointmentViewmodel, cancelFirst: boolean) {
+
+    if (!this.Profile.NotificationsAllowed) return;
+    await LocalNotifications.requestPermissions();
+    if (cancelFirst) {
+      this.clearNotification(appointment);
     }
+    var text: string;
+    var scheduleTime: Date = new Date(new Date(appointment.StartDate).getTime() - this.profile.NotificationDelay * 60000);
+    var title: string = this.translate.instant("HEADER_NOTIFICATION");
+    var startTimeText = this.formatDate(new Date(appointment.StartDate), "HH:mm");
+    var endTime: Date = moment(appointment.StartDate).add(appointment.Duration, "minute").toDate();
+    var endTimeText = this.formatDate(endTime, "HH:mm");
+    if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Standard) {
+      text = this.translate.instant("MSG_NOTIFICATION");
+      text = text.replace("${placeName}", appointment.PlaceName);
+      text = text.replace("${horse}", appointment.HorseName);
+      text = text.replace("${text}", appointment.AppointmentName);
+    } else if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Admin) {
+      text = this.translate.instant("MSG_NOTIFICATION_EVENT");
+      text = text.replace("${placeName}", appointment.PlaceName);
+      text = text.replace("${text}", appointment.AppointmentName);
+    }
+    else if (AppointmentViewmodel.recordType(appointment) === RecordTypeEnum.Private) {
+      text = this.translate.instant("MSG_NOTIFICATION_PRIVATE");
+      text = text.replace("${text}", appointment.AppointmentName);
+    }
+    text = text.replace("${starttime}", startTimeText);
+    text = text.replace("${endtime}", endTimeText);
+    console.log(`Sending local notification text: ${text} title: ${title} when: ${scheduleTime} id: ${appointment.Id}`);
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: appointment.Id,
+          title: title,
+          body: text,
+          schedule: { at: scheduleTime },
+          iconColor: '#1ab749'
+        }
+      ]
+    });
   }
 
   getuserstatus(callback: any) {
@@ -502,11 +512,11 @@ export class DataService {
   private refreshOnline(doAll: boolean) {
     if (doAll) {
       this.getuserstatus(() => { });
-    } 
+    }
     this.loadHomeAppointments();
     this.loadNews();
   }
-  
+
   loadHomeAppointments() {
     this.restProvider.getNextAppointments(this.Profile.UserKey, this.Profile.ShowEvents)
       .then((data: any) => {

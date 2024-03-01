@@ -118,11 +118,11 @@ export class PrivateAppointmentPage {
   }
 
   onCreateOrUpdate() {
+    var header: string = this.isNew ? "HEADER_CONFIRM_CREATE_PRIVATE_APPOINTMENT" : "HEADER_CONFIRM_MODIFY_APPOINTMENT";
+    var text: string = this.isNew ? "MSG_CONFIRM_CREATE_PRIVATE_APPOINTMENT": "MSG_CONFIRM_MODIFY_APPOINTMENT";
     this.toastSvc.confirm(() => {
-      return this.modalCtrl.dismiss(this.appointment, this.isNew ? 'create' : 'save');
-    }, 
-    this.isNew ? "HEADER_CONFIRM_CREATE_PRIVATE_APPOINTMENT" : "HEADER_CONFIRM_MODIFY_APPOINTMENT", 
-    this.isNew ? "MSG_CONFIRM_CREATE_PRIVATE_APPOINTMENT": "MSG_CONFIRM_MODIFY_APPOINTMENT");
+      var role: string = this.isNew ? 'create' : 'save';
+      return this.modalCtrl.dismiss(this.appointment, role);
+    }, header, text);
   }
-
 }

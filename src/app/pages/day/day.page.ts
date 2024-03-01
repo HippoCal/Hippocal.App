@@ -88,7 +88,6 @@ export class DayPage {
         await this.createModal(null, RecordTypeEnum.Admin, data.StartDate, true);
         break;
     }
-    
   }
 
   handleError(error: number) {
@@ -149,16 +148,5 @@ export class DayPage {
     const { data, role } = await modal.onWillDismiss();
     this.postEventProcessing(data, role);
   }
-
-  // public async onShowAppointment(appointment: AppointmentViewmodel) {
-  //   if (appointment.OwnAppointment) {
-  //     if (AppointmentViewmodel.recordType(appointment) !== RecordTypeEnum.Private) {
-  //       await this.create(appointment, appointment.StartDate, null);
-  //     } else {
-  //       await this.createPrivate(appointment, appointment.StartDate);
-  //     }
-  //   }
-
-  // }
 
 }

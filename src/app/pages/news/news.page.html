@@ -20,5 +20,14 @@
     <ion-item-divider color="secondary">{{ 'LIST_HEADER_NEWS' | translate }}</ion-item-divider>
     <app-news [news]="news" (showNews)="onDetails(news)" [color]="color" *ngFor="let news of dataProvider.News"></app-news>
   </ion-list>
+  <div *ngIf="dataProvider.News.length === 0">
+    <ion-row>
+      <img src="assets/imgs/noNews.png" class="center" />
+    </ion-row>
+    <ion-row>&nbsp;</ion-row>
+    <ion-row class="ion-text-center">
+      <h2 class="textcenter">{{ 'LBL_NO_NEWS' | translate }}</h2>
+    </ion-row>
+  </div>
 </ion-content>
 

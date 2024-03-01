@@ -356,6 +356,7 @@ export class AppointmentService {
         this.appointment.Id = result.Id;
         this.appointment.IsDirty = false;
         this.dataProvider.refreshAppointmentId(this.appointment, true);
+        this.dataProvider.setNotification(this.appointment, false);
         if(refreshDay) {
           this.dataProvider.getMyAppointments(dt);
         }
@@ -404,6 +405,7 @@ export class AppointmentService {
       if (result) {
         this.removeAppointment(this.appointment);
         this.refreshData(false);
+        this.dataProvider.clearNotification(this.appointment);
         this.dataProvider.saveAppointments();
         if(callback) {
           callback();
@@ -421,6 +423,7 @@ export class AppointmentService {
         this.appointment.IsDirty = false;
         this.dataProvider.updateAppointment(this.appointment);
         this.SetOriginalAppointment();
+        this.dataProvider.setNotification(this.appointment, true);
         return;
       } else {      
         this.dataProvider.removeAppointment(this.appointment, true);

@@ -148,22 +148,6 @@ export class HomePage {
     
   }
 
-  getColor(appointment: AppointmentViewmodel): string {
-    var now = moment();
-    var startDate = moment(appointment.StartDate);
-    var endDate = moment(appointment.StartDate).add(appointment.Duration, 'minutes');
-    if (startDate < now && endDate > now) {
-      return 'orange';
-    }
-    else if (now < startDate) {
-      return 'divider';
-    }
-    else if (now > endDate) {
-      return 'grey';
-    }
-    return 'divider';
-  }
-
   formatTime(appointment: AppointmentViewmodel): string {
 
     var d1: Date = new Date(appointment.StartDate);

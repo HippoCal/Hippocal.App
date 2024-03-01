@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import * as moment from 'moment';
 import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
 import { DataService } from 'src/app/services/services';
 import { AppointmentViewmodel } from 'src/app/viewmodels/appointmentviewmodel';
@@ -22,6 +23,21 @@ export class AppointmentbubbleComponent  implements OnInit {
   }
 
   get css(): string {
+
+    if(this.appointment.IsDirty) {
+      return "dirtyData textcenter"
+    }
+    
+    var now = moment();
+    var startDate = moment(this.appointment.StartDate);
+    var endDate = moment(this.appointment.StartDate).add(this.appointment.Duration, 'minutes');
+    if (startDate < now && endDate > now) {
+      return "justRunningData textcenter";
+    }
+    else if (now > endDate) {
+      return "overData textcenter";
+    }
+
     var cssClasses: string;
     switch(this.recordType) {
       case RecordTypeEnum.Standard:
@@ -37,9 +53,7 @@ export class AppointmentbubbleComponent  implements OnInit {
         cssClasses = "adminData textcenter"
         break;
     }
-    if(this.appointment.IsDirty) {
-      cssClasses = "dirtyData textcenter"
-    }
+
     return cssClasses;
   }
 
