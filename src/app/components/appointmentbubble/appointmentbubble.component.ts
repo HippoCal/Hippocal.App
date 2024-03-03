@@ -35,9 +35,12 @@ export class AppointmentbubbleComponent  implements OnInit {
       return "justRunningData textcenter";
     }
     else if (now > endDate) {
-      return "overData textcenter";
+      if(this.appointment.OwnAppointment) {
+        return "overData textcenter";
+      } else {
+        return "otherOverData textcenter";
+      }
     }
-
     var cssClasses: string;
     switch(this.recordType) {
       case RecordTypeEnum.Standard:

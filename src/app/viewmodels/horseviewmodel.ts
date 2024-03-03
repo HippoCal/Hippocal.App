@@ -17,6 +17,16 @@ export class HorseViewmodel {
     this.Appointments = [];
   }
 
+  public static Clone(data: HorseViewmodel): HorseViewmodel {
+    const horse = new HorseViewmodel() 
+    horse.Name = data.Name;
+    horse.ImageUrl = data.ImageUrl;
+    horse.LocalImage = data.LocalImage;
+    horse.HorseKey = data.HorseKey;
+    horse.UserKey = data.UserKey;
+    return horse;
+  }
+
   public static PartialClone(data: HorseViewmodel, existing?: HorseViewmodel): HorseViewmodel {
     const horse = existing !== undefined ? existing :new HorseViewmodel() 
     horse.Name = data.Name;

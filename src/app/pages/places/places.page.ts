@@ -24,10 +24,20 @@ export class PlacesPage {
       this.createPrivatePlace();
   }
   
-  ionViewWillEnter() { 
-    this.createPrivatePlace();
-    this.hasPlaces = this.dataProvider.Profile.Places !== undefined && this.dataProvider.Profile.Places.length > 0;
-    this.dataProvider.setCurrentTab('tab3');
+  async ionViewWillEnter() { 
+    if(this.dataProvider.Profile.Places.length === 0) {
+      this.dataProvider.createPrivatePlace(true);
+      const modal = await this.modalCtrl.create({
+        component: WeekPage,
+      });
+      modal.present();
+      const { data, role } = await modal.onWillDismiss();
+      this.dataProvider.navigate("home", "tab1");
+    } else {
+      this.createPrivatePlace();
+      this.hasPlaces = this.dataProvider.Profile.Places !== undefined && this.dataProvider.Profile.Places.length > 0;
+      this.dataProvider.setCurrentTab('tab3');
+    }
   };
 
   async selectPlace(place: PlaceViewmodel) {

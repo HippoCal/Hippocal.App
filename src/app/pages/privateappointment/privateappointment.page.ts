@@ -1,9 +1,9 @@
-import { Component, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, ViewChild, ElementRef, Input, NgZone } from '@angular/core';
 import { AppointmentViewmodel } from "src/app/viewmodels/viewmodels";
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
-import { AppointmentService, DataService, ToastService } from 'src/app/services/services';
+import { AppointmentService, DataService, ImageService, ToastService } from 'src/app/services/services';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -25,15 +25,18 @@ export class PrivateAppointmentPage {
   @Input("hasEvent") hasEvent: boolean;
   @Input("appointment") appointment: AppointmentViewmodel;
 
+  public horseImage: string;
   constructor(
     private modalCtrl: ModalController,
     public dataProvider: DataService,
+    private imageProvider: ImageService,
+    private zone: NgZone,
     public appointmentService: AppointmentService,
     public translate: TranslateService,
     private toastSvc: ToastService,) {
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.appointmentService.dt = moment(new Date(this.dt));
     this.isNew = false;
     this.hasName = false;
@@ -45,6 +48,7 @@ export class PrivateAppointmentPage {
       this.appointment.AppointmentType = AppointmentTypeEnum.Custom;
     }
     this.appointmentService.setAppointment(this.appointment);
+    await this.gethorseImage();
     this.duration = this.appointment.Duration;
     this.appointmentService.setHorseName(this.appointmentService.appointment.HorseKey);
     this.onChangeAppointmentType();
@@ -119,10 +123,22 @@ export class PrivateAppointmentPage {
 
   onCreateOrUpdate() {
     var header: string = this.isNew ? "HEADER_CONFIRM_CREATE_PRIVATE_APPOINTMENT" : "HEADER_CONFIRM_MODIFY_APPOINTMENT";
-    var text: string = this.isNew ? "MSG_CONFIRM_CREATE_PRIVATE_APPOINTMENT": "MSG_CONFIRM_MODIFY_APPOINTMENT";
+    var text: string = this.isNew ? "MSG_CONFIRM_CREATE_PRIVATE_APPOINTMENT" : "MSG_CONFIRM_MODIFY_APPOINTMENT";
     this.toastSvc.confirm(() => {
       var role: string = this.isNew ? 'create' : 'save';
       return this.modalCtrl.dismiss(this.appointment, role);
     }, header, text);
+  }
+
+  async gethorseImage() {
+    if (this.dataProvider.Profile.Horses.length === 1) {
+      var image = await this.dataProvider.getHorseImage(this.appointmentService.appointment.HorseKey);
+      if (image !== null) {
+        this.zone.run(() => {
+          this.horseImage = image.data;
+          this.appointmentService.appointment.HorseImageUrl = image.fileName;
+        });
+      }
+    }
   }
 }

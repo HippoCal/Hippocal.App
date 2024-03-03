@@ -9,6 +9,7 @@ import { UUID } from 'angular2-uuid';
 import { Router } from '@angular/router';
 import { ColorConst } from 'src/app/constants';
 import { LocalNotifications, ScheduleOptions } from '@capacitor/local-notifications';
+import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
 
 
 @Injectable()
@@ -136,12 +137,14 @@ export class DataService {
     });
   }
 
-  getuserstatus(callback: any) {
+  getuserstatus(callback: any, incNumLogins: boolean) {
     if (this.IsOnline && this.Profile !== undefined) {
       this.restProvider.getuserstatus(this.Profile.UserKey).then((result: any) => {
         if (result) {
           console.log('-getuserstatus: IsActive: ' + result.IsActive + ' EMailConfirmed: ' + result.EmailConfirmed + ' NumLogins: ' + result.NumLogins);
-          this.Profile.NumLogins = result.NumLogins;
+          if (incNumLogins) {
+            this.Profile.NumLogins++;
+          }
           this.Profile.EmailConfirmed = result.EmailConfirmed;
           this.Profile.IsActive = result.IsActive;
           this.setPlaces(result.Places);
@@ -218,30 +221,15 @@ export class DataService {
     }
   }
 
-
   async setHorses(horses: HorseViewmodel[]) {
     if (horses !== null) {
-      var tmphorses: HorseViewmodel[] = [];
-      var localImage: string = this.getDefaultImage("horse");
-      horses.forEach((item: HorseViewmodel) => {
-        this.Profile.Horses.forEach((horse: HorseViewmodel) => {
-          if (horse.HorseKey == item.HorseKey) {
-            item.Appointments = horse.Appointments;
-          }
-        });
-        var newHorse = new HorseViewmodel(
-          item.Name,
-          item.HorseKey,
-          item.ImageUrl,
-          localImage,
-        );
-        newHorse.Appointments = item.Appointments;
-        tmphorses.push(newHorse);
+      horses.forEach((horse: HorseViewmodel) => {
+        if(!this.Profile.Horses.some( e => e.HorseKey === horse.HorseKey)) {
+          this.Profile.Horses.push(horse);
+        }
       });
-      this.Profile.Horses = tmphorses;
     }
   }
-
 
   private getBusinessHours(businessHours, start, end): any[] {
     var result: any[] = [];
@@ -334,6 +322,10 @@ export class DataService {
             this.setHorses(data.Horses);
             if (this.Profile.Places.length === 0) {
               this.isPrivate = true;
+              if (this.Profile.Horses.length === 0 && this.Profile.HorseName !== '') {
+                var horse: HorseViewmodel = new HorseViewmodel(this.Profile.HorseName, UUID.UUID());
+                this.addHorse(horse);
+              }
             }
             this.Profile.IsRegistered = this.Profile.UserKey !== '' && this.Profile.UserKey === userKey;
             this.saveProfile(this.Profile);
@@ -511,7 +503,7 @@ export class DataService {
 
   private refreshOnline(doAll: boolean) {
     if (doAll) {
-      this.getuserstatus(() => { });
+      this.getuserstatus(() => { }, false);
     }
     this.loadHomeAppointments();
     this.loadNews();
@@ -602,7 +594,7 @@ export class DataService {
     this.loadWeek();
   }
 
-  addAppointment(app: AppointmentViewmodel) {
+  addAppointment(app: any) {
     var existing = this.appointments.filter(e => e.Id === app.Id);
     if (existing && existing.length === 0 || app.Id === 0) {
       this.appointments.push(app);
@@ -940,12 +932,15 @@ export class DataService {
           value.Email = token.EMail;
         }
       }
-      this.profile = value;
-      this.profile.Horses.forEach((horse) => {
+      var horses: HorseViewmodel[] = [];
+      value.Horses.forEach((horse) => {
+        horse.UserKey = this.profile.UserKey;
+        horses.push(HorseViewmodel.Clone(horse));
         horse.LocalImage = '';
       })
-      await this.storage?.set(this.PROFILE_KEY, this.profile);
-      await this.getHorseImages();
+      await this.storage?.set(this.PROFILE_KEY, value);
+      value.Horses = horses;
+      this.profile = value;
     }
   }
 
@@ -1142,6 +1137,16 @@ export class DataService {
     this.locale = "de-DE";
   }
 
+  async getHorseImage(horseKey: string): Promise<ImageViewmodel> {
+    
+    var horses = this.Profile.Horses.filter( e => e.HorseKey === horseKey);
+    if(horses && horses.length > 0) {
+      var horse = horses[0];
+      return await this.imageProvider.get(horse.ImageUrl, horseKey, "horse", true, this.Profile.UserKey);
+    }
+    return null;
+  }
+
   async getProfileImage() {
     var image = await this.imageProvider.get(this.Profile.ImageUrl, this.Profile.UserKey, "user", true, this.Profile.UserKey);
     if (image) {
@@ -1188,6 +1193,7 @@ export class DataService {
       halfhour.BackgroundColor = ColorConst.COL_BACK_DAY_CLOSED;
     }
   }
+
 
   private getHalfHourColor(item: AppointmentViewmodel, halfhour: HalfHourViewmodel) {
     var count = halfhour.Appointments.length > 0 ? halfhour.Appointments.filter(e => AppointmentViewmodel.recordType(e) !== RecordTypeEnum.Private).length : 0;

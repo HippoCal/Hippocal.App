@@ -15,18 +15,19 @@ import { ImageviewPage } from '../imageview/imageview.page';
 export class OtherAppointmentPage {
 
   @ViewChild('comment') commentInput: ElementRef;
+  @Input("dt") dt: Date;
+  @Input("hasEvent") hasEvent: boolean;
+  @Input("appointment") appointment: AppointmentViewmodel;
 
   public isNew: boolean;
   public area: string;
   public hasName: boolean;
   public duration: number;
   jobName: string;
+  imageType: string;
+  key: string;
+  imageUrl: string;
 
-  @Input("dt") dt: Date;
-  @Input("hasEvent") hasEvent: boolean;
-  @Input("appointment") appointment: AppointmentViewmodel;
-
-  userImage: string;
   constructor(
     public dataProvider: DataService,
     public appointmentService: AppointmentService,
@@ -44,19 +45,11 @@ export class OtherAppointmentPage {
     this.appointmentService.setData();
     this.hasName = false;
     this.jobName = this.appointmentService.getJobText(this.appointment.JobType);
-    this.getUserImage();
+    this.imageType = this.appointmentService.appointment.OwnAppointment ? "horse" : "user"; 
+    this.key = this.appointmentService.appointment.OwnAppointment ? this.appointmentService.appointment.HorseKey : this.dataProvider.Profile.UserKey; 
+    this.imageUrl = this.appointmentService.appointment.OwnAppointment ? this.dataProvider.Profile.ImageUrl : this.appointmentService.appointment.ImageUrl; 
   }
 
-  async zoom() {
-    var url = this.appointment.ImageUrl.replace("thumb_", "");
-    const modal = await this.modalCtrl.create({
-      component: ImageviewPage,
-      componentProps: { imageUrl: url, key: this.dataProvider.Profile.UserKey, type: "user" }
-    });
-    modal.present();
-    const { data, role } = await modal.onWillDismiss();
-  }
-  
   onSave() {
     this.toastSvc.confirm(() => {
       return this.modalCtrl.dismiss(this.appointmentService.appointment, 'save');
@@ -64,15 +57,7 @@ export class OtherAppointmentPage {
     "HEADER_CONFIRM_MODIFY_APPOINTMENT", 
     "MSG_CONFIRM_MODIFY_APPOINTMENT");
   }
- 
-  async getUserImage() {  
-    var image = await this.imageProvider.get(this.appointment.ImageUrl, this.appointment.UserKey, "user", true, this.dataProvider.Profile.UserKey);
-    if(image) {
-      this.zone.run(() => {
-        this.userImage = image.data;
-      });    
-    }
-  }
+
   resize() {
     if (this.appointmentService.appointment.Comment.length > 100) {
       var element = this.commentInput['_elementRef'].nativeElement.getElementsByClassName("text-input")[0];

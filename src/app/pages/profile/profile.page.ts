@@ -30,8 +30,8 @@ export class ProfilePage {
     }
     this.area = "basic";
     this.color = 'divider';
-    this.lockedOut = (!this.dataProvider.Profile.IsActive && !this.dataProvider.IsPrivate) || (!this.dataProvider.Profile.EmailConfirmed && this.dataProvider.Profile.NumLogins > 5);
-    this.lockOutReasonEMail = (!this.dataProvider.Profile.EmailConfirmed && this.dataProvider.Profile.NumLogins > 5);
+    this.lockedOut = (!this.dataProvider.Profile.IsActive && !this.dataProvider.IsPrivate) || (!this.dataProvider.Profile.EmailConfirmed && this.dataProvider.FreeLogins <= 0);
+    this.lockOutReasonEMail = (!this.dataProvider.Profile.EmailConfirmed && this.dataProvider.FreeLogins <= 0);
     if (!this.dataProvider.Profile.IsActive) {
       this.lockOutReasonEMail = false;
     }
@@ -128,7 +128,7 @@ export class ProfilePage {
     switch (role) {
       case 'saveHorse':
         this.zone.run(() => {
-          if (data.ImageUrl !== horse.ImageUrl && horse.ImageUrl !== '') {
+          if (data.ImageUrl !== horse.ImageUrl && horse.ImageUrl !== '' && horse.ImageUrl !== null && horse.ImageUrl !== undefined) {
             this.imageProvider.deleteImage(horse.ImageUrl);
             isChanged = true;
           }

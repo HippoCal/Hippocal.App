@@ -14,6 +14,12 @@
   height: 1rem !important
 }
 
+.imgcenter {
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
 ion-range {
   --bar-height: 4px;
   --bar-border-radius: 8px;

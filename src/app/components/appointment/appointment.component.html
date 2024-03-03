@@ -3,7 +3,7 @@
     <ion-item *ngIf="recordType === 0" [color]="getColor(appointment)">
       <div class="contentRow">
         <ion-avatar item-start>
-          <img class="smallImage" [src]="horseImage" />
+          <img *ngIf="isVisible" class="smallImage" [src]="horseImage" />
         </ion-avatar>
         <div>
           <h6 class="component">{{formatDate(appointment.StartDate)}}</h6>
@@ -19,7 +19,7 @@
     <ion-item *ngIf="recordType === 1" [color]="getColor(appointment)">
       <div class="contentRow">
         <ion-avatar item-start>
-          <img class="smallImage" [src]="horseImage" />
+          <img *ngIf="isVisible" class="smallImage" [src]="horseImage" />
         </ion-avatar>
         <div>
           <h6 class="component">{{formatDate(appointment.StartDate)}}</h6>

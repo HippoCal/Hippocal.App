@@ -19,6 +19,7 @@ export class AppointmentComponent implements OnInit {
   @Output() deleteAppointment = new EventEmitter<AppointmentViewmodel>();
   
   public horseImage: string;
+  public isVisible: boolean = false;
 
   recordType: RecordTypeEnum;
 
@@ -90,7 +91,7 @@ export class AppointmentComponent implements OnInit {
       return 'admin';
     }
     else if(this.recordType === RecordTypeEnum.Private) {
-      return 'medium';
+      return 'blue';
     }
     else if(this.recordType === RecordTypeEnum.Standard) {
       return 'primary';
@@ -100,12 +101,14 @@ export class AppointmentComponent implements OnInit {
 
   
   async gethorseImage() {
-    var image = await this.imageProvider.get(this.appointment.HorseImageUrl, this.appointment.HorseKey, "horse", true, this.dataProvider.Profile.UserKey);
-    if(image) {
-      this.zone.run(() => {
-        this.horseImage = image.data;
-      });    
-    }
+    var image = await this.dataProvider.getHorseImage(this.appointment.HorseKey);
+      if (image !== null) {
+        this.zone.run(() => {
+          this.horseImage = image.data;
+          this.appointment.HorseImageUrl = image.fileName;
+          this.isVisible = true;
+        });
+      }
   }
 
   public onClick() {

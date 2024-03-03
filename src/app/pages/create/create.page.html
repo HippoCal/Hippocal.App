@@ -12,6 +12,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+  <app-imageavatar *ngIf="dataProvider.Profile.Horses.length === 1" [imageType]="'horse'" [key]="dataProvider.Profile.Horses[0].HorseKey" [imageurl]="" ></app-imageavatar>
   <ion-grid>
     <ion-row *ngIf="isNew || !appointmentService.appointment.IsInTheFuture">
       <ion-col size="3">

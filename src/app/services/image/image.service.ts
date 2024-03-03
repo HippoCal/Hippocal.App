@@ -337,7 +337,7 @@ export class ImageService {
       width: 400,
       height: 400,
       quality: 70,
-      allowEditing: false,
+      allowEditing: true,
       source: sourceType,
       resultType: CameraResultType.Uri,
       correctOrientation: true

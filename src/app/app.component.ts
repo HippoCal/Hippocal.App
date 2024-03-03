@@ -128,7 +128,7 @@ export class AppComponent {
         } else {
           this.dataProvider.getuserstatus((result) => {
             this.getStartModus(result);
-          });
+          }, true);
         }
 
       });

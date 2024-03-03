@@ -105,7 +105,7 @@ export class EdithorsePage {
       msg = "MSG_CONFIRM_MODIFYHORSE";
     }
     this.toastSvc.confirm(async () => {
-      await this.refreshImage();
+      this.refreshImage();
       return this.modalCtrl.dismiss(this.horse, 'saveHorse');    
       }, header, msg);
   }

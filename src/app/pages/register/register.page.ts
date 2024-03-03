@@ -1,7 +1,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BarcodeScanner, BarcodeFormat, Barcode } from '@capacitor-mlkit/barcode-scanning';
-import { TokenViewmodel } from "../../viewmodels/viewmodels";
+import { HorseViewmodel, TokenViewmodel } from "../../viewmodels/viewmodels";
 import { DataService, ImageService } from "../../services/services";
 import { AlertController } from '@ionic/angular';
 import { UUID } from 'angular2-uuid';

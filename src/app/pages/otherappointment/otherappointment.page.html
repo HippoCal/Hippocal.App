@@ -10,13 +10,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
-  <ion-item>
-    <div class="imgcenter">
-      <ion-avatar>
-        <img [src]="userImage" class="center" (click)="zoom()"/>
-      </ion-avatar>
-    </div>
-  </ion-item>
+  <app-imageavatar [imageType]="imageType" [key]="key" [imageurl]="appointmentService.appointment.ImageUrl"></app-imageavatar>
   <ion-grid>
   <ion-row>
     <ion-col size="3"><h6>{{ 'LBL_DATE' | translate }}</h6></ion-col>
