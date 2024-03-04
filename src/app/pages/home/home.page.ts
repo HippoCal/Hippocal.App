@@ -38,7 +38,7 @@ export class HomePage {
   };
 
   ngOnInit() { 
-    
+    this.appointmentService.initTypes();
   }
   
   async loadAppointments() {

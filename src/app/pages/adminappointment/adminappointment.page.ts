@@ -32,6 +32,7 @@ export class AdminappointmentPage {
   }
 
   ngOnInit() {
+    this.appointmentService.initTypes();
     this.appointmentService.dt = moment(new Date(this.dt));
     this.appointmentService.appointment = this.appointment;
     this.appointmentService.dt = moment(new Date(this.appointmentService.dt));

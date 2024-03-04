@@ -14,6 +14,7 @@ export class NewsComponent {
   @Output() showNews = new EventEmitter<NewsViewmodel>();
   public newsKey: string;
   public newsImage: string;
+  public isVisible: boolean = false;
 
   constructor(
     public dataProvider: DataService, 
@@ -41,6 +42,7 @@ export class NewsComponent {
     if(image) {
       this.zone.run(() => {
         this.newsImage = image.data;
+        this.isVisible = true;
       });    
     }
   }

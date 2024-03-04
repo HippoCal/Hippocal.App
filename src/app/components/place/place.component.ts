@@ -10,6 +10,7 @@ import { PlaceViewmodel } from 'src/app/viewmodels/placeviewmodel';
 export class PlaceComponent  implements OnInit {
 
   public placeImage: string;
+  public isVisible: boolean = false;
 
   @Input('place') place: PlaceViewmodel;
   @Input('color') color: string;
@@ -42,6 +43,7 @@ export class PlaceComponent  implements OnInit {
     if(image) {
       this.zone.run(() => {
         this.placeImage = image.data;
+        this.isVisible = true;
       });    
     }
   }

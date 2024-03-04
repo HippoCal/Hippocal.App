@@ -33,6 +33,7 @@ export class CreatePage {
   }
 
   ngOnInit() {
+    this.appointmentService.initTypes();
     this.appointmentService.dt = moment(new Date(this.dt));
 
     if (this.appointment === null || this.appointment === undefined) {

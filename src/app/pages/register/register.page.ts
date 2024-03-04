@@ -24,7 +24,7 @@ export class RegisterPage implements OnInit {
 
   isSupported = false;
   barcodes: Barcode[] = [];
-  
+
   registerForm: FormGroup;
 
   constructor(
@@ -120,7 +120,7 @@ export class RegisterPage implements OnInit {
     window.document.querySelector('body')?.classList.add('barcode-scanner-active');
 
     const body = document.getElementById('myBodyId');
-    if(body) {
+    if (body) {
       body.style.visibility = 'hidden';
     }
     await BarcodeScanner.startScan({ formats: [BarcodeFormat.QrCode] });
@@ -141,7 +141,7 @@ export class RegisterPage implements OnInit {
     window.document.querySelector('body')?.classList.remove('barcode-scanner-active');
     this.isVisible = false;
     const body = document.getElementById('myBodyId');
-    if(body) {
+    if (body) {
       body.style.visibility = 'visible';
     }
   }
@@ -176,7 +176,7 @@ export class RegisterPage implements OnInit {
         return;
       }
 
-     const listener = await BarcodeScanner.addListener('barcodeScanned', async result => {
+      const listener = await BarcodeScanner.addListener('barcodeScanned', async result => {
         this.zone.run(() => {
           console.log('Scanned: ', result.barcode);
           if (result.barcode && result.barcode.format === BarcodeFormat.QrCode) {
@@ -202,28 +202,34 @@ export class RegisterPage implements OnInit {
       await this.show();
     }
     catch (ex) {
-      if (ex.code === "UNAVAILABLE") {
-        // if (ex.code === "UNAVAILABLE" && (this.dataService.Profile.Email === 'com2001@web.de' || this.dataService.Profile.Email === 'steffen.scholz@maerkischer-turnerbund.de')) {
-        this.isEnabled = true;
-        this.hide();
-        if(this.dataProvider.Profile.UserKey === "") {
-          //this.dataProvider.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
-          this.dataProvider.Profile.UserKey = "99fe21e8-8d74-30df-1023-e4d546979352";
-        } else {
-          this.dataProvider.Profile.DummyUserKey = "09e30373-7be0-4ae8-a5a3-7d419b31a247";
+      // if (ex.code === "UNAVAILABLE") {
+        if (ex.code === "UNAVAILABLE" && (this.dataProvider.Profile.Email === 'com2001@web.de' || this.dataProvider.Profile.Email === 'steffen.scholz@maerkischer-turnerbund.de')) {
+          this.isEnabled = true;
+          this.hide();
+          if (this.dataProvider.Profile.UserKey === "") {
+            //this.dataProvider.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
+            // staging
+            //this.dataProvider.Profile.UserKey = "99fe21e8-8d74-30df-1023-e4d546979352";
+            // prod
+            this.dataProvider.Profile.UserKey = "b27b80ef-2d01-4b18-a042-332e6c5b0b45";
+          } else {
+            this.dataProvider.Profile.DummyUserKey = "09e30373-7be0-4ae8-a5a3-7d419b31a247";
+          }
+          // Staging Longierhalle
+          //this.dataService.Profile.PlaceKey = "b66db54b-9493-4cca-a239-8225cd1f5fd9";
+          // localhost Longierhalle
+          //this.dataProvider.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
+          // prod
+          this.dataProvider.Profile.PlaceKey = "dbe0a332-6665-4ea1-a8f0-bd1421b029c5";
+          // localhost Reithalle
+
+          //this.dataService.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
+          // localhost New Reithalle
+          //this.dataProvider.Profile.PlaceKey = "e94e31f6-92e9-47bf-880d-9ab7ab7af8fb";
+          this.placeName = 'Dummyplace';
+          this.ownerName = 'Dummyowner';
         }
-        // Staging Longierhalle
-        //this.dataService.Profile.PlaceKey = "b66db54b-9493-4cca-a239-8225cd1f5fd9";
-        // localhost Longierhalle
-        this.dataProvider.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
-        // localhost Reithalle
-        
-        //this.dataService.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
-        // localhost New Reithalle
-        //this.dataProvider.Profile.PlaceKey = "e94e31f6-92e9-47bf-880d-9ab7ab7af8fb";
-        this.placeName = 'Dummyplace';
-        this.ownerName = 'Dummyowner';
-      }
+      // }
       console.log('Error is', ex);
     }
   }

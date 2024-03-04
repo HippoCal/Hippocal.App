@@ -31,7 +31,6 @@ export class AppointmentService {
     public dataProvider: DataService,
     public restProvider: RestService) {
     this.initTypes();
-    //this.loadOwnData();
   }
 
   initTypes() {

@@ -37,6 +37,7 @@ export class PrivateAppointmentPage {
   }
 
   async ngOnInit() {
+    this.appointmentService.initTypes();
     this.appointmentService.dt = moment(new Date(this.dt));
     this.isNew = false;
     this.hasName = false;

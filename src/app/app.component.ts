@@ -3,7 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { register } from 'swiper/element/bundle';
-import { DataService, ImageService, StorageService } from './services/services';
+import { AppointmentService, DataService, ImageService, StorageService } from './services/services';
 import { ProfileViewmodel } from './viewmodels/profileviewmodel';
 
 //import { App, AppInfo } from '@capacitor/app';
@@ -23,6 +23,7 @@ export class AppComponent {
     private translate: TranslateService, 
     public imageProvider: ImageService,
     public storageProvider: StorageService,
+    public appointmentService: AppointmentService,
     public platform: Platform) {
     platform.ready().then(() => {
         SplashScreen.hide();
@@ -146,7 +147,7 @@ export class AppComponent {
     }
     // not registered yet
     if (this.dataProvider.Profile.UserKey === '') {
-      this.dataProvider.navigate('register', 'tab1');
+      this.dataProvider.navigateNoTabs('register');
       return;
     }
 

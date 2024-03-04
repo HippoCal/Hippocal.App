@@ -2,7 +2,7 @@
   <ion-item color="{{color}}">
     <div class="contentRow">
       <ion-avatar item-start>
-        <img class="smallImage" [src]="newsImage" />
+        <img *ngIf="isVisible" class="smallImage" [src]="newsImage" />
       </ion-avatar>
       <h6 class="component">{{ news.Name }}</h6>
     </div>

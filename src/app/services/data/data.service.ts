@@ -1171,9 +1171,17 @@ export class DataService {
       halfhour.Appointments.push(item);
       this.getHalfHourColor(item, halfhour);
       // private
-    } else if (AppointmentViewmodel.recordType(item) === RecordTypeEnum.Private || AppointmentViewmodel.recordType(item) === RecordTypeEnum.Other) {
+    } else if (AppointmentViewmodel.recordType(item) === RecordTypeEnum.Private) {
       halfhour.Appointments.push(item);
       halfhour.HasData = true;
+    }
+    else if(AppointmentViewmodel.recordType(item) === RecordTypeEnum.Other) {
+      halfhour.Appointments.push(item);
+      halfhour.HasData = true;
+      if (this.Profile.CurrentPlace !== undefined && this.Profile.CurrentPlace !== null) {
+        halfhour.CanCreate = halfhour.Date > new Date() &&
+          this.profile.CurrentPlace.MaxCapacity > halfhour.Appointments.length;
+      }
     }
     // admin
     else {
@@ -1296,7 +1304,12 @@ export class DataService {
     if (tab) {
       this.currentTab = tab;
     }
+    
     return this.router.navigate([`tabs/${this.currentTab}/${url}`], extras);
+  }
+
+  async navigateNoTabs(url: string, extras?: any): Promise<boolean> {
+    return this.router.navigate([url], extras);
   }
 
   get Profile(): ProfileViewmodel {
