@@ -72,7 +72,7 @@
         <ion-list>
           <ion-item-divider color="secondary">{{ 'LIST_HEADER_PLACES' | translate }}</ion-item-divider>
           <ion-item-sliding *ngFor="let place of dataProvider.Profile.Places" (click)="onPlaceDetails()">
-            <app-place [place]="place" [color]="color" (click)="onPlaceDetails(place)" [canDelete]="true"></app-place>
+            <app-place [place]="place" [color]="color" (click)="$event.stopPropagation(); onPlaceDetails()" [canDelete]="true"></app-place>
             <ion-item-options slot="start">
               <ion-button color="danger" [disabled]="!dataProvider.IsOnline" (click)="$event.stopPropagation(); onDeletePlace(place)">
                 <ion-icon name="trash"></ion-icon>

@@ -120,7 +120,7 @@ export class ProfilePage {
     var horse = existing ? existing : new HorseViewmodel('', '', '', '', this.dataProvider.Profile.UserKey);
     const modal = await this.modalCtrl.create({
       component: EdithorsePage,
-      componentProps: { horse: HorseViewmodel.PartialClone(horse), isNew: isNew }
+      componentProps: { horse: HorseViewmodel.Clone(horse), isNew: isNew }
     });
     modal.present();
     const { data, role } = await modal.onWillDismiss();
@@ -132,11 +132,9 @@ export class ProfilePage {
             this.imageProvider.deleteImage(horse.ImageUrl);
             isChanged = true;
           }
-          if (isNew) {
-            this.dataProvider.addHorse(data);
-          } else {
-            existing = HorseViewmodel.PartialClone(data, horse);
-          }
+          data.LocalImage = '';
+          this.dataProvider.addModifyHorse(data, isNew);
+          existing = HorseViewmodel.PartialClone(data, horse);
           this.dataProvider.saveProfile(this.dataProvider.Profile);
         });
         break;
@@ -175,6 +173,7 @@ export class ProfilePage {
   }
 
   async onPlaceDetails() {
+
     const modal = await this.modalCtrl.create({
       component: PlacedetailsPage,
     });

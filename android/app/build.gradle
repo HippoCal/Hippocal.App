@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace "de.hippocal.app"
+    namespace "de.hippocal.mobile"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "de.hippocal.app"
+        applicationId "de.hippocal.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

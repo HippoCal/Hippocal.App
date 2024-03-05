@@ -324,7 +324,7 @@ export class DataService {
               this.isPrivate = true;
               if (this.Profile.Horses.length === 0 && this.Profile.HorseName !== '') {
                 var horse: HorseViewmodel = new HorseViewmodel(this.Profile.HorseName, UUID.UUID());
-                this.addHorse(horse);
+                this.addModifyHorse(horse, true);
               }
             }
             this.Profile.IsRegistered = this.Profile.UserKey !== '' && this.Profile.UserKey === userKey;
@@ -367,11 +367,14 @@ export class DataService {
     }
   }
 
-  addHorse(horse: HorseViewmodel) {
+  addModifyHorse(horse: HorseViewmodel, isNew: boolean) {
     horse.UserKey = this.Profile.UserKey;
-    this.Profile.Horses.push(horse);
+    if(isNew) {
+      this.Profile.Horses.push(horse);
+    }
+    
     if (this.IsOnline) {
-      return this.restProvider.addHorse(horse);
+      return this.restProvider.addModifyHorse(horse);
     } else {
       return this.offlineResponse();
     }

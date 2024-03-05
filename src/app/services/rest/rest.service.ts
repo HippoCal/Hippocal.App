@@ -213,7 +213,7 @@ export class RestService {
     return this.post(url, body, true, true, true);
   }
 
-  addHorse(horse: HorseViewmodel) {
+  addModifyHorse(horse: HorseViewmodel) {
     var url = this.apiUrl + '/addmodifyhorse';
     return this.post(url, horse, true, true, true);
   } 
