@@ -137,7 +137,11 @@ export class HomePage {
   postEventProcessing(data: AppointmentViewmodel, role: string) {
     switch (role) {
       case 'save':
-        this.appointmentService.save();
+        this.appointmentService.save( false, null, (success) => {
+          if(success === false) {
+            this.refresh();
+          }          
+        } );
         this.loadAppointments();
         break;
       case 'delete':

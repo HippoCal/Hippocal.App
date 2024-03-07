@@ -44,7 +44,7 @@ export class ToastService {
     var message = useTranslation ? this.translate.instant(messageId) : messageId;
     var headerText = useTranslation && header !== '' ? this.translate.instant(header) : header;
 
-    if (!this.toastVisible && message !== this.toastText) {
+
       try {
         this.toastCtrl.dismiss().then(() => {
         }).catch(() => {
@@ -71,6 +71,5 @@ export class ToastService {
         this.toastText = message;
         toast.present();
       });
-    }
   }
 }

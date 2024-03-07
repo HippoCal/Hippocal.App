@@ -16,6 +16,7 @@ import { OtherAppointmentPage } from '../otherappointment/otherappointment.page'
 export class DayPage {
 
   dayString: string;
+  changed: boolean = false;
 
   @Input("dt") dt: Date;
 
@@ -27,59 +28,37 @@ export class DayPage {
   }
 
   ngOnInit() {
+    this.refresh()
+  }
+
+  private refresh() {
     this.dataProvider.DayIsLoaded = false;
     this.appointmentService.syncAppointments();
     this.dayString = this.formatDate(this.dt);
     this.dataProvider.getAppointments(this.dt);
     this.dataProvider.getMyAppointments(this.dt);
   }
-
   cancel() {
-    return this.modalCtrl.dismiss(null, 'cancel');
+    return this.modalCtrl.dismiss(null, this.changed ? 'changed': 'cancel');
   }
 
   formatDate(dt: Date): string {
     return this.dataProvider.formatDate(dt, "dddd, LL");
   }
 
-  // async createAdmin(dt: Date) {
-  //   const modal = await this.modalCtrl.create({
-  //     component: AdminappointmentPage,
-  //     componentProps: { appointment: null, dt: dt }
-  //   });
-  //   modal.present();
-  //   const { data, role } = await modal.onWillDismiss();
-  //   await this.postEventProcessing(data, null, role, dt);
-  // }
-
-  // async createPrivate(appointment: AppointmentViewmodel, dt: Date) {
-  //   const modal = await this.modalCtrl.create({
-  //     component: PrivateAppointmentPage,
-  //     componentProps: { appointment: appointment, dt: dt }
-  //   });
-  //   modal.present();
-  //   const { data, role } = await modal.onWillDismiss();
-  //   await this.postEventProcessing(data, null, role, dt);
-  // }
-  
-  // async create(appointment: AppointmentViewmodel, dt: Date, halfhour: HalfHourViewmodel, hasEvent?: boolean) {
-  //   const modal = await this.modalCtrl.create({
-  //     component: CreatePage,
-  //     componentProps: { appointment: appointment, dt: dt, hasEvent: hasEvent }
-  //   });
-  //   modal.present();
-  //   const { data, role } = await modal.onWillDismiss();
-  //   await this.postEventProcessing(data, halfhour, role, dt);
-  // }
-
   async postEventProcessing(data: AppointmentViewmodel, role: string) {
     switch (role) {
       case 'create':
         this.appointmentService.create(true, this.dt);
         this.dataProvider.getMyAppointments(this.dt);
+        this.changed = true;
         break;
       case 'save':
-        this.appointmentService.save();
+        this.dataProvider.getMyAppointments(this.dt);
+        this.appointmentService.save(false, null, (success) => {
+          this.changed = true;
+          this.refresh();
+        } );
         break;
       case 'delete':
         this.appointmentService.delete();      

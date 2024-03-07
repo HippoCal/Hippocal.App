@@ -37,9 +37,7 @@ export class WeekPage {
   }
 
   ngOnInit() {
-    this.firstDay = moment(new Date()).toDate();
-    this.appointmentService.syncAppointments();
-    this.dataProvider.initWeek(this.firstDay);
+    this.refresh();
   }
 
   ionViewWillEnter() {
@@ -89,7 +87,9 @@ export class WeekPage {
     });
     modal.present();
     const { data, role } = await modal.onWillDismiss();
-    this.dataProvider.getWeekAppointments();
+    if(role === 'changed') {
+      this.refresh()
+    }
   }
 
   formatTime(appointment): string {
@@ -150,6 +150,12 @@ export class WeekPage {
   onRefresh() {
     this.appointmentService.syncAppointments();
     this.dataProvider.loadWeek();
+  }
+
+  refresh() {
+    this.firstDay = moment(new Date()).toDate();
+    this.appointmentService.syncAppointments();
+    this.dataProvider.initWeek(this.firstDay);
   }
 
   handleError(error: number) {

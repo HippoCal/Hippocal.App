@@ -209,18 +209,18 @@ export class RegisterPage implements OnInit {
           if (this.dataProvider.Profile.UserKey === "") {
             //this.dataProvider.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
             // staging
-            //this.dataProvider.Profile.UserKey = "99fe21e8-8d74-30df-1023-e4d546979352";
+            this.dataProvider.Profile.UserKey = "99fe21e8-8d74-30df-1023-e4d546979352";
             // prod
-            this.dataProvider.Profile.UserKey = "b27b80ef-2d01-4b18-a042-332e6c5b0b45";
+            //this.dataProvider.Profile.UserKey = "b27b80ef-2d01-4b18-a042-332e6c5b0b45";
           } else {
             this.dataProvider.Profile.DummyUserKey = "09e30373-7be0-4ae8-a5a3-7d419b31a247";
           }
           // Staging Longierhalle
-          //this.dataService.Profile.PlaceKey = "b66db54b-9493-4cca-a239-8225cd1f5fd9";
+          this.dataProvider.Profile.PlaceKey = "b66db54b-9493-4cca-a239-8225cd1f5fd9";
           // localhost Longierhalle
           //this.dataProvider.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
           // prod
-          this.dataProvider.Profile.PlaceKey = "dbe0a332-6665-4ea1-a8f0-bd1421b029c5";
+          //this.dataProvider.Profile.PlaceKey = "dbe0a332-6665-4ea1-a8f0-bd1421b029c5";
           // localhost Reithalle
 
           //this.dataService.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";

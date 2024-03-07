@@ -63,7 +63,7 @@
   "HEADER_ADDHORSE": "New horse",
   "HEADER_MODIFYHORSE": "Modify horse",
   "HEADER_CONFIRM_MODIFYHORSE": "Modify horse data",
-  "HEADER_APPOINTMENTDETAILS": "Details",
+  "HEADER_APPOINTMENTDETAILS": "Appointmentdetails",
   "MSG_CONFIRM_RESETPROFILE": "Do you really want to disable your access to HippoCal?",
   "HEADER_CONFIRM_RESETPROFILE": "Disable access",
   "LIST_HEADER_NEWS": "Your News",

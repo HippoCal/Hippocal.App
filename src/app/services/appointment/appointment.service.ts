@@ -347,7 +347,7 @@ export class AppointmentService {
     }
   }
 
-  create(refreshDay?: boolean, dt?: Date) {
+  create(refreshDay?: boolean, dt?: Date, callback?: any) {
     this.setData();
     this.dataProvider.addAppointment(this.appointment);
     this.createAppointment(this.appointment).then((result: ResultIdViewmodel) => {
@@ -359,8 +359,14 @@ export class AppointmentService {
         if(refreshDay) {
           this.dataProvider.getMyAppointments(dt);
         }
+        if(callback) {
+          callback(true);
+        }
       } else {
         this.handleError(result.ErrorId);
+        if(callback) {
+          callback(false);
+        }
       }
     });
   }
@@ -415,7 +421,7 @@ export class AppointmentService {
     });
   }
 
-  save( initWeek?: boolean, firstDay?: Date) {
+  save( initWeek?: boolean, firstDay?: Date, callback?: any) {
     this.setData();
     this.modifyAppointment().then((result: ResultIdViewmodel) => {
       if (result.Result) {
@@ -423,12 +429,18 @@ export class AppointmentService {
         this.dataProvider.updateAppointment(this.appointment);
         this.SetOriginalAppointment();
         this.dataProvider.setNotification(this.appointment, true);
+        if(callback) {
+          callback(true);
+        }
         return;
       } else {      
         this.dataProvider.removeAppointment(this.appointment, true);
         this.dataProvider.addAppointment(this.originalappointment);
         this.refreshLocal(this.originalappointment, initWeek, firstDay);
         this.handleError(result.ErrorId);
+        if(callback) {
+          callback(false);
+        }
         return;
       }
     });      
