@@ -7,7 +7,7 @@ android {
         applicationId "de.hippocal.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 24008
+        versionCode 24010
         versionName "6.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
