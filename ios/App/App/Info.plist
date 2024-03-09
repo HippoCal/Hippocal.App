@@ -46,10 +46,10 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>To capture images</string>
+	<string>HippoCal benötigt die Kamera, um initial den Barcode zur Authentifizierung zu scannen.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>To add images</string>
+	<string>Aus der Bilder-Bibliothek kannst Du Bilder für Dein Pferd auswählen.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>To store images</string>
+	<string>Aus der Bilder-Bibliothek kannst Du Bilder für Dein Pferd auswählen.</string>
 </dict>
 </plist>
