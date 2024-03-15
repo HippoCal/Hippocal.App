@@ -7,6 +7,7 @@ export class HorseViewmodel {
   public LocalImage: string;
   public UserKey: string;
   public Appointments: AppointmentViewmodel[];
+  public IsActive: boolean;
 
   constructor(name?: string, horsekey?: string, imageUrl?: string, localImage?: string, userKey? : string) {
     this.Name = name !== undefined ? name : '';
@@ -15,6 +16,7 @@ export class HorseViewmodel {
     this.LocalImage = localImage !== undefined ? localImage : '';
     this.UserKey = userKey !== undefined ? userKey : '';
     this.Appointments = [];
+    this.IsActive = false;
   }
 
   public static Clone(data: HorseViewmodel): HorseViewmodel {

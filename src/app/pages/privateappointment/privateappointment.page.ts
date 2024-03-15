@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, Input, NgZone } from '@angular/core';
-import { AppointmentViewmodel } from "src/app/viewmodels/viewmodels";
+import { AppointmentViewmodel, HorseViewmodel, ProfileViewmodel } from "src/app/viewmodels/viewmodels";
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
@@ -29,7 +29,6 @@ export class PrivateAppointmentPage {
   constructor(
     private modalCtrl: ModalController,
     public dataProvider: DataService,
-    private imageProvider: ImageService,
     private zone: NgZone,
     public appointmentService: AppointmentService,
     public translate: TranslateService,
@@ -44,7 +43,17 @@ export class PrivateAppointmentPage {
     this.area = "horses";
     if (this.appointment === null || this.appointment === undefined) {
       this.isNew = true;
-      this.appointment = new AppointmentViewmodel(this.dataProvider.Profile.UserKey, '', '', this.appointmentService.dt, this.appointmentService.dt.hour(), this.appointmentService.dt.minute(), '', 60, JobTypeEnum.Other, AppointmentTypeEnum.Custom);
+      this.appointment = new AppointmentViewmodel(
+        this.dataProvider.Profile.UserKey,
+        '',
+        '',
+        this.appointmentService.dt,
+        this.appointmentService.dt.hour(),
+        this.appointmentService.dt.minute(),
+        ProfileViewmodel.GetTitle(this.dataProvider.Profile),
+        60,
+        JobTypeEnum.Other,
+        AppointmentTypeEnum.Custom);
       this.appointment.HorseKey = this.dataProvider.Profile.Horses.length > 0 ? this.dataProvider.Profile.Horses[0].HorseKey : '';
       this.appointment.AppointmentType = AppointmentTypeEnum.Custom;
     }
@@ -52,8 +61,32 @@ export class PrivateAppointmentPage {
     await this.gethorseImage();
     this.duration = this.appointment.Duration;
     this.appointmentService.setHorseName(this.appointmentService.appointment.HorseKey);
-    this.onChangeAppointmentType();
     this.onNameChanged();
+    this.setActiveHorse();
+  }
+
+  setActiveHorse() {
+    var hasActiveItem: boolean = false;
+    if (this.dataProvider.Profile.Horses != null && this.dataProvider.Profile.Horses.length > 1) {
+      this.dataProvider.Profile.Horses.forEach((item) => {
+        if (this.appointmentService.appointment.HorseKey !== "") {
+          if (item.HorseKey === this.appointmentService.appointment.HorseKey) {
+            hasActiveItem = true;
+            item.IsActive = true;
+            this.onChangeHorse(item);
+          }
+        }
+        else if (item.IsActive) {
+          hasActiveItem = true;
+          this.onChangeHorse(item);
+          return;
+        }
+      })
+      if (!hasActiveItem) {
+        this.dataProvider.Profile.Horses[0].IsActive = true;
+        this.onChangeHorse(this.dataProvider.Profile.Horses[0]);
+      }
+    }
   }
 
   change(event) {
@@ -108,8 +141,14 @@ export class PrivateAppointmentPage {
     return this.dataProvider.formatDate(new Date(dt), "HH:mm");
   }
 
-  onChangeHorse() {
-    this.appointmentService.setHorseName(this.appointmentService.appointment.HorseKey);
+  onChangeHorse(horse: HorseViewmodel) {
+    this.dataProvider.Profile.Horses.forEach((item) => {
+      item.IsActive = false;
+    })
+    horse.IsActive = true;
+    this.appointmentService.appointment.HorseName = horse.Name;
+    this.appointmentService.appointment.HorseImageUrl = horse.ImageUrl;
+    this.appointmentService.appointment.HorseKey = horse.HorseKey;
   }
 
   cancel() {

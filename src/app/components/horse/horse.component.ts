@@ -11,8 +11,8 @@ import { AppointmentService, DataService, ImageService, ToastService } from 'src
 export class HorseComponent {
 
   @Input('horse') horse: HorseViewmodel;
-  @Input('color') color: string;
   @Input('canDelete') canDelete: boolean;
+  @Input('showIsActive') showIsActive: boolean;
   @Input('showappointments') showAppointments: boolean;
   public horseKey: string;
   public horseAppointments: HorseAppointmentsViewmodel;
@@ -28,44 +28,45 @@ export class HorseComponent {
 
   ngOnInit() {
     this.gethorseImage();
+
   }
 
   onClick(horse: HorseViewmodel) {
-    if (this.showAppointments) {
-      if (this.horseKey === horse.HorseKey) {
-        this.horseKey = '';
-      } else {
-        this.horseKey = horse.HorseKey;
-        this.appointmentProvider.getHorseAppointments(horse.HorseKey, (data: HorseAppointmentsViewmodel) => {
-          this.horseAppointments = data
-        });
-      }
-    }
+    // if (this.showAppointments) {
+    //   if (this.horseKey === horse.HorseKey) {
+    //     this.horseKey = '';
+    //   } else {
+    //     this.horseKey = horse.HorseKey;
+    //     this.appointmentProvider.getHorseAppointments(horse.HorseKey, (data: HorseAppointmentsViewmodel) => {
+    //       this.horseAppointments = data
+    //     });
+    //   }
+    // }
   }
 
-  getAppointmentName(data: IOwnAppointmentViewmodel) {
-    let ownAppointment: OwnAppointmentViewmodel = new OwnAppointmentViewmodel(data);
+  // getAppointmentName(data: IOwnAppointmentViewmodel) {
+  //   let ownAppointment: OwnAppointmentViewmodel = new OwnAppointmentViewmodel(data);
 
-    if (ownAppointment.AppointmentName !== undefined && ownAppointment.AppointmentName !== null && ownAppointment.PlaceName !== undefined && ownAppointment.PlaceName !== null) {
-      return ownAppointment.PlaceName + ": " + ownAppointment.AppointmentName;
-    }
-    if (ownAppointment.AppointmentName !== undefined && ownAppointment.AppointmentName !== null) {
-      return ownAppointment.AppointmentName;
-    }
-    if (ownAppointment.PlaceName !== undefined && ownAppointment.PlaceName !== undefined) {
-      return ownAppointment.PlaceName;
-    }
-    return '';
-  }
+  //   if (ownAppointment.AppointmentName !== undefined && ownAppointment.AppointmentName !== null && ownAppointment.PlaceName !== undefined && ownAppointment.PlaceName !== null) {
+  //     return ownAppointment.PlaceName + ": " + ownAppointment.AppointmentName;
+  //   }
+  //   if (ownAppointment.AppointmentName !== undefined && ownAppointment.AppointmentName !== null) {
+  //     return ownAppointment.AppointmentName;
+  //   }
+  //   if (ownAppointment.PlaceName !== undefined && ownAppointment.PlaceName !== undefined) {
+  //     return ownAppointment.PlaceName;
+  //   }
+  //   return '';
+  // }
 
-  onTypeClick(typeAppointment: TypeAppointmentsViewmodel) {
-    typeAppointment.Visible = !typeAppointment.Visible;
-    this.appointmentProvider.saveStatus(typeAppointment, this.horseKey);
-  }
+  // onTypeClick(typeAppointment: TypeAppointmentsViewmodel) {
+  //   typeAppointment.Visible = !typeAppointment.Visible;
+  //   this.appointmentProvider.saveStatus(typeAppointment, this.horseKey);
+  // }
 
-  getCaption(jobType: JobTypeEnum, appointmentType: AppointmentTypeEnum) {
-    return this.appointmentProvider.getCaption(jobType, appointmentType);
-  }
+  // getCaption(jobType: JobTypeEnum, appointmentType: AppointmentTypeEnum) {
+  //   return this.appointmentProvider.getCaption(jobType, appointmentType);
+  // }
 
   onDeleteHorse(horse: HorseViewmodel) {
     this.toastsvc.confirm(() => {
@@ -76,23 +77,23 @@ export class HorseComponent {
       "MSG_CONFIRM_DELETE_HORSE");
   }
 
-  formatTime(data: IOwnAppointmentViewmodel): string {
+  // formatTime(data: IOwnAppointmentViewmodel): string {
 
-    let ownAppointment: OwnAppointmentViewmodel = new OwnAppointmentViewmodel(data);
-    var d1: Date = new Date(ownAppointment.StartDate);
-    var d2: Date = new Date(d1);
+  //   let ownAppointment: OwnAppointmentViewmodel = new OwnAppointmentViewmodel(data);
+  //   var d1: Date = new Date(ownAppointment.StartDate);
+  //   var d2: Date = new Date(d1);
 
-    d2.setMinutes(d1.getMinutes() + ownAppointment.Duration);
-    return this.dataProvider.formatDate(d1, "HH:mm") +
-      ' - ' +
-      this.dataProvider.formatDate(d2, "HH:mm");
+  //   d2.setMinutes(d1.getMinutes() + ownAppointment.Duration);
+  //   return this.dataProvider.formatDate(d1, "HH:mm") +
+  //     ' - ' +
+  //     this.dataProvider.formatDate(d2, "HH:mm");
 
-  }
+  // }
 
-  formatDate(data: IOwnAppointmentViewmodel): string {
-    let ownAppointment: OwnAppointmentViewmodel = new OwnAppointmentViewmodel(data);
-    return this.dataProvider.formatDate(new Date(ownAppointment.StartDate), "dddd, LL");
-  }
+  // formatDate(data: IOwnAppointmentViewmodel): string {
+  //   let ownAppointment: OwnAppointmentViewmodel = new OwnAppointmentViewmodel(data);
+  //   return this.dataProvider.formatDate(new Date(ownAppointment.StartDate), "dddd, LL");
+  // }
 
   get isLastHorse(): boolean {
     return this.dataProvider.Profile.Horses.length < 2;

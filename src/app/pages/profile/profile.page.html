@@ -61,8 +61,7 @@
       <div *ngSwitchCase="'horses'">
         <ion-item-divider color="secondary">{{ 'LIST_HEADER_HORSES' | translate }}</ion-item-divider>
         <ion-list>
-          <app-horse [horse]="horse" [showappointments]="false" [canDelete]="true" (click)="onModifyHorse(horse)"
-            *ngFor="let horse of dataProvider.Profile.Horses"></app-horse>
+          <app-horse *ngFor="let horse of dataProvider.Profile.Horses" [horse]="horse" [showappointments]="false" [canDelete]="true" [showIsActive]="false" (click)="onModifyHorse(horse)"/>
         </ion-list>
         <ion-button color="primary" (click)="onAddHorse()" [disabled]="!dataProvider.IsOnline" expand="block">{{
           'BTN_NEWHORSE' |

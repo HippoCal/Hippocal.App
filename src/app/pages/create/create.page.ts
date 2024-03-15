@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { AppointmentViewmodel, ProfileViewmodel} from "src/app/viewmodels/viewmodels";
+import { AppointmentViewmodel, HorseViewmodel, ProfileViewmodel } from "src/app/viewmodels/viewmodels";
 import { AppointmentTypeEnum, JobTypeEnum } from 'src/app/enums/enums';
 import { DataService, AppointmentService, ToastService, ImageService } from 'src/app/services/services';
 import { TranslateService } from '@ngx-translate/core';
@@ -56,8 +56,32 @@ export class CreatePage {
     this.appointmentService.setData();
     this.hasName = false;
     this.onNameChanged();
-    this.onChangeJobType();
-    this.onChangeHorse() ;
+    //this.onChangeJobType();
+    this.setActiveHorse();
+  }
+
+  setActiveHorse() {
+    var hasActiveItem: boolean = false;
+    if (this.dataProvider.Profile.Horses != null && this.dataProvider.Profile.Horses.length > 1) {
+      this.dataProvider.Profile.Horses.forEach((item) => {
+        if(this.appointmentService.appointment.HorseKey !== "") {
+          if(item.HorseKey === this.appointmentService.appointment.HorseKey) {
+            hasActiveItem = true;
+            item.IsActive = true;
+            this.onChangeHorse(item);
+          }
+        } 
+        else if (item.IsActive) {
+          hasActiveItem = true;
+          this.onChangeHorse(item);
+          return;
+        }
+      })
+      if (!hasActiveItem) {
+        this.dataProvider.Profile.Horses[0].IsActive = true;
+        this.onChangeHorse(this.dataProvider.Profile.Horses[0]);
+      }
+    }
   }
 
   onCreateAdminAppointment() {
@@ -69,6 +93,7 @@ export class CreatePage {
       return this.modalCtrl.dismiss(this.appointmentService.appointment, 'delete');
     }, "HEADER_CONFIRM_DELETE", "MSG_CONFIRM_DELETE");
   }
+
 
   changeDuration(event) {
     var duration: number = event.target.value;
@@ -98,16 +123,22 @@ export class CreatePage {
     }
   }
 
-  onChangeHorse() {
-    this.appointmentService.setHorseName(this.appointmentService.appointment.HorseKey);
+  onChangeHorse(horse: HorseViewmodel) {
+    this.dataProvider.Profile.Horses.forEach((item) => {
+      item.IsActive = false;
+    })
+    horse.IsActive = true;
+    this.appointmentService.appointment.HorseName = horse.Name;
+    this.appointmentService.appointment.HorseImageUrl = horse.ImageUrl;
+    this.appointmentService.appointment.HorseKey = horse.HorseKey;
   }
 
   onCreateOrUpdate() {
     this.toastSvc.confirm(() => {
       return this.modalCtrl.dismiss(this.appointmentService.appointment, this.isNew ? 'create' : 'save');
-    }, 
-    this.isNew ? "HEADER_CONFIRM_CREATE" : "HEADER_CONFIRM_MODIFY_APPOINTMENT", 
-    this.isNew ? "MSG_CONFIRM_CREATE": "MSG_CONFIRM_MODIFY_APPOINTMENT");
+    },
+      this.isNew ? "HEADER_CONFIRM_CREATE" : "HEADER_CONFIRM_MODIFY_APPOINTMENT",
+      this.isNew ? "MSG_CONFIRM_CREATE" : "MSG_CONFIRM_MODIFY_APPOINTMENT");
   }
 
   cancel() {
