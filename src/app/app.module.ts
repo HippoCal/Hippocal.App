@@ -14,6 +14,7 @@ import { DataService, ImageService, TokenService, LoadingService, RestService, A
 import { Drivers } from '@ionic/storage';
 import { ComponentsModule } from './components/components.module';
 
+
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, '../assets/i18n/', '.json');
 }
@@ -42,11 +43,13 @@ export function createTranslateLoader(http: HttpClient) {
     ),
     AppRoutingModule],
   providers: [
+
     RestService,
     DataService,
     TokenService,
     FormsModule,
     LoadingService,
+
     AppointmentService,
     ImageService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }

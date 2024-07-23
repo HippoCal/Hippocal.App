@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     namespace "de.hippocal.mobile"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "de.hippocal.mobile"
         minSdkVersion rootProject.ext.minSdkVersion

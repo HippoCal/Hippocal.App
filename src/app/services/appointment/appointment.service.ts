@@ -29,7 +29,8 @@ export class AppointmentService {
 
   constructor(public storage: StorageService, public translate: TranslateService,
     public dataProvider: DataService,
-    public restProvider: RestService) {
+    public restProvider: RestService,
+    ) {
     this.initTypes();
   }
 
@@ -529,7 +530,7 @@ export class AppointmentService {
 
   public async modifyAppointment() {
     if (this.dataProvider.IsOnline) {
-      return this.restProvider.modifyAppointment(this.appointment);
+      return this.dataProvider.modifyAppointment(this.appointment);
     } else {
       return this.dataProvider.offlineResponse();
     }

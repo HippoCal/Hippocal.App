@@ -50,6 +50,7 @@ export class DataService {
     public storage: StorageService,
     public restProvider: RestService,
     public imageProvider: ImageService,
+
     private router: Router,
     public platform: Platform) {
 
@@ -83,6 +84,11 @@ export class DataService {
     } else {
       return this.offlineResponse();
     }
+  }
+
+  async modifyAppointment(appointment: AppointmentViewmodel) {
+    await this.setNotification(appointment, true);
+    return this.restProvider.modifyAppointment(appointment);
   }
 
   async clearAllNotifications() {
