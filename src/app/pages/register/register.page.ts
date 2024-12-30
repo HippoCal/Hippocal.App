@@ -2,9 +2,10 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BarcodeScanner, BarcodeFormat, Barcode } from '@capacitor-mlkit/barcode-scanning';
 import { HorseViewmodel, TokenViewmodel } from "../../viewmodels/viewmodels";
-import { DataService, ImageService } from "../../services/services";
+import { DataService, ImageService, TokenService } from "../../services/services";
 import { AlertController } from '@ionic/angular';
 import { UUID } from 'angular2-uuid';
+import { Token } from '@angular/compiler';
 
 @Component({
   selector: 'app-register',
@@ -29,6 +30,7 @@ export class RegisterPage implements OnInit {
 
   constructor(
     public dataProvider: DataService,
+    public tokenProvider: TokenService,
     public imageService: ImageService,
     private alertController: AlertController,
     private zone: NgZone,
@@ -206,22 +208,25 @@ export class RegisterPage implements OnInit {
         if (ex.code === "UNAVAILABLE" && (this.dataProvider.Profile.Email === 'com2001@web.de' || this.dataProvider.Profile.Email === 'steffen.scholz@maerkischer-turnerbund.de')) {
           this.isEnabled = true;
           this.hide();
-          if (this.dataProvider.Profile.UserKey === "") {
+          if (this.dataProvider.Profile.UserKey === "" || this.dataProvider.Profile.UserKey !== "b27b80ef-2d01-4b18-a042-332e6c5b0b45") {
             // localhost
-            this.dataProvider.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
+            //this.dataProvider.Profile.UserKey = "9625b8b8-48fc-45e9-8c36-30ac595f2e7a";
             // staging
             //this.dataProvider.Profile.UserKey = "99fe21e8-8d74-30df-1023-e4d546979352";
             // prod
-            //this.dataProvider.Profile.UserKey = "b27b80ef-2d01-4b18-a042-332e6c5b0b45";
+            this.dataProvider.Profile.UserKey = "b27b80ef-2d01-4b18-a042-332e6c5b0b45";
+            this.tokenProvider.token.UserKey = this.dataProvider.Profile.UserKey;
+            this.tokenProvider.token.EMail = this.dataProvider.Profile.Email;
+            this.tokenProvider.saveToken(this.tokenProvider.token);
           } else {
             this.dataProvider.Profile.DummyUserKey = "09e30373-7be0-4ae8-a5a3-7d419b31a247";
           }
           // Staging Longierhalle
           //this.dataProvider.Profile.PlaceKey = "b66db54b-9493-4cca-a239-8225cd1f5fd9";
           // localhost Longierhalle
-          this.dataProvider.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
+          //this.dataProvider.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";
           // prod
-          //this.dataProvider.Profile.PlaceKey = "dbe0a332-6665-4ea1-a8f0-bd1421b029c5";
+          this.dataProvider.Profile.PlaceKey = "dbe0a332-6665-4ea1-a8f0-bd1421b029c5";
           // localhost Reithalle
 
           //this.dataService.Profile.PlaceKey = "15aa745c-ae33-452c-8e7b-3b66073db095";

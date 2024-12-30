@@ -16,7 +16,7 @@
       <h2>{{news.Headline}}</h2>
     </ion-item>
     <ion-item text-wrap>
-      <p>{{news.Text}}</p>
+      <div [innerHTML]="safeHtml"></div>
     </ion-item>
     <swiper-container>
       <swiper-slide>

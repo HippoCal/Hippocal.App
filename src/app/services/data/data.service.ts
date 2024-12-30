@@ -1001,9 +1001,10 @@ export class DataService {
 
   // loads day data
   getAppointments(currentDate: Date) {
-    if (!this.dayIsLoaded) {
+    if (!this.dayIsLoaded || currentDate !== this.currentDay) {
       this.currentDay = currentDate;
       this.IsPrivate ? this.initPrivateDay() : this.initDay();
+      this.dayIsLoaded = false;
     }
     if (this.IsOnline) {
       var placeKey: string = ''

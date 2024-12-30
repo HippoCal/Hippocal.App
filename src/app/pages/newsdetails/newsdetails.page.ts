@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { NewsViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService } from 'src/app/services/services';
 import { ModalController } from '@ionic/angular';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'page-newsdetails',
@@ -12,10 +13,12 @@ import { ModalController } from '@ionic/angular';
 export class NewsdetailsPage {
 
   public image: string;
+  public safeHtml: SafeHtml;
 
   @Input("news") news: NewsViewmodel;
   constructor(
     private router: Router,
+    private sanitizer: DomSanitizer,
     private route: ActivatedRoute,
     private zone: NgZone,
     public dataProvider: DataService,
@@ -29,6 +32,7 @@ export class NewsdetailsPage {
     this.getImage();
     this.news.isNew = false;
     this.dataProvider.saveNews();
+    this.safeHtml = this.sanitizer.bypassSecurityTrustHtml(this.news.Text);
   }
 
   cancel() {
@@ -49,6 +53,7 @@ export class NewsdetailsPage {
       this.dataProvider.News.forEach((entry) => {
         if (entry.NewsEntryKey == this.news.NewsEntryKey) {
           this.news = entry;
+          this.safeHtml = this.sanitizer.bypassSecurityTrustHtml(this.news.Text);
         }
       });
     });

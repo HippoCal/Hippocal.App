@@ -9,6 +9,7 @@ import { PrivateAppointmentPage } from '../privateappointment/privateappointment
 import { PlacedetailsPage } from '../placedetails/placedetails.page';
 import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
 import { OtherAppointmentPage } from '../otherappointment/otherappointment.page';
+import * as moment from 'moment';
 
 @Component({
   selector: 'page-nowinplace',
@@ -24,10 +25,11 @@ export class NowinplacePage {
     public dataProvider: DataService, 
     private modalCtrl: ModalController,
     public appointmentService: AppointmentService,
-    public imageProvider: ImageService) {
-    this.dt = new Date();
-    this.dataProvider.getAppointments(this.dt);
-  }
+    public imageProvider: ImageService) 
+    {
+      this.dt = moment().startOf('day').toDate();
+      this.dataProvider.getAppointments(this.dt);
+    }
 
   cancel() {
     return this.modalCtrl.dismiss(null, 'cancel');
