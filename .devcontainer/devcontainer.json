@@ -1,0 +1,10 @@
+{
+	"name": "Optra Development",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"mounts": [
+    "source=${localWorkspaceFolder}/.claude-config,target=/home/vscode/.config,type=bind"
+	],
+	"remoteUser": "root"
+}
