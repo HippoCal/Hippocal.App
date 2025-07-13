@@ -32,7 +32,12 @@
               }
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "localforage",
+              "angular2-uuid", 
+              "moment"
+            ]
           },
           "configurations": {
             "production": {

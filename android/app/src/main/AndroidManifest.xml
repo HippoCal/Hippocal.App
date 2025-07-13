@@ -8,6 +8,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        
+        <!-- 16KB Memory Pages Support für Android 15+ -->
+        <meta-data android:name="android.app.16kb.enabled" android:value="true" />
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
             android:exported="true"

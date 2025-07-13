@@ -22,7 +22,39 @@
               "uriFormat": "%s",
               "action": "debugWithChrome"
             }
-          }
-
+        },
+        {
+            "name": "🤖 Run Android on Device (Windows)",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run build && npx cap sync android && echo 'Build complete! Now run from Windows: cd android && gradlew.bat installDebug'",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "🔄 Android with Live Reload",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npx ionic capacitor run android --livereload --external",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "🐛 Debug Android Device (USB)",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}/src",
+            "urlFilter": "*://localhost/*",
+            "trace": true
+        },
+        {
+            "name": "🔨 Build & Install Debug APK",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "cd android && ./gradlew installDebug",
+            "cwd": "${workspaceFolder}",
+            "windows": {
+                "command": "cd android && gradlew.bat installDebug"
+            }
+        }
     ]
 }

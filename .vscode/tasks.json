@@ -1,0 +1,55 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "android-build",
+            "type": "shell",
+            "command": "npm run build && npx cap sync android",
+            "group": "build",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
+            "label": "ionic-build",
+            "type": "shell",
+            "command": "npm run build",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "cap-sync",
+            "type": "shell",
+            "command": "npx cap sync",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "start-livereload",
+            "type": "shell",
+            "command": "npx ionic serve --external --port=8100",
+            "group": "serve",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": {
+                "owner": "ionic",
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^.*Local:.*$",
+                    "endsPattern": "^.*served at.*$"
+                }
+            }
+        }
+    ]
+}
