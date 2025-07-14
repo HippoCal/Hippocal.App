@@ -5,13 +5,11 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:background">@null</item>
-        <!-- Edge-to-Edge Display -->
+        <!-- Edge-to-Edge Display ohne deprecated APIs -->
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:navigationBarColor">#FFFFFF</item>
-        <item name="android:statusBarColor">#FFFFFF</item>
         <item name="android:forceDarkAllowed">false</item>
         <item name="android:enforceNavigationBarContrast">false</item>
-        <!-- Erzwinge helle System-UI auch im Dark Mode -->
+        <!-- Modern Edge-to-Edge Setup für Android 10+ -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
