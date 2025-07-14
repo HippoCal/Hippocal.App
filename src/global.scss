@@ -122,3 +122,34 @@ ion-app.cameraView, ion-app.cameraView ion-content, ion-app.cameraView .nav-deco
 	color: #ffffff;
 }
 
+// KRITISCHER FIX: Android System-Navigation Überlappung v2.0
+// Aggressive Cache-Buster und einfachere Lösung
+.plt-android ion-tab-bar,
+.plt-capacitor.plt-android ion-tab-bar,
+ion-app.plt-android ion-tab-bar,
+body.plt-android ion-tab-bar {
+  position: fixed !important;
+  
+  // Einfacher fester Wert - kein env() da es nicht zuverlässig funktioniert
+  bottom: 16px !important;
+  
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 9999 !important;
+  transform: none !important;
+  
+  // Styling mit Cache-Buster
+  height: 56px !important;
+  background: var(--ion-tab-bar-background, #ffffff) !important;
+  border-top: 1px solid var(--ion-tab-bar-border-color, #cccccc) !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+// Content-Bereich anpassen
+.plt-android ion-tabs,
+.plt-capacitor.plt-android ion-tabs,
+ion-app.plt-android ion-tabs,
+body.plt-android ion-tabs {
+  padding-bottom: 72px !important; // 56px Tab-Bar + 16px Abstand
+}
+
