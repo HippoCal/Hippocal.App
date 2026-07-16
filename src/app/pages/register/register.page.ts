@@ -178,16 +178,17 @@ export class RegisterPage implements OnInit {
         return;
       }
 
-      const listener = await BarcodeScanner.addListener('barcodeScanned', async result => {
+      const listener = await BarcodeScanner.addListener('barcodesScanned', async result => {
         this.zone.run(() => {
-          console.log('Scanned: ', result.barcode);
-          if (result.barcode && result.barcode.format === BarcodeFormat.QrCode) {
+          const barcode = result.barcodes?.[0];
+          console.log('Scanned: ', barcode);
+          if (barcode && barcode.format === BarcodeFormat.QrCode) {
             this.isLocked = true;
             this.hide();
             if (this.dataProvider.Profile.UserKey === '' || this.dataProvider.Profile.UserKey === undefined) {
               this.dataProvider.Profile.UserKey = UUID.UUID();
             }
-            this.dataProvider.getPlaceOwner(result.barcode.rawValue).then((result: any) => {
+            this.dataProvider.getPlaceOwner(barcode.rawValue).then((result: any) => {
               this.dataProvider.Profile.PlaceKey = result.PlaceKey;
               this.placeName = result.PlaceName;
               this.ownerName = result.OwnerName;
