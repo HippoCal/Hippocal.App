@@ -68,3 +68,6 @@ testem.log
 Thumbs.db
 
 resources/android/**/*
+/.claude/settings.local.json
+/.devcontainer/Dockerfile
+/.devcontainer/devcontainer.json
