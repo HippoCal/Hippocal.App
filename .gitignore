@@ -71,3 +71,14 @@ resources/android/**/*
 /.claude/settings.local.json
 /.devcontainer/Dockerfile
 /.devcontainer/devcontainer.json
+
+# Signing & deploy secrets (never commit these)
+*.jks
+*.keystore
+**/play-service-account.json
+fastlane/*.json
+fastlane/.env*
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/test_output
+vendor/bundle

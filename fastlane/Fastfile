@@ -1,0 +1,60 @@
+# Fastlane pipeline for HippoCal (Capacitor 8 / Angular).
+#
+# The web build (`npm run build`) and `npx cap sync` are run BEFORE fastlane in
+# the CI workflow, so these lanes only handle the native build + store upload.
+#
+# Android secrets (env):  ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD,
+#                         ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD, SUPPLY_JSON_KEY
+# iOS secrets (env):      ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_CONTENT (base64 .p8)
+
+default_platform(:android)
+
+platform :android do
+  desc "Build a signed AAB and upload it to Google Play (default track: internal)"
+  lane :deploy do |options|
+    track = options[:track] || "internal"
+
+    gradle(
+      project_dir: "android",
+      task: "bundle",
+      build_type: "Release"
+    )
+
+    upload_to_play_store(
+      track: track,
+      aab: "android/app/build/outputs/bundle/release/app-release.aab",
+      # Only publish straight to users on the production track; otherwise stage
+      # as a draft/complete on the test track.
+      release_status: track == "production" ? "completed" : "draft",
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
+
+platform :ios do
+  desc "Build a signed IPA and upload it to TestFlight"
+  # NOTE: requires a macOS runner + Xcode 26 and code signing set up
+  # (fastlane match OR manual certs). Wire this into a macOS CI job when ready.
+  lane :beta do
+    api_key = app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_content: ENV["ASC_KEY_CONTENT"],
+      is_key_content_base64: true
+    )
+
+    build_app(
+      workspace: "ios/App/App.xcworkspace",
+      scheme: "App",
+      export_method: "app-store"
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true
+    )
+  end
+end

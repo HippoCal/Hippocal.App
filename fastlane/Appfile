@@ -1,0 +1,12 @@
+for_platform :android do
+  package_name("de.hippocal.app")
+  # Google Play service-account JSON. In CI this points to a temp file written
+  # from the PLAY_SERVICE_ACCOUNT_JSON secret (see .github/workflows/release.yml).
+  json_key_file(ENV["SUPPLY_JSON_KEY"]) if ENV["SUPPLY_JSON_KEY"]
+end
+
+for_platform :ios do
+  app_identifier("de.hippocal.app")
+  # apple_id / itc_team_id / team_id are provided via the App Store Connect
+  # API key (ASC_KEY_*) rather than hard-coded credentials.
+end
