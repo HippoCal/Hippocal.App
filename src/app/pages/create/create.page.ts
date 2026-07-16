@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, OnInit } from '@angular/core';
 import { AppointmentViewmodel, HorseViewmodel, ProfileViewmodel } from "src/app/viewmodels/viewmodels";
 import { AppointmentTypeEnum, JobTypeEnum } from 'src/app/enums/enums';
 import { DataService, AppointmentService, ToastService, ImageService } from 'src/app/services/services';
@@ -11,7 +11,7 @@ import { ModalController } from '@ionic/angular';
   templateUrl: './create.page.html',
   styleUrls: ['./create.page.scss']
 })
-export class CreatePage {
+export class CreatePage implements OnInit {
 
   @ViewChild('comment') commentInput: ElementRef;
 
@@ -19,9 +19,9 @@ export class CreatePage {
   public hasName: boolean;
   public duration: number;
 
-  @Input("dt") dt: Date;
-  @Input("hasEvent") hasEvent: boolean;
-  @Input("appointment") appointment: AppointmentViewmodel;
+  @Input() dt: Date;
+  @Input() hasEvent: boolean;
+  @Input() appointment: AppointmentViewmodel;
 
   constructor(
     public dataProvider: DataService,

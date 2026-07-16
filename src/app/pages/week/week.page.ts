@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { AppointmentService, DataService, ImageService } from 'src/app/services/services';
 import * as moment from 'moment';
 import { TranslateService } from '@ngx-translate/core';
@@ -19,7 +19,7 @@ import { OtherAppointmentPage } from '../otherappointment/otherappointment.page'
   templateUrl: '././week.page.html',
   styleUrls: ['./week.page.scss'],
 })
-export class WeekPage {
+export class WeekPage implements OnInit {
 
 
   private firstDay: Date;

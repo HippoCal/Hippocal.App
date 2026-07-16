@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { DataService, ImageService, ToastService } from "src/app/services/services";
 import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
 import { ModalController } from '@ionic/angular';
@@ -9,7 +9,7 @@ import { ProfileViewmodel } from 'src/app/viewmodels/profileviewmodel';
   templateUrl: './editprofile.page.html',
   styleUrls: ['./editprofile.page.scss'],
 })
-export class EditprofilePage { 
+export class EditprofilePage implements OnInit { 
 
   showEventsOldValue: boolean;
 

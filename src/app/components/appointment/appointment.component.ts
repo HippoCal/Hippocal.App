@@ -13,8 +13,8 @@ import { RecordTypeEnum } from 'src/app/enums/recordtypeenum';
 })
 export class AppointmentComponent implements OnInit {
 
-  @Input('appointment') appointment: AppointmentViewmodel;
-  @Input('canDelete') canDelete: boolean;
+  @Input() appointment: AppointmentViewmodel;
+  @Input() canDelete: boolean;
   @Output() showAppointment = new EventEmitter<AppointmentViewmodel>();
   @Output() deleteAppointment = new EventEmitter<AppointmentViewmodel>();
   

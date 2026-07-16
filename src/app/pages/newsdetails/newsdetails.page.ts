@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NewsViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService } from 'src/app/services/services';
@@ -10,12 +10,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   templateUrl: './newsdetails.page.html',
   styleUrls: ['./newsdetails.page.scss']
 })
-export class NewsdetailsPage {
+export class NewsdetailsPage implements OnInit {
 
   public image: string;
   public safeHtml: SafeHtml;
 
-  @Input("news") news: NewsViewmodel;
+  @Input() news: NewsViewmodel;
   constructor(
     private router: Router,
     private sanitizer: DomSanitizer,

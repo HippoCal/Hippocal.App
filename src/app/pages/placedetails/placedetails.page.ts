@@ -19,9 +19,6 @@ export class PlacedetailsPage {
     public imageProvider: ImageService) {
   }
 
-  ngOnInit() {
-
-  }
 
   cancel() {
     return this.modalCtrl.dismiss(null, 'cancel');

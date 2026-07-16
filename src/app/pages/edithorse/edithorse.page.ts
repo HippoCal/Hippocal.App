@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HorseViewmodel } from "src/app//viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from "src/app/services/services";
@@ -13,15 +13,15 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./edithorse.page.scss'],
 })
 
-export class EdithorsePage {
+export class EdithorsePage implements OnInit {
 
   public horseImage: string;
   public oldImageName: string;
   horseForm: FormGroup;
   private file: ImageViewmodel;
 
-  @Input("horse") horse: HorseViewmodel;
-  @Input("isNew") isNew: boolean;
+  @Input() horse: HorseViewmodel;
+  @Input() isNew: boolean;
   constructor(
     public dataProvider: DataService,
     public imageProvider: ImageService,

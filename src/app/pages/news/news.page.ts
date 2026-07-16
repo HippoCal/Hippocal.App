@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NewsViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService } from 'src/app/services/services';
 import { ModalController } from '@ionic/angular';
@@ -9,7 +9,7 @@ import { NewsdetailsPage } from '../newsdetails/newsdetails.page';
   templateUrl: './news.page.html',
   styleUrls: ['./news.page.scss'],
 })
-export class NewsPage {
+export class NewsPage implements OnInit {
   
   public color: string;
 

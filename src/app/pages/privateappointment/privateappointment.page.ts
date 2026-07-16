@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, Input, NgZone } from '@angular/core';
+import { Component, ViewChild, ElementRef, Input, NgZone, OnInit } from '@angular/core';
 import { AppointmentViewmodel, HorseViewmodel, ProfileViewmodel } from "src/app/viewmodels/viewmodels";
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,7 +12,7 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./privateappointment.page.scss']
 })
 
-export class PrivateAppointmentPage {
+export class PrivateAppointmentPage implements OnInit {
 
   @ViewChild('comment') commentInput: ElementRef;
 
@@ -21,9 +21,9 @@ export class PrivateAppointmentPage {
   public area: string = 'horses';
   public duration: number;
 
-  @Input("dt") dt: Date;
-  @Input("hasEvent") hasEvent: boolean;
-  @Input("appointment") appointment: AppointmentViewmodel;
+  @Input() dt: Date;
+  @Input() hasEvent: boolean;
+  @Input() appointment: AppointmentViewmodel;
 
   public horseImage: string;
   constructor(

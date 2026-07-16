@@ -99,7 +99,7 @@
   </ion-range>
   <ion-row *ngIf="dataProvider.Profile.Horses.length > 1">
     <ion-col size="12">
-        <app-horse *ngFor="let horse of dataProvider.Profile.Horses" [horse]="horse" [showappointments]="false" [showIsActive]="true" item-start (click)="onChangeHorse(horse)"/>
+        <app-horse *ngFor="let horse of dataProvider.Profile.Horses" [horse]="horse" [showAppointments]="false" [showIsActive]="true" item-start (click)="onChangeHorse(horse)"/>
     </ion-col>
   </ion-row>
   <ion-item>

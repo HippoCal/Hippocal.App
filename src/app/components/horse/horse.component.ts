@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
 import { HorseViewmodel, HorseAppointmentsViewmodel, TypeAppointmentsViewmodel, OwnAppointmentViewmodel, IOwnAppointmentViewmodel } from "src/app/viewmodels/viewmodels";
 import { AppointmentService, DataService, ImageService, ToastService } from 'src/app/services/services';
@@ -8,12 +8,12 @@ import { AppointmentService, DataService, ImageService, ToastService } from 'src
   templateUrl: './horse.component.html',
   styleUrls: ['./horse.component.scss'],
 })
-export class HorseComponent {
+export class HorseComponent implements OnInit {
 
-  @Input('horse') horse: HorseViewmodel;
-  @Input('canDelete') canDelete: boolean;
-  @Input('showIsActive') showIsActive: boolean;
-  @Input('showappointments') showAppointments: boolean;
+  @Input() horse: HorseViewmodel;
+  @Input() canDelete: boolean;
+  @Input() showIsActive: boolean;
+  @Input() showAppointments: boolean;
   public horseKey: string;
   public horseAppointments: HorseAppointmentsViewmodel;
 

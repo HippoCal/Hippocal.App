@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ColorConst } from 'src/app/constants';
 import { DataService } from 'src/app/services/services';
 import { AppointmentViewmodel } from 'src/app/viewmodels/appointmentviewmodel';
@@ -10,16 +10,13 @@ import { HalfHourViewmodel } from 'src/app/viewmodels/halfhourviewmodel';
   templateUrl: './hour.component.html',
   styleUrls: ['./hour.component.scss'],
 })
-export class HourComponent  implements OnInit {
-  @Input('halfHour') halfHour: HalfHourViewmodel;
+export class HourComponent {
+  @Input() halfHour: HalfHourViewmodel;
   @Output() selectHalfHour = new EventEmitter<HalfHourViewmodel>();
   @Output() showAppointment = new EventEmitter<AppointmentViewmodel>();
 
   constructor(public dataProvider: DataService) { }
 
-  ngOnInit() {
-    
-  }
 
   public onSelectHalfHour() {
     this.selectHalfHour.emit(this.halfHour);

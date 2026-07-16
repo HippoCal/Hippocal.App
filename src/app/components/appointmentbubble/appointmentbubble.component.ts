@@ -11,8 +11,8 @@ import { AppointmentViewmodel } from 'src/app/viewmodels/appointmentviewmodel';
 })
 export class AppointmentbubbleComponent  implements OnInit {
 
-  @Input('appointment') appointment: AppointmentViewmodel;
-  @Input('showTime') showTime: boolean;
+  @Input() appointment: AppointmentViewmodel;
+  @Input() showTime: boolean;
   @Output() showAppointment = new EventEmitter<AppointmentViewmodel>();
 
   recordType: RecordTypeEnum = RecordTypeEnum.Standard;

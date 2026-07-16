@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, NgZone, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, NgZone, ViewChild, OnInit } from '@angular/core';
 import { AppointmentViewmodel} from "src/app/viewmodels/viewmodels";
 import { DataService, AppointmentService, ImageService, ToastService } from 'src/app/services/services';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,12 +12,12 @@ import { ImageviewPage } from '../imageview/imageview.page';
   templateUrl: './otherappointment.page.html',
   styleUrls: ['./otherappointment.page.scss']
 })
-export class OtherAppointmentPage {
+export class OtherAppointmentPage implements OnInit {
 
   @ViewChild('comment') commentInput: ElementRef;
-  @Input("dt") dt: Date;
-  @Input("hasEvent") hasEvent: boolean;
-  @Input("appointment") appointment: AppointmentViewmodel;
+  @Input() dt: Date;
+  @Input() hasEvent: boolean;
+  @Input() appointment: AppointmentViewmodel;
 
   public isNew: boolean;
   public area: string;

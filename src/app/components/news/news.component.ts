@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, NgZone, Output } from '@angular/core';
+import { Component, EventEmitter, Input, NgZone, OnInit, Output } from '@angular/core';
 import { NewsViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from 'src/app/services/services';
 
@@ -7,10 +7,10 @@ import { DataService, ImageService, ToastService } from 'src/app/services/servic
   templateUrl: './news.component.html',
   styleUrls: ['./news.component.scss'],
 })
-export class NewsComponent {
+export class NewsComponent implements OnInit {
 
-  @Input('news') news: NewsViewmodel;
-  @Input('color') color: string;
+  @Input() news: NewsViewmodel;
+  @Input() color: string;
   @Output() showNews = new EventEmitter<NewsViewmodel>();
   public newsKey: string;
   public newsImage: string;

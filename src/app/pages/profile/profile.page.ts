@@ -1,4 +1,4 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { HorseViewmodel, PlaceViewmodel, ProfileViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService, ToastService } from 'src/app/services/services';
 import { ModalController } from '@ionic/angular';
@@ -12,7 +12,7 @@ import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss']
 })
-export class ProfilePage {
+export class ProfilePage implements OnInit {
 
   public area: string;
   public lockedOut: boolean;

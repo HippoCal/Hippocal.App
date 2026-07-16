@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationExtras } from '@angular/router';
 import { AppointmentViewmodel, NewsViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, ImageService, AppointmentService, ToastService } from "src/app/services/services";
@@ -18,7 +18,7 @@ import { OtherAppointmentPage } from '../otherappointment/otherappointment.page'
   templateUrl: '././home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage {
+export class HomePage implements OnInit {
 
   public color: string;
 

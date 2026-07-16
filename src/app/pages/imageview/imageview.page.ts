@@ -1,4 +1,4 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { DataService, ImageService } from "src/app/services/services";
 
@@ -7,14 +7,14 @@ import { DataService, ImageService } from "src/app/services/services";
   templateUrl: './imageview.page.html',
   styleUrls: ['./imageview.page.scss']
 })
-export class ImageviewPage {
+export class ImageviewPage implements OnInit {
 
   public image: string;
   public data: any;
 
-  @Input("imageUrl") imageUrl: string;
-  @Input("key") key: string;
-  @Input("type") type: string;
+  @Input() imageUrl: string;
+  @Input() key: string;
+  @Input() type: string;
 
   constructor(
     public dataProvider: DataService,

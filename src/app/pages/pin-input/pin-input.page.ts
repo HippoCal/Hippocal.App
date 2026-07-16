@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, AfterViewChecked } from '@angular/core';
 import { IonInput } from '@ionic/angular';
 import { DataService, ImageService } from 'src/app/services/services';
 import { TokenViewmodel } from "src/app/viewmodels/viewmodels";
@@ -8,7 +8,7 @@ import { TokenViewmodel } from "src/app/viewmodels/viewmodels";
   templateUrl: './pin-input.page.html',
   styleUrls: ['./pin-input.page.scss']
 })
-export class PinInputPage {
+export class PinInputPage implements AfterViewChecked {
 
   @ViewChild('Field1', {static: false}) field1!: IonInput;
   focusIsSet: boolean = false;

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AppointmentViewmodel, HalfHourViewmodel } from "src/app/viewmodels/viewmodels";
 import { AppointmentService, DataService } from "src/app/services/services";
 import { ModalController } from '@ionic/angular';
@@ -13,12 +13,12 @@ import { OtherAppointmentPage } from '../otherappointment/otherappointment.page'
   templateUrl: './day.page.html',
   styleUrls: ['./day.page.scss'],
 })
-export class DayPage {
+export class DayPage implements OnInit {
 
   dayString: string;
   changed: boolean = false;
 
-  @Input("dt") dt: Date;
+  @Input() dt: Date;
 
   constructor(
     private modalCtrl: ModalController,

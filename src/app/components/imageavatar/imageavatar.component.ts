@@ -12,9 +12,9 @@ import { ModalController } from '@ionic/angular';
 })
 export class ImageavatarComponent implements OnInit {
 
-  @Input('imageurl') imageurl: string;
-  @Input('key') key: string;
-  @Input('imageType') imageType: string;
+  @Input() imageurl: string;
+  @Input() key: string;
+  @Input() imageType: string;
 
   public image: string;
 

@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, ViewChild, ElementRef, Input, OnInit } from '@angular/core';
 import { PlaceViewmodel, AppointmentViewmodel, ProfileViewmodel } from "src/app/viewmodels/viewmodels";
 import { DataService, AppointmentService, ToastService } from 'src/app/services/services';
 import { JobTypeEnum, AppointmentTypeEnum } from 'src/app/enums/enums';
@@ -11,7 +11,7 @@ import { ModalController } from '@ionic/angular';
   templateUrl: './adminappointment.page.html',
   styleUrls: ['./adminappointment.page.scss']
 })
-export class AdminappointmentPage {
+export class AdminappointmentPage implements OnInit {
 
   @ViewChild('comment') commentInput: ElementRef;
 
@@ -20,8 +20,8 @@ export class AdminappointmentPage {
   public hasName: boolean;
 
 
-  @Input("dt") dt: Date;
-  @Input("appointment") appointment: AppointmentViewmodel;
+  @Input() dt: Date;
+  @Input() appointment: AppointmentViewmodel;
 
   constructor(
     public dataProvider: DataService,
