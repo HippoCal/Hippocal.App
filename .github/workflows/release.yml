@@ -53,6 +53,9 @@ jobs:
       - name: Sync Capacitor (Android)
         run: npx cap sync android
 
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
       - name: Decode upload keystore
         run: echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
         env:
