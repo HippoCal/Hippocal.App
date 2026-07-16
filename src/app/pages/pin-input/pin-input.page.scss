@@ -10,13 +10,17 @@
   .otp1 {
     color: darkgray;
     border-style: solid;
-    height: 70px;
+    height: 76px;
     width: 18%;
     margin-left: 2px;
     margin-right: 2px;
-    font-size: 55px;
+    font-size: 44px;
+    line-height: 1;
     text-align: center;
     background-color: white;
+    // give the glyphs vertical breathing room so they are not clipped at the top
+    --padding-top: 8px;
+    --padding-bottom: 8px;
   }
   
   ion-input.has-focus {
@@ -25,11 +29,13 @@
   }
 
   .centerInputFields {
-    margin-top: 40px;
+    margin-top: 48px;
     margin-bottom: 40px;
     align-content: center;
     align-items: center;
     border-style: none;
+    // prevent the taller input boxes (incl. focus border) from being clipped
+    overflow: visible;
   }
   .inputFields {
     align-content: center;
