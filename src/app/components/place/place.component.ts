@@ -12,10 +12,10 @@ export class PlaceComponent  implements OnInit {
   public placeImage: string;
   public isVisible: boolean = false;
 
-  @Input('place') place: PlaceViewmodel;
-  @Input('color') color: string;
-  @Input('canDelete') canDelete: boolean;
-  @Output() click = new EventEmitter<PlaceViewmodel>();
+  @Input() place: PlaceViewmodel;
+  @Input() color: string;
+  @Input() canDelete: boolean;
+  @Output() placeSelected = new EventEmitter<PlaceViewmodel>();
   constructor(
     private zone: NgZone,
     public dataProvider: DataService,
@@ -29,7 +29,7 @@ export class PlaceComponent  implements OnInit {
   onClick(){
     if(!this.place.IsPrivate) {
       this.dataProvider.Profile.CurrentPlace = this.place;
-      this.click.emit(this.place);
+      this.placeSelected.emit(this.place);
     }
   }
 
