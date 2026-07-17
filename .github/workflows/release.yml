@@ -57,9 +57,14 @@ jobs:
         run: chmod +x android/gradlew
 
       - name: Decode upload keystore
-        run: echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+        run: |
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 -d > "$RUNNER_TEMP/upload.jks"
+          # Fail early with a clear message if the decoded file is not a valid keystore
+          keytool -list -keystore "$RUNNER_TEMP/upload.jks" -storepass "$ANDROID_KEYSTORE_PASSWORD" >/dev/null \
+            || { echo "::error::Decoded keystore is invalid. Re-create ANDROID_KEYSTORE_BASE64 (pure base64, no PEM headers/newlines)."; exit 1; }
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
 
       - name: Write Play service account
         run: printf '%s' "$PLAY_JSON" > "$RUNNER_TEMP/play.json"
