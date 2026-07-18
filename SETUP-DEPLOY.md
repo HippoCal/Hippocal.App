@@ -129,12 +129,32 @@ Deployment target is iOS 15.0 (`ios/App/App.xcodeproj`, `ios/App/Podfile`).
 
 ## 7. Local build & 16 KB verification
 
+Unsigned build (just to verify it compiles):
+
 ```bash
 npm ci
 npm run build
 npx cap sync android
 cd android && ./gradlew :app:bundleRelease
 ```
+
+**Signed** build locally — pass the keystore as Gradle properties (preferred over
+env vars: they are read per-build, so no `--gradlew stop` daemon dance and no
+`ANDROID_KEYSTORE_*` env caching):
+
+```bash
+cd android && ./gradlew :app:bundleRelease \
+  -PRELEASE_STORE_FILE=/absolute/path/hippocal.keystore \
+  -PRELEASE_STORE_PASSWORD=... \
+  -PRELEASE_KEY_ALIAS=hippocal \
+  -PRELEASE_KEY_PASSWORD=...
+```
+
+`build.gradle` reads these properties first and falls back to the `ANDROID_KEYSTORE_*`
+env vars. Use an **absolute** `RELEASE_STORE_FILE` path (relative paths resolve
+against `android/app/`). Verify the result: `jarsigner -verify <aab>` → `jar verified.`
+
+The AAB is written to `android/app/build/outputs/bundle/release/app-release.aab`.
 
 Verify the native libraries are 16 KB aligned (Android 15+ requirement) — both
 `.so` must report `0x4000`:

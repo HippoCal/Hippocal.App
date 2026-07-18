@@ -74,8 +74,10 @@ jobs:
       - name: Fastlane deploy
         run: bundle exec fastlane android deploy track:${{ github.event.inputs.track || 'internal' }}
         env:
-          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/upload.jks
-          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          # Passed to Gradle as project properties (RELEASE_STORE_FILE etc.) via the
+          # ORG_GRADLE_PROJECT_ prefix — read per-build, no daemon env caching.
+          ORG_GRADLE_PROJECT_RELEASE_STORE_FILE: ${{ runner.temp }}/upload.jks
+          ORG_GRADLE_PROJECT_RELEASE_STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ORG_GRADLE_PROJECT_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ORG_GRADLE_PROJECT_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           SUPPLY_JSON_KEY: ${{ runner.temp }}/play.json
