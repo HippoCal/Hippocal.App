@@ -1,6 +1,8 @@
 require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
 
-platform :ios, '15.0'
+# 15.5, nicht 15.0: GoogleMLKit/BarcodeScanning 8.0 (via @capacitor-mlkit 8.1.0)
+# verlangt als Mindest-Deployment-Target iOS 15.5.
+platform :ios, '15.5'
 use_frameworks!
 
 # workaround to avoid Xcode caching of Pods that requires
@@ -30,4 +32,14 @@ end
 
 post_install do |installer|
   assertDeploymentTarget(installer)
+  # assertDeploymentTarget deckelt nur bei 15.0. GoogleMLKit braucht 15.5, also
+  # jedes Pod-Target verlaesslich auf mindestens 15.5 heben.
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f
+      if current != 0.0 && current < 15.5
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.5'
+      end
+    end
+  end
 end
