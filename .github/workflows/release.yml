@@ -58,13 +58,51 @@ jobs:
 
       - name: Decode upload keystore
         run: |
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 -d > "$RUNNER_TEMP/upload.jks"
-          # Fail early with a clear message if the decoded file is not a valid keystore
-          keytool -list -keystore "$RUNNER_TEMP/upload.jks" -storepass "$ANDROID_KEYSTORE_PASSWORD" >/dev/null \
-            || { echo "::error::Decoded keystore is invalid. Re-create ANDROID_KEYSTORE_BASE64 (pure base64, no PEM headers/newlines)."; exit 1; }
+          set -uo pipefail
+          ks="$RUNNER_TEMP/upload.jks"
+
+          # 1) Secret set at all?
+          if [ -z "${ANDROID_KEYSTORE_BASE64:-}" ]; then
+            echo "::error::Secret ANDROID_KEYSTORE_BASE64 is empty or missing."
+            exit 1
+          fi
+
+          # 2) Decodes as base64? (whitespace/newlines are tolerated, PEM headers are not)
+          if ! printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '[:space:]' | base64 -d > "$ks" 2>/dev/null; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 is not valid base64. Re-create it WITHOUT PEM headers -- on Windows use:"
+            echo "::error::[Convert]::ToBase64String([IO.File]::ReadAllBytes('C:\\path\\hippocal.keystore')) | Set-Content -NoNewline ks.b64"
+            exit 1
+          fi
+          echo "Decoded $(stat -c%s "$ks") bytes."
+
+          # 3) Is the decoded blob actually a keystore? JKS starts with 0xFEEDFEED, PKCS#12 with 0x3082.
+          magic=$(head -c4 "$ks" | od -An -tx1 | tr -d ' \n')
+          case "$magic" in
+            feedfeed) echo "Detected JKS keystore." ;;
+            3082*)    echo "Detected PKCS#12 keystore." ;;
+            *)        echo "::error::Decoded file is not a keystore (magic bytes: $magic). The secret probably holds the wrong file or base64 of base64."
+                      exit 1 ;;
+          esac
+
+          # 4) Only now can a keytool failure be attributed to the password.
+          if ! keytool -list -keystore "$ks" -storepass "$ANDROID_KEYSTORE_PASSWORD" > /dev/null 2> keytool.err; then
+            echo "::error::Keystore file is valid, but keytool could not open it -- ANDROID_KEYSTORE_PASSWORD is most likely wrong."
+            sed 's/^/  /' keytool.err
+            exit 1
+          fi
+          echo "Keystore opened successfully."
+
+          # 5) Warn early if the alias secret does not exist in this keystore.
+          if ! keytool -list -keystore "$ks" -storepass "$ANDROID_KEYSTORE_PASSWORD" -alias "$ANDROID_KEY_ALIAS" > /dev/null 2>&1; then
+            echo "::error::Alias '$ANDROID_KEY_ALIAS' not found. Aliases present in the keystore:"
+            keytool -list -keystore "$ks" -storepass "$ANDROID_KEYSTORE_PASSWORD" 2>/dev/null | grep -i 'PrivateKeyEntry\|trustedCertEntry' | sed 's/^/  /'
+            exit 1
+          fi
+          echo "Alias '$ANDROID_KEY_ALIAS' found."
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
 
       - name: Write Play service account
         run: printf '%s' "$PLAY_JSON" > "$RUNNER_TEMP/play.json"
