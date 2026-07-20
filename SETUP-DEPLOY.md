@@ -81,6 +81,28 @@ base64 -w0 upload.jks          # Linux
 base64 -i upload.jks | pbcopy  # macOS
 ```
 
+**Windows (PowerShell)** — use this, *not* `certutil`:
+
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\path\hippocal.keystore")) |
+  Set-Content -NoNewline ks.b64
+```
+
+> `certutil -encode` wraps the output in `-----BEGIN CERTIFICATE-----` headers.
+> The workflow strips whitespace but not those headers, so the secret fails to
+> decode. Paste the full content of `ks.b64` into `ANDROID_KEYSTORE_BASE64`.
+
+Verify password and alias locally before pushing a tag — the two values must
+match `ANDROID_KEYSTORE_PASSWORD` and `ANDROID_KEY_ALIAS`:
+
+```bash
+keytool -list -keystore hippocal.keystore -storepass <store-password>
+```
+
+The workflow checks these four failure modes separately and names the culprit:
+secret missing → not base64 → not a keystore (magic bytes) → wrong password →
+unknown alias (it then lists the aliases actually present).
+
 > Never commit the keystore or the service-account JSON. `.gitignore` already
 > excludes `*.jks`, `*.keystore`, and `fastlane/*.json`.
 
