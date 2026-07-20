@@ -6,7 +6,9 @@ for_platform :android do
 end
 
 for_platform :ios do
-  app_identifier("de.hippocal.app")
+  # iOS uses a DIFFERENT identifier than Android (de.hippocal.app) -- this is the
+  # one registered in App Store Connect and set in ios/App/App.xcodeproj.
+  app_identifier("de.hippocal.mobile")
   # apple_id / itc_team_id / team_id are provided via the App Store Connect
   # API key (ASC_KEY_*) rather than hard-coded credentials.
 end
