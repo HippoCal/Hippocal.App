@@ -12,6 +12,10 @@ on:
           - alpha
           - beta
           - production
+      ios:
+        description: "Also build iOS and upload to TestFlight (macOS runner, 10x minutes)"
+        default: false
+        type: boolean
   push:
     tags:
       - "v*"
@@ -119,3 +123,66 @@ jobs:
           ORG_GRADLE_PROJECT_RELEASE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ORG_GRADLE_PROJECT_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           SUPPLY_JSON_KEY: ${{ runner.temp }}/play.json
+
+  # macOS runners bill at 10x the minute rate, so this job is opt-in: it runs on
+  # a version tag, or manually when "ios" is ticked.
+  ios:
+    if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.ios == 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Ruby (Fastlane)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web assets
+        run: npm run build
+
+      - name: Sync Capacitor (iOS)
+        run: npx cap sync ios
+
+      - name: Install CocoaPods
+        working-directory: ios/App
+        run: pod install --repo-update
+
+      - name: Write App Store Connect API key
+        run: |
+          set -uo pipefail
+          key="$RUNNER_TEMP/asc.p8"
+          if [ -z "${ASC_KEY_CONTENT:-}" ]; then
+            echo "::error::Secret ASC_KEY_CONTENT is empty or missing."
+            exit 1
+          fi
+          if ! printf '%s' "$ASC_KEY_CONTENT" | tr -d '[:space:]' | base64 -d > "$key" 2>/dev/null; then
+            echo "::error::ASC_KEY_CONTENT is not valid base64. Encode the .p8 with:"
+            echo "::error::[Convert]::ToBase64String([IO.File]::ReadAllBytes('AuthKey_XXXX.p8')) | Set-Content -NoNewline"
+            exit 1
+          fi
+          # A .p8 is PEM: it must start with a PRIVATE KEY header.
+          if ! head -1 "$key" | grep -q 'BEGIN PRIVATE KEY'; then
+            echo "::error::Decoded file is not a .p8 private key (missing PEM header)."
+            exit 1
+          fi
+          echo "API key written ($(stat -f%z "$key") bytes)."
+        env:
+          ASC_KEY_CONTENT: ${{ secrets.ASC_KEY_CONTENT }}
+
+      - name: Fastlane TestFlight
+        run: bundle exec fastlane ios beta
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_PATH: ${{ runner.temp }}/asc.p8
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}

@@ -40,20 +40,45 @@ end
 
 platform :ios do
   desc "Build a signed IPA and upload it to TestFlight"
-  # NOTE: requires a macOS runner + Xcode 26 and code signing set up
-  # (fastlane match OR manual certs). Wire this into a macOS CI job when ready.
+  #
+  # Signing uses Xcode "cloud signing" (Xcode 13+): the distribution certificate
+  # and provisioning profile are created/fetched through the App Store Connect
+  # API key. That means no local certificates, no .p12 secrets and no match
+  # repository -- which matters here because there is no local Mac to bootstrap
+  # any of those on. The macOS CI runner is the only Mac involved.
+  #
+  # Required env: ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_PATH (.p8 written by CI),
+  #               APPLE_TEAM_ID
   lane :beta do
+    key_path = ENV["ASC_KEY_PATH"]
+    team_id  = ENV["APPLE_TEAM_ID"]
+
+    UI.user_error!("ASC_KEY_PATH is not set or the file is missing") unless key_path && File.exist?(key_path)
+    UI.user_error!("APPLE_TEAM_ID is not set") if team_id.to_s.empty?
+
     api_key = app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
-      key_content: ENV["ASC_KEY_CONTENT"],
-      is_key_content_base64: true
+      key_filepath: key_path
     )
+
+    # xcodebuild needs the key by absolute path; a relative one is silently ignored.
+    xcargs = [
+      "-allowProvisioningUpdates",
+      "-authenticationKeyID #{ENV['ASC_KEY_ID']}",
+      "-authenticationKeyIssuerID #{ENV['ASC_ISSUER_ID']}",
+      "-authenticationKeyPath #{File.absolute_path(key_path)}",
+      "CODE_SIGN_STYLE=Automatic",
+      "DEVELOPMENT_TEAM=#{team_id}"
+    ].join(" ")
 
     build_app(
       workspace: "ios/App/App.xcworkspace",
       scheme: "App",
-      export_method: "app-store"
+      export_method: "app-store",
+      xcargs: xcargs,
+      export_team_id: team_id,
+      export_options: { signingStyle: "automatic" }
     )
 
     upload_to_testflight(
