@@ -49,7 +49,10 @@ export class CreatePage implements OnInit {
         30,
         JobTypeEnum.Other,
         AppointmentTypeEnum.Standard);
-      this.appointment.HorseKey = this.dataProvider.Profile.Horses[0].HorseKey;
+      // Profile.Horses kann leer sein (Nutzer ohne Pferd, oder Profil noch nicht
+      // via loadProfile() nachgeladen). Ohne Guard wirft Horses[0] hier und die
+      // ganze Seite rendert nicht mehr.
+      this.appointment.HorseKey = this.dataProvider.Profile.Horses?.[0]?.HorseKey ?? '';
     }
     this.duration = this.appointment.Duration;
     this.appointmentService.setAppointment(this.appointment);

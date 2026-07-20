@@ -9,6 +9,7 @@ import { LoadingService } from '../services';
 import { ToastService } from '../services';
 import { ImageViewmodel } from 'src/app/viewmodels/imageviewmodel';
 import { finalize } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class RestService {
@@ -35,7 +36,8 @@ export class RestService {
     });
   }
 
-  private baseUrl = 'https://www.hippocal.de';
+  // Dev -> http://localhost:4100, Prod -> https://www.hippocal.de (siehe environment.ts).
+  private baseUrl = environment.apiBaseUrl;
   //private baseUrl = window.location.origin;
   //private baseUrl = "http://localhost:31894";
  
@@ -43,7 +45,7 @@ export class RestService {
   //private baseUrl = "https://hippocalweb-2017-hippocalwebapi.azurewebsites.net";
 
   //private webUrl = "https://hippocalweb-2017-hippocalweb-2018.azurewebsites.net";
-  private webUrl = "https://www.hippocal.de";
+  private webUrl = environment.webBaseUrl;
   //private webUrl = "http://localhost:31894";
   
   private apiUrl = this.baseUrl + '/api/mobileauth';
@@ -321,11 +323,15 @@ export class RestService {
       this.showLoading("MSG_LOADING");
     }
     return new Promise((resolve, reject) => {
-      console.info('RestService: get from url: ' + url + params ? ' params ' + params : '');
       this.getHeader(useToken, showAnimation,
         (headers: any) => {
           if (headers !== null) {
-            
+            // Erst hier loggen: vorher wurde die Zeile auch dann ausgegeben,
+            // wenn mangels Token gar kein Request rausging — das sah nach
+            // doppelten Aufrufen aus. (Die alte Zeile hatte zudem einen
+            // Precedence-Bug `'…' + url + params ? A : B`, wodurch NIE die URL
+            // im Log stand, sondern immer nur " params [object Object]".)
+            console.info('RestService: get from url: ' + url, params ?? '');
             let options = { headers: headers, params: params };
             return this.http.get<T>(url, options).subscribe({ next: (data) => {
                 if (showAnimation) {

@@ -1,0 +1,19 @@
+{
+  "//": "Dev-Proxy: die App laeuft im Browser (Windows) und wuerde localhost:4100 nur erreichen, wenn dieser Port separat weitergeleitet ist. Stattdessen ruft sie /api|/Upload|/Account auf ihrem eigenen Origin (8100) auf; ng serve leitet containerintern an die API weiter. Vorteil: nur EIN weitergeleiteter Port und kein CORS.",
+  "/api": {
+    "target": "http://localhost:4100",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/Upload": {
+    "target": "http://localhost:4100",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/Account": {
+    "target": "http://localhost:4100",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

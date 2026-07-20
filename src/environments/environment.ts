@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  // Dev: LEER = same-origin. Die Requests gehen an den Dev-Server (Port 8100),
+  // der sie per proxy.conf.json containerintern an die API (4100) weiterreicht.
+  // Grund: Der Browser laeuft unter Windows und erreicht 4100 im Devcontainer
+  // nur, wenn dieser Port zusaetzlich weitergeleitet ist. Über den Proxy genügt
+  // EIN weitergeleiteter Port — und CORS entfällt.
+  apiBaseUrl: '',
+  // Upload-Handler (/Upload/...) und Media (/api/media/...) ebenfalls same-origin.
+  webBaseUrl: '',
 };
 
 /*

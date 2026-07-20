@@ -7,7 +7,10 @@ import { StorageService } from '../services';
 export class TokenService {
 
   private TOKEN_KEY: string = '_token';
-  public token: TokenViewmodel;
+  // Leerer Default: ohne gespeicherten Token (frischer Browser) bleibt token
+  // sonst undefined, und getHeader() in rest.service liest token.UserKey ->
+  // TypeError beim ersten API-Call und die App bootet nicht (weisser Screen).
+  public token: TokenViewmodel = new TokenViewmodel('', '', '', '', 0);
   private expiry: any;
 
   constructor(public storage: StorageService) {

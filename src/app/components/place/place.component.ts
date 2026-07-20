@@ -27,10 +27,15 @@ export class PlaceComponent  implements OnInit {
   }
 
   onClick(){
+    // CurrentPlace nur fuer echte Plaetze direkt setzen — beim privaten Termin
+    // uebernimmt das die aufrufende Seite (sie klont den Platz).
     if(!this.place.IsPrivate) {
       this.dataProvider.Profile.CurrentPlace = this.place;
-      this.placeSelected.emit(this.place);
     }
+    // Auch fuer den privaten Termin emittieren: vorher stand das Emit INNERHALB
+    // der Bedingung, dadurch war die Zeile "Neuer privater Termin" auf der
+    // Places-Seite ohne Funktion (auf Home gibt es dafuer einen eigenen Button).
+    this.placeSelected.emit(this.place);
   }
 
   get isLastPlace(): boolean {

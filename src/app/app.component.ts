@@ -5,6 +5,8 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import { register } from 'swiper/element/bundle';
 import { AppointmentService, DataService, ImageService, StorageService } from './services/services';
 import { ProfileViewmodel } from './viewmodels/profileviewmodel';
+import { TokenViewmodel } from './viewmodels/viewmodels';
+import { environment } from '../environments/environment';
 
 //import { App, AppInfo } from '@capacitor/app';
 register();
@@ -71,28 +73,44 @@ export class AppComponent {
       });
   }
 
-  initTranslate() {
-    // Set the default language for translation strings, and the current language.
+  /**
+   * Sprachwahl. Es existieren nur assets/i18n/de.json und en.json — deshalb
+   * strikt auf diese beiden begrenzen. (Vorher konnte die Browsersprache z.B.
+   * auf 'fr' oder 'zh-cmn-Hans' schalten, wofür es keine Datei gibt.)
+   */
+  private readonly LANG_KEY = '_lang';
+  public readonly supportedLangs = ['de', 'en'];
+  public currentLang = 'de';
+
+  async initTranslate() {
     this.translate.setDefaultLang('de');
-    this.translate.addLangs(['en']);
-    this.translate.use('de');
-    const browserLang = this.translate.getBrowserLang();
+    this.translate.addLangs(this.supportedLangs);
 
-    if (browserLang) {
-      if (browserLang === 'zh') {
-        const browserCultureLang = this.translate.getBrowserCultureLang();
+    // Gespeicherte Wahl schlägt Browsersprache; sonst Browsersprache, sonst de.
+    const stored = await this.storageProvider.get(this.LANG_KEY);
+    const browser = this.translate.getBrowserLang() ?? '';
+    const lang = this.supportedLangs.includes(stored)
+      ? stored
+      : this.supportedLangs.includes(browser)
+        ? browser
+        : 'de';
 
-        if (browserCultureLang.match(/-CN|CHS|Hans/i)) {
-          this.translate.use('zh-cmn-Hans');
-        } else if (browserCultureLang.match(/-TW|CHT|Hant/i)) {
-          this.translate.use('zh-cmn-Hant');
-        }
-      } else {
-        this.translate.use(this.translate.getBrowserLang());
-      }
-    } else {
-      this.translate.use('de'); // Set your language here
+    this.currentLang = lang;
+    this.translate.use(lang);
+  }
+
+  /** Sprachumschaltung aus dem Side-Menu. */
+  async switchLanguage(lang: string) {
+    if (!this.supportedLangs.includes(lang) || lang === this.currentLang) {
+      return;
     }
+    this.currentLang = lang;
+    this.translate.use(lang);
+    await this.storageProvider.set(this.LANG_KEY, lang);
+    // Menütitel sind einmalig übersetzte Strings -> neu aufbauen.
+    this.buildMenu();
+    // Remote-Texte (/texte) werden pro Locale gecacht und beim nächsten Aufruf
+    // in der neuen Sprache geladen.
   }
 
   openProfile() {
@@ -110,11 +128,60 @@ export class AppComponent {
   }
 
   start() {
+    // Dev-Login (nur non-prod): ?devlogin=<userKey>:<pin> seedet Profile+Token
+    // im Storage, damit man sich im Browser ohne QR-Scan anmelden kann.
+    this.applyDevLogin().then(() => this.startCore())
+  }
+
+  /**
+   * Nur im Dev-Build: liest ?devlogin=<userKey>:<pin>:<email> aus der URL und
+   * legt Profile + Token so an, wie es sonst der QR-Scan täte.
+   * Die E-Mail MUSS die echte des Users sein: /gettoken prüft
+   * `(user.eMail ?? null) === (input.EMail ?? null)` — bei Abweichung kommt ein
+   * leerer Token zurück und alle Folge-Calls laufen auf 401.
+   * Users ohne E-Mail in der DB: dritten Teil weglassen. In Prod ein No-Op.
+   */
+  private async applyDevLogin(): Promise<void> {
+    if (environment.production) { return }
+    const dev = new URLSearchParams(window.location.search).get('devlogin')
+    if (!dev) { return }
+    // E-Mail kann selbst ':' enthalten -> Rest wieder zusammenfügen.
+    const [userKey, pin, ...rest] = dev.split(':')
+    if (!userKey) { return }
+    const email = rest.join(':')
+
+    // Reihenfolge ist wichtig: ZUERST den Token, DANN den UserKey ins Profil.
+    // Sobald Profile.UserKey gesetzt ist, koennen andere Stellen (z.B. der
+    // home.page-Konstruktor ueber refresh()) authentifizierte Requests
+    // ausloesen — ohne bereits vorhandenen Token laufen die in ein 401.
+    await this.dataProvider.saveToken(
+      new TokenViewmodel(userKey, pin ?? '', '', email, 0),
+    )
+
+    const profile = this.dataProvider.Profile
+    profile.UserKey = userKey
+    profile.UserPin = pin ?? ''
+    profile.Email = email
+    profile.EmailConfirmed = true
+    profile.IsActive = true
+    profile.IsRegistered = true
+    await this.dataProvider.saveProfile(profile)
+
+    // Das geseedete Profil enthält weder Plätze noch Pferde — bei echten Nutzern
+    // stehen die aus der Registrierung im Storage. loadProfile() holt beides per
+    // /getprofile nach, sonst laufen Seiten wie create.page auf leere Horses.
+    this.dataProvider.loadProfile()
+
+    console.log('[devlogin] Token+Profile seeded for', userKey)
+  }
+
+  startCore() {
     try {
       this.dataProvider.load( () => {
         //this.dataProvider.getLocalHomeData();
-        this.initTranslate();
-        this.buildMenu();
+        // initTranslate ist async (liest die gespeicherte Sprache) — buildMenu
+        // MUSS danach laufen, sonst stehen die Menütitel in der alten Sprache.
+        void this.initTranslate().then(() => this.buildMenu());
         this.dataProvider.getProfileImage();
         if (this.dataProvider.Profile.UserKey !== '' &&
         (this.dataProvider.Profile.Email === '' ||

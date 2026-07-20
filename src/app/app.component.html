@@ -14,6 +14,21 @@
               <ion-label>{{ p.title }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
+
+          <!-- Sprachumschaltung: Sprachnamen bewusst NICHT uebersetzt (jede
+               Sprache in ihrer eigenen Schreibweise), nur das Label. -->
+          <ion-item lines="none">
+            <ion-icon slot="start" name="language"></ion-icon>
+            <ion-select
+              [value]="currentLang"
+              (ionChange)="switchLanguage($event.detail.value)"
+              interface="popover"
+              [label]="'MNU_LANGUAGE' | translate"
+              labelPlacement="start">
+              <ion-select-option value="de">Deutsch</ion-select-option>
+              <ion-select-option value="en">English</ion-select-option>
+            </ion-select>
+          </ion-item>
         </ion-list>
       </ion-content>
     </ion-menu>

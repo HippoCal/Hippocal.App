@@ -6,7 +6,7 @@
     <ion-title>{{ dataProvider.getHeader(isNew? 'HEADER_CREATE' : 'HEADER_MODIFY') }}</ion-title>
     <ion-buttons slot="end">
       <ion-button icon="close-outline"
-        [disabled]="!dataProvider.IsOnline || !appointmentService.appointment.IsInTheFuture"
+        [disabled]="!dataProvider.IsOnline || !appointmentService.appointment?.IsInTheFuture"
         (click)="onCreateOrUpdate()">{{ 'BTN_SAVE' | translate }}</ion-button>
     </ion-buttons>
   </ion-toolbar>

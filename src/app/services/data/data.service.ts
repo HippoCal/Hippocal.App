@@ -18,12 +18,14 @@ export class DataService {
   private PROFILE_KEY: string = '_profile';
   private APPOINTMENT_KEY: string = '_appointment';
   private NEWS_KEY: string = '_news';
-  private locale: string = '';
 
   private currentTab: string = 'tab1';
   public IsLoaded: boolean;
 
-  private profile: ProfileViewmodel;
+  // Leerer Default, damit Template-Bindings (Profile.UserKey/Places/...) beim
+  // Erst-Rendering im Browser nicht auf undefined laufen, bevor der Storage
+  // geladen ist. getProfileFromStorage() ueberschreibt das mit dem echten Profil.
+  private profile: ProfileViewmodel = new ProfileViewmodel('', '');
 
   private appointments: AppointmentViewmodel[] = [];
   private weekAppointments: AppointmentViewmodel[] = [];
@@ -56,7 +58,7 @@ export class DataService {
 
     this.IsLoaded = false;
 
-    this.getLocale();
+    // Locale wird jetzt im Getter aus der aktiven Sprache abgeleitet (s. get Locale).
     this.setMomentLocale();
     this.currentDay = new Date();
   }
@@ -498,16 +500,18 @@ export class DataService {
     if (doAll) {
       this.getLocalAppointments();
     }
-    if (this.IsOnline) {
-      if (this.Profile === undefined) {
-        setTimeout(() => {
-          this.refreshOnline(doAll)
-        }, 1000);
-      }
-      else {
-        this.refreshOnline(doAll);
-      }
+    if (!this.IsOnline) {
+      return;
     }
+    // Ohne UserKey ist niemand angemeldet -> keine authentifizierten Requests
+    // abfeuern, die zwangsläufig in 401 laufen. Frueher stand hier
+    // `Profile === undefined` als "noch nicht geladen"-Sperre; seit Profile mit
+    // einem leeren Default initialisiert wird, greift die nicht mehr.
+    // Nach dem Login stoesst getStartModus() den Refresh ohnehin erneut an.
+    if (!this.Profile?.UserKey) {
+      return;
+    }
+    this.refreshOnline(doAll);
   }
 
   private refreshOnline(doAll: boolean) {
@@ -1047,7 +1051,10 @@ export class DataService {
 
   getText(key: string) {
     this.remoteText = "";
-    this.storage?.get(key).then((value) => {
+    // Cache-Key MUSS die Locale enthalten, sonst bleibt nach einem Sprachwechsel
+    // der Text der alten Sprache dauerhaft stehen.
+    const cacheKey = `${key}_${this.Locale}`;
+    this.storage?.get(cacheKey).then((value) => {
       if (value) {
         this.remoteText = value;
         return value;
@@ -1055,7 +1062,7 @@ export class DataService {
         return this.restProvider.getText(key, this.Locale).then((result) => {
           if (result !== "" && result !== undefined && result !== null) {
             this.remoteText = result.toString();
-            this.storage?.set(key, result.toString());
+            this.storage?.set(cacheKey, result.toString());
           }
         });
       }
@@ -1141,10 +1148,6 @@ export class DataService {
       }
     }
     this.halfHours.push(new HalfHourViewmodel(this.formatDate(dt, "HH:mm"), dt, canCreate, this.dayIsLoaded));
-  }
-
-  private getLocale() {
-    this.locale = "de-DE";
   }
 
   async getHorseImage(horseKey: string): Promise<ImageViewmodel> {
@@ -1402,8 +1405,14 @@ export class DataService {
     return this.restProvider.BaseUrl;
   }
 
+  /**
+   * Locale fuer /texte. Wird bei JEDEM Zugriff aus der aktiven UI-Sprache
+   * abgeleitet — nicht zwischengespeichert, damit ein Sprachwechsel zur Laufzeit
+   * sofort wirkt. Contract: de -> de-DE, en -> en-US.
+   */
   get Locale(): string {
-    return this.locale;
+    const lang = this.translate?.currentLang || this.translate?.getDefaultLang() || 'de';
+    return lang.toLowerCase().startsWith('en') ? 'en-US' : 'de-DE';
   }
 
   get RemoteText(): string {
