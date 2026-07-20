@@ -1,3 +1,16 @@
 ion-col {
     padding: 0px;
   }
+
+/* ── Orientierung in der Wochenliste ───────────────────────────────────────
+   Vorher sahen alle sieben Tage identisch aus — man musste das Datum lesen,
+   um sich zurechtzufinden. Heute wird markiert, Vergangenes tritt zurueck. */
+ion-item.today {
+  --ion-color-base: #eaf5ed !important;
+  border-left: 3px solid var(--ion-color-primary);
+  font-weight: 600;
+}
+
+ion-item.past {
+  --ion-color-contrast: #9aa19c !important;
+}

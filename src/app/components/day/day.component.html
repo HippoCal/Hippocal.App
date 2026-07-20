@@ -1,4 +1,4 @@
-<ion-item color="light" (click)="onSelectDay()">
+<ion-item color="light" [class.today]="isToday" [class.past]="isPast" (click)="onSelectDay()">
   <ion-grid>
     <ion-row class="wrap justify-content-start align-items-center">
       <ion-col size="4">

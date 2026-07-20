@@ -23,12 +23,14 @@
 	--ion-color-success-contrast-rgb: 255, 255, 255;
 	--ion-color-success-shade: #28ba62;
 	--ion-color-success-tint: #42d77d;
-	--ion-color-warning: #ffec82;
-	--ion-color-warning-rgb: 255, 236, 130;
-	--ion-color-warning-contrast: #000000;
-	--ion-color-warning-contrast-rgb: 0, 0, 0;
-	--ion-color-warning-shade: #e0d072;
-	--ion-color-warning-tint: #ffee8f;
+	/* Warnung MUSS sich von der neutralen Flaeche unterscheiden — vorher war sie
+	   identisch mit --ion-color-light (#ffec82) und konnte nichts signalisieren. */
+	--ion-color-warning: #f2c744;
+	--ion-color-warning-rgb: 242, 199, 68;
+	--ion-color-warning-contrast: #2b2a25;
+	--ion-color-warning-contrast-rgb: 43, 42, 37;
+	--ion-color-warning-shade: #d5af3c;
+	--ion-color-warning-tint: #f4cd57;
 	--ion-color-danger: #eb445a;
 	--ion-color-danger-rgb: 235, 68, 90;
 	--ion-color-danger-contrast: #ffffff;
@@ -53,12 +55,15 @@
 	--ion-color-medium-contrast-rgb: 255, 255, 255;
 	--ion-color-medium-shade: #808289;
 	--ion-color-medium-tint: #9d9fa6;
-	--ion-color-light: #ffec82;
-	--ion-color-light-rgb: 255, 236, 130;
-	--ion-color-light-contrast: #000000;
-	--ion-color-light-contrast-rgb: 0, 0, 0;
-	--ion-color-light-shade: #e0d072;
-	--ion-color-light-tint: #ffee8f;
+	/* `light` ist in Ionic die NEUTRALE Flaeche. Vorher mit sattem Gelb belegt —
+	   dadurch wurde jede Liste/Karte mit color="light" knallgelb. Jetzt ein
+	   warmes Off-White; das Gelb bleibt Signalfarbe (siehe divider/warning). */
+	--ion-color-light: #f7f7f4;
+	--ion-color-light-rgb: 247, 247, 244;
+	--ion-color-light-contrast: #2b2a25;
+	--ion-color-light-contrast-rgb: 43, 42, 37;
+	--ion-color-light-shade: #e6e6e3;
+	--ion-color-light-tint: #f8f8f6;
 	--ion-color-orange: #fba609;
 	--ion-color-orange-rgb: 251, 166, 9;
 	--ion-color-orange-contrast: #000000;
@@ -71,18 +76,20 @@
 	--ion-color-grey-contrast-rgb: 0,0,0;
 	--ion-color-grey-shade: #a8aba6;
 	--ion-color-grey-tint: #c5c8c4;
-	--ion-color-divider: #ffec82;
+	/* Markiert Ungelesenes (News-Zeilen). Deutlich entsaettigt: hebt sich noch ab,
+	   schreit aber nicht mehr. */
+	--ion-color-divider: #fdf4d9;
 	--ion-color-blue: #254069;
 	--ion-color-blue-rgb: 37,64,105;
 	--ion-color-blue-contrast: #ffffff;
 	--ion-color-blue-contrast-rgb: 255,255,255;
 	--ion-color-blue-shade: #21385c;
 	--ion-color-blue-tint: #3b5378;
-	--ion-color-divider-rgb: 255,236,130;
-	--ion-color-divider-contrast: #000000;
-	--ion-color-divider-contrast-rgb: 0,0,0;
-	--ion-color-divider-shade: #e0d072;
-	--ion-color-divider-tint: #ffee8f;
+	--ion-color-divider-rgb: 253,244,217;
+	--ion-color-divider-contrast: #2b2a25;
+	--ion-color-divider-contrast-rgb: 43,42,37;
+	--ion-color-divider-shade: #ded7bf;
+	--ion-color-divider-tint: #fdf6dd;
 	--ion-color-dark: #222;
 	--ion-color-dark-rgb: 34,34,34;
 	--ion-color-dark-contrast: #ffffff;

@@ -9,8 +9,19 @@
     width: 55px !important;
   }
 
+  /* Abschnitte brauchen Luft, damit die Seite ruhig wirkt (vorher 5px). */
   ion-list {
-    margin-bottom: 5px;
+    margin-bottom: 20px;
+  }
+
+  /* Abschnittsueberschriften ordnen den Inhalt — sie sollen ihn nicht
+     ueberstrahlen. Vorher konkurrierten sie in der Groesse mit den Karten. */
+  h2 {
+    font-size: 1.05em;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: #4a524d;
+    margin: 4px 0;
   }
   
   h6 {

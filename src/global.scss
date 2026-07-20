@@ -51,6 +51,15 @@
     gap: 15px;
   }
 
+/* Flex-Kinder haben per Default min-width:auto und koennen daher nicht unter
+   ihre Inhaltsbreite schrumpfen — langer Text lief so aus dem Item heraus.
+   overflow-wrap faengt zusaetzlich unteilbar lange Woerter ab (z.B. ein
+   Platzname ohne Leerzeichen), die sonst trotzdem ueberlaufen wuerden. */
+.contentRow > * {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
 .barcode-scanner-active {
     opacity: 0;
     visibility: hidden;
@@ -88,6 +97,56 @@ ion-title {
 
 ion-button {
 	font-size: 0.8em;
+	--border-radius: 10px;
+	/* Versalien sind schlechter lesbar — im Deutschen mit langen Komposita
+	   ("Neuer privater Termin") besonders. Normale Schreibung. */
+	text-transform: none;
+	letter-spacing: 0;
+}
+
+/* ── Empty States ──────────────────────────────────────────────────────────
+   Vorher grosse Raster-Verbotsschilder (durchgestrichenes Pferd/Kuvert), die
+   "verboten" signalisierten statt "hier ist noch nichts" — und die neben den
+   feinen Linien-Icons der Tab-Bar wie eine zweite Bildsprache wirkten.
+   Jetzt dieselbe Icon-Sprache, gedaempft, Icon und Text gemeinsam zentriert. */
+.emptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 48px 24px;
+	text-align: center;
+	color: #8a918c;
+}
+
+.emptyState ion-icon {
+	font-size: 56px;
+	color: #c3ccc6;
+}
+
+.emptyState p {
+	margin: 0;
+	font-size: 1em;
+	line-height: 1.45;
+	max-width: 26ch;
+}
+
+/* ── Layout-Grundraster: ein Gutter, ein Radius ─────────────────────────────
+   Vorher legte ion-grid innerhalb von .ion-padding nochmals eigenes Padding
+   drauf — dadurch standen Buttons sichtbar weiter innen als die Karten
+   darunter. Und Buttons waren rund, Karten eckig. Beides vereinheitlicht. */
+ion-content.ion-padding ion-grid {
+	padding-inline: 0;
+	padding-top: 0;
+}
+
+/* Listen als zusammenhaengende Karte: gemeinsamer Radius statt eckiger Bloecke.
+   overflow:hidden clippt die Ecken; ion-item-sliding funktioniert weiterhin,
+   da die Optionen innerhalb der Item-Box aufgedeckt werden. */
+ion-list {
+	border-radius: 12px;
+	overflow: hidden;
 }
 
 h2 {

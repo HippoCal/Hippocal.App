@@ -14,12 +14,39 @@ ion-avatar {
   height: 45px !important;
 }
 
+/* Die Liste bildet jetzt die Karte (Radius global) — der Eintrag braucht daher
+   nur noch eine Trennlinie statt eines vollen Rahmens. */
 ion-item-sliding {
-  border-right-style: solid;
-  border-left-style: solid;
-  border-bottom-style: solid;
-  border-color: #d0dad5;
-  border-width: 1px;
+  border-bottom: 1px solid #e4e8e5;
+}
+
+/* ── Zustandsfarben entschaerft ─────────────────────────────────────────────
+   Die Farbe kodiert den Zustand (laeuft gerade / vergangen / Admin / privat /
+   Standard) — diese Information bleibt erhalten. Statt vollflaechig gesaettigt
+   mit weisser Schrift jetzt eine blasse Flaeche mit dunklem Text und farbiger
+   Kante links: gleiche Aussage, deutlich ruhiger und besser lesbar. */
+ion-item.ion-color-primary,
+ion-item.ion-color-orange,
+ion-item.ion-color-grey,
+ion-item.ion-color-admin,
+ion-item.ion-color-blue,
+ion-item.ion-color-divider {
+  --ion-color-contrast: #23291f !important;
+  --inner-border-width: 0;
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+}
+
+ion-item.ion-color-primary { --ion-color-base: #eaf5ed !important; border-left: 4px solid #1ab749; }
+ion-item.ion-color-orange  { --ion-color-base: #fdf0d9 !important; border-left: 4px solid #fba609; }
+ion-item.ion-color-admin   { --ion-color-base: #fdeae3 !important; border-left: 4px solid #ea5722; }
+ion-item.ion-color-blue    { --ion-color-base: #eaeef5 !important; border-left: 4px solid #254069; }
+ion-item.ion-color-divider { --ion-color-base: #fdf4d9 !important; border-left: 4px solid #f2c744; }
+/* Vergangenes tritt zusaetzlich ueber die Textfarbe zurueck. */
+ion-item.ion-color-grey {
+  --ion-color-base: #f4f5f3 !important;
+  --ion-color-contrast: #7b817c !important;
+  border-left: 4px solid #cdd2ce;
 }
 
 .avatardiv {
@@ -46,7 +73,31 @@ img.smallImage {
   height: 45px !important;
 }
 
+/* ── Hierarchie in der Karte ───────────────────────────────────────────────
+   Vorher waren Datum, Uhrzeit+Pferd und Bezeichnung gleich gross — der Blick
+   fand keinen Anker. Ein Reiter sucht zuerst die UHRZEIT, deshalb traegt die
+   mittlere Zeile das Gewicht; Datum und Bezeichnung ordnen sich unter. */
 h6.component {
-  font-size: 0.9em;
-  margin: 1px;
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* 1. Zeile: Datum — Kontext */
+h6.component:nth-of-type(1) {
+  font-size: 0.78em;
+  font-weight: 500;
+  opacity: 0.7;
+  letter-spacing: 0.02em;
+}
+
+/* 2. Zeile: Uhrzeit + Pferd — der Leseanker */
+h6.component:nth-of-type(2) {
+  font-size: 1.08em;
+  font-weight: 600;
+}
+
+/* 3. Zeile: Bezeichnung — Sekundaerinfo */
+h6.component:nth-of-type(3) {
+  font-size: 0.82em;
+  opacity: 0.75;
 }

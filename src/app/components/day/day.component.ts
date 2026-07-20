@@ -16,6 +16,27 @@ export class DayComponent {
 
   constructor(public dataProvider: DataService) { }
 
+  /** Datum dieses Tages = Wochenanfang + Offset (Offset ist der Index 0..6). */
+  private get date(): Date {
+    const d = new Date(this.dataProvider.FirstDay);
+    d.setDate(d.getDate() + this.day.Offset);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  /** Hebt den heutigen Tag in der Wochenliste hervor. */
+  public get isToday(): boolean {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return this.date.getTime() === today.getTime();
+  }
+
+  /** Vergangene Tage treten optisch zurueck (hier ist nichts mehr zu buchen). */
+  public get isPast(): boolean {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return this.date.getTime() < today.getTime();
+  }
 
   public onSelectDay() {
     this.selectDay.emit(this.day);

@@ -48,14 +48,9 @@
       <app-appointment [appointment]="appointment" *ngFor="let appointment of place.Appointments.slice(0, 12)" [canDelete]="true" (showAppointment)="onShowAppointment(appointment)" (deleteAppointment)="onDeleteAppointment(appointment)"></app-appointment>
     </ion-list>
   </div>
-  <div *ngIf="dataProvider.PlaceAppointments.length === 0">
-    <ion-row>
-      <img src="assets/imgs/empty.png" class="center" />
-    </ion-row>
-    <ion-row>&nbsp;</ion-row>
-    <ion-row class="ion-text-center">
-      <h2 class="textcenter">{{ 'LBL_NO_APPOINTMENTS' | translate }}</h2>
-    </ion-row>
+  <div *ngIf="dataProvider.PlaceAppointments.length === 0" class="emptyState">
+    <ion-icon name="calendar-outline"></ion-icon>
+    <p>{{ 'LBL_NO_APPOINTMENTS' | translate }}</p>
   </div>
   <div *ngIf="dataProvider.UnreadMessages !== 0">
     <ion-item lines="none">
