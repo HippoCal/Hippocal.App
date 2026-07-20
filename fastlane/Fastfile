@@ -14,6 +14,10 @@ platform :android do
   lane :deploy do |options|
     track = options[:track] || "internal"
 
+    # Check the Play credentials BEFORE building: the bundle takes ~3 minutes,
+    # and a missing permission would otherwise only surface after that wait.
+    validate_play_store_json_key(json_key: ENV["SUPPLY_JSON_KEY"])
+
     gradle(
       project_dir: "android",
       task: "bundle",
