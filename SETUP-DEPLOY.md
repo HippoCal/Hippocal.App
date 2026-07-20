@@ -40,21 +40,52 @@ Repo → **Settings → Secrets and variables → Actions → New repository sec
 | `ANDROID_KEY_PASSWORD` | Key password |
 | `PLAY_SERVICE_ACCOUNT_JSON` | Full JSON of the Google Play service account (see §3) |
 
-The workflow decodes the keystore + service account into temp files and passes
-their paths to Gradle/Fastlane via env vars (`ANDROID_KEYSTORE_PATH`,
-`SUPPLY_JSON_KEY`). The Gradle signing config in `android/app/build.gradle` reads
-these env vars; without them the release build stays unsigned (so local debug
-builds are unaffected).
+The workflow decodes the keystore and the service account into temp files. The
+keystore path/credentials reach Gradle as **project properties** via the
+`ORG_GRADLE_PROJECT_` prefix (`RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`,
+`RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`); the service account path goes to
+Fastlane as `SUPPLY_JSON_KEY`.
+
+`android/app/build.gradle` reads the project properties first and falls back to
+the `ANDROID_KEYSTORE_*` env vars, which is the convenient route for local
+release builds. Project properties are read per build, so unlike env vars they
+are not cached by the Gradle daemon. Without either, the release build simply
+stays unsigned — local debug builds are unaffected.
 
 ---
 
 ## 3. Google Play service account
 
-1. Play Console → **Setup → API access**.
-2. Create (or link) a Google Cloud service account.
-3. Grant it access with at least **Release** permissions for the app.
-4. Create a JSON key for the service account and download it.
-5. Paste the **entire JSON** into the `PLAY_SERVICE_ACCOUNT_JSON` secret.
+> The old route **Play Console → Setup → API access** no longer exists. Google
+> split the flow: the account is created in Google Cloud, and the Play Console
+> only grants it access like any other user.
+
+**a) Create the account (Google Cloud Console)**
+
+1. <https://console.cloud.google.com/iam-admin/serviceaccounts> — pick or create
+   a project.
+2. **APIs & Services → Library** → enable **Google Play Android Developer API**.
+3. **Create service account** (e.g. `hippocal-play-deploy`).
+4. On the new account: **Keys → Add key → Create new key → JSON** → download.
+5. Copy its e-mail address (`…@….iam.gserviceaccount.com`).
+
+**b) Grant access (Play Console)**
+
+6. Play Console at **account level** (switch to *All apps* if you only see one
+   app) → **Users and permissions** → **Invite new user**.
+7. Paste the service account e-mail.
+8. Under **App permissions** select HippoCal and grant at least
+   *Release to testing tracks*; add *Release to production* for the
+   `production` track.
+9. Paste the **entire JSON** (including `{` … `}`, not a path) into the
+   `PLAY_SERVICE_ACCOUNT_JSON` secret.
+
+Without step b the build succeeds and only the upload fails, with
+`Google Api Error: Invalid request - The caller does not have permission`.
+Permission changes can take a few minutes to reach the API — retry once before
+suspecting the configuration. The `deploy` lane calls
+`validate_play_store_json_key` before building, so credential problems surface
+in seconds instead of after the ~3-minute bundle.
 
 > First upload only: an app must have had at least one manual AAB upload in the
 > Play Console before the API can push builds. HippoCal already exists on Play
