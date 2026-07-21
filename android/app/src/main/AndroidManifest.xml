@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8' ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -31,9 +32,22 @@
         
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Bildauswahl laeuft ueber den System-Fotopicker (Camera.getPhoto mit
+         CameraSource.Photos), der genau EIN Bild liefert und keine breite
+         Medienberechtigung braucht. Gespeichert wird nur intern (Directory.Data).
+
+         READ_MEDIA_IMAGES wurde von Google Play abgelehnt (Foto-/Video-Richtlinie)
+         und ist ersatzlos entfernt. READ_EXTERNAL_STORAGE nur noch fuer Android
+         <= 12 (Galerie-Fallback des Pickers), auf 13+ nicht mehr angefordert.
+         WRITE_EXTERNAL_STORAGE entfaellt ganz (nur interner Speicher).
+         tools:node=remove haelt die Berechtigungen auch dann draussen, falls ein
+         Plugin sie beim Manifest-Merge wieder einschleust. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:node="remove" />
 </manifest>
