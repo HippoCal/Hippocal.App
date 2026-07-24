@@ -124,10 +124,13 @@ jobs:
           ORG_GRADLE_PROJECT_RELEASE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           SUPPLY_JSON_KEY: ${{ runner.temp }}/play.json
 
-  # macOS runners bill at 10x the minute rate, so this job is opt-in: it runs on
-  # a version tag, or manually when "ios" is ticked.
+  # macOS runners bill at 10x the minute rate, AND iOS signing is not finished
+  # yet (no distribution certificate — needs an Admin API key). So this job runs
+  # ONLY when explicitly requested via the "ios" checkbox, not on version tags.
+  # Re-add `startsWith(github.ref, 'refs/tags/v')` here once iOS uploads work, so
+  # a release tag ships both platforms again.
   ios:
-    if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.ios == 'true'
+    if: github.event.inputs.ios == 'true'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
