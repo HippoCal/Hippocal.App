@@ -224,8 +224,29 @@ The 16 KB-aligned libs come from `@capacitor-mlkit/barcode-scanning@8.1.0`
 
 ## 8. Troubleshooting
 
+### `error: invalid source release: 21` (the recurring one)
+
+The build needs JDK 21, but the Gradle daemon is running an older JDK. The trap:
+`java -version` reads the **PATH**, while Gradle picks its JDK from **`JAVA_HOME`**
+(precedence: `org.gradle.java.home` → `JAVA_HOME` → PATH). So `java -version` can
+show 21 while `JAVA_HOME` still points at JDK 17 — and Gradle uses the 17.
+
+Check and fix on Windows:
+
+```powershell
+echo $env:JAVA_HOME            # likely a jdk-17 path — that is the cause
+setx JAVA_HOME "C:\Program Files\Eclipse Adoptium\jdk-21.x.x-hotspot"
+# open a NEW shell (setx only affects new shells), then:
+android\gradlew --stop         # the daemon caches env vars; kill it once
+```
+
+The daemon caching is why the error survives a "fixed" PATH — always
+`gradlew --stop` after changing `JAVA_HOME`. CI is unaffected: `setup-java`
+sets `JAVA_HOME` to Temurin 21 on the runner.
+
 | Symptom | Cause / fix |
 |---------|-------------|
+| `invalid source release: 21` | `JAVA_HOME` on old JDK (not PATH) + cached daemon — see above |
 | `upload certificate mismatch` (Play) | Wrong upload key — see §4 |
 | `You need to upload an APK/AAB first` | First upload must be manual in Play Console (n/a for existing app) |
 | `.so` shows `0x1000` in readelf | Old native libs — ensure barcode-scanning is `8.1.0`, no version overrides in `variables.gradle` |
